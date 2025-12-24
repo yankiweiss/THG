@@ -5,7 +5,7 @@
       "use": "@vercel/static-build"
     }
   ],
-  "outputDirectory": "builds",
+  "outputDirectory": "dist",
   "routes": [
     { "src": "/(.*)", "dest": "/index.html" }
   ]
