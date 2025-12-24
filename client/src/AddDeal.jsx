@@ -1,6 +1,7 @@
 import "bootstrap/dist/css/bootstrap.min.css";
 import { useState } from "react";
 import SyndicatorDetails from "./SyndicatorDetails";
+import { FaPlus } from "react-icons/fa";
 
 function AddDeal() {
   const [syndicator, setSyndicator] = useState([
@@ -32,7 +33,7 @@ function AddDeal() {
           </div>
           <div className="row g-3 mt-1 d-flex justify-content-center">
             <div className="col-md-4">
-              <label className="form-label">Property Address:</label>
+              <label className="form-label">Property Name:</label>
               <input autoFocus className="form-control" />
             </div>
             <div className="col-md-4">
@@ -47,7 +48,7 @@ function AddDeal() {
               style={{ cursor: "pointer" }}
               onClick={addSyndicator}
             >
-              Add Syndicator 
+              Add Investor<FaPlus />
             </h1>
           </div>
 
