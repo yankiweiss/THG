@@ -32,13 +32,21 @@ function AddDeal() {
             <h1 className="mt-4 badge text-bg-light fs-5">Property Details</h1>
           </div>
           <div className="row g-3 mt-1 d-flex justify-content-center">
-            <div className="col-md-4">
+            <div className="col-md-3">
               <label className="form-label">Property Name:</label>
               <input autoFocus className="form-control" />
             </div>
-            <div className="col-md-4">
+            <div className="col-md-3">
               <label className="form-label">Purchase Price:</label>
-              <input className="form-control" />
+              <input type="number" className="form-control" />
+            </div>
+
+            <div className="col-md-3">
+                <label class="form-label" for="inputGroupFile02">
+              Upload Property Photo:
+            </label>
+            <input type="file" class="form-control" id="inputGroupFile02" />
+        
             </div>
           </div>
 
@@ -48,11 +56,10 @@ function AddDeal() {
               style={{ cursor: "pointer" }}
               onClick={addSyndicator}
             >
-              Add Investor<FaPlus />
+              Add Investor
+              <FaPlus />
             </h1>
           </div>
-
-         
 
           {syndicator.map((syndicator, index) => (
             <SyndicatorDetails
