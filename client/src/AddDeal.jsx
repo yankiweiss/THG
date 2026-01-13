@@ -8,18 +8,10 @@ import "./index.css";
 // function to submit the form to backend
 
 function AddDeal() {
-  const handleForm = (e) => {
-    e.preventDefault();
-    const form = e.target;
-    const formData = new FormData(form);
-    const dataObject = Object.fromEntries(formData.entries());
-    console.log(dataObject);
-  };
 
-  const handleSyn = () => {
-    console.log(syndicator)
-  }
+ 
 
+ 
   const [syndicator, setSyndicator] = useState([
     { investorName: "", investorAmount: "", investorPercent: "" },
   ]);
@@ -40,6 +32,23 @@ function AddDeal() {
       prev.map((s, i) => (i === index ? { ...s, [field]: value } : s))
     );
   };
+
+
+   const handleForm = (e) => {
+    e.preventDefault();
+    const form = e.target;
+    const formData = new FormData(form);
+    const dataObject = Object.fromEntries(formData.entries());
+
+    const payload = {
+      ...dataObject,
+      syndicator : syndicator
+    }
+
+    console.log(payload)
+  
+  };
+
 
   return (
     <div className="outside-wrap">
@@ -118,7 +127,7 @@ function AddDeal() {
           ))}
 
           <div className="text-center mt-5">
-            <button type="submit" className="btn btn-primary" onClick={handleSyn}>
+            <button type="submit" className="btn btn-primary">
               Save
             </button>
           </div>
