@@ -1,20 +1,36 @@
 import "bootstrap/dist/css/bootstrap.min.css";
-import { useState } from "react";
 import SyndicatorDetails from "./SyndicatorDetails";
+import { useState } from "react";
 import { FaPlus } from "react-icons/fa";
+import Quarter from "./Quarters";
+import "./index.css";
+
+// function to submit the form to backend
 
 function AddDeal() {
+  const handleForm = (e) => {
+    e.preventDefault();
+    const form = e.target;
+    const formData = new FormData(form);
+    const dataObject = Object.fromEntries(formData.entries());
+    console.log(dataObject);
+  };
+
+  const handleSyn = () => {
+    console.log(syndicator)
+  }
+
   const [syndicator, setSyndicator] = useState([
-    { name: "", amount: "", percent: "" },
+    { investorName: "", investorAmount: "", investorPercent: "" },
   ]);
 
   const addSyndicator = () => {
     setSyndicator((prev) => [
       ...prev,
       {
-        name: "",
-        amount: "",
-        percent: "",
+        investorName: "",
+        investorAmount: "",
+        investorPercent: "",
       },
     ]);
   };
@@ -24,41 +40,72 @@ function AddDeal() {
       prev.map((s, i) => (i === index ? { ...s, [field]: value } : s))
     );
   };
+
   return (
-    <>
-      <div className=" mx-auto w-75  mt-5 p-5 border border-dark rounded">
-        <form>
-          <div className="text-center">
-            <h1 className="mt-4 badge text-bg-light fs-5">Property Details</h1>
-          </div>
-          <div className="row g-3 mt-1 d-flex justify-content-center">
+    <div className="outside-wrap">
+      <h2 className="main-header pt-5">Add New Deal</h2>
+
+      <div className="from-content w-75">
+        <form onSubmit={handleForm}>
+          <h4 className="header-text text-start">Property Details</h4>
+
+          <hr></hr>
+
+          <div className="row g-3 d-flex justify-content-center">
             <div className="col-md-3">
               <label className="form-label">Property Name:</label>
-              <input autoFocus className="form-control" />
+              <input autoFocus className="form-control" name="property-name" />
             </div>
-            <div className="col-md-3">
+            <div className="col-md-2">
               <label className="form-label">Purchase Price:</label>
-              <input type="number" className="form-control" />
+              <input
+                type="number"
+                className="form-control"
+                name="purchase-price"
+              />
             </div>
 
             <div className="col-md-3">
-                <label class="form-label" for="inputGroupFile02">
-              Upload Property Photo:
-            </label>
-            <input type="file" class="form-control" id="inputGroupFile02" />
-        
+              <label class="form-label" for="upload-documents">
+                Upload Documents:
+              </label>
+              <input
+                type="file"
+                class="form-control"
+                id="upload-documents"
+                name="property-documents"
+              />
             </div>
+             <div className="col-md-3">
+              <label class="form-label" for="upload-documents">
+                Upload Pictures:
+              </label>
+              <input
+                type="file"
+                class="form-control"
+                id="upload-documents"
+                name="property-documents"
+              />
+            </div>
+             <hr></hr>
           </div>
 
-          <div className="text-center">
-            <h1
-              className="mt-5 badge text-bg-light fs-5"
-              style={{ cursor: "pointer" }}
+          {/* adding syndicator info: */}
+
+          <h4 className="header-text text-start">Investor Details</h4>
+
+          <div className="text-start">
+             <hr></hr>
+            <h5
+              className="add-investor"
+              style={{ cursor: "pointer"}}
               onClick={addSyndicator}
             >
-              Add Investor
               <FaPlus />
-            </h1>
+              Add Investor
+             
+            </h5>
+             <hr></hr>
           </div>
 
           {syndicator.map((syndicator, index) => (
@@ -71,13 +118,13 @@ function AddDeal() {
           ))}
 
           <div className="text-center mt-5">
-            <button type="submit" className="btn btn-primary">
+            <button type="submit" className="btn btn-primary" onClick={handleSyn}>
               Save
             </button>
           </div>
         </form>
       </div>
-    </>
+    </div>
   );
 }
 

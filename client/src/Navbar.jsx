@@ -10,6 +10,12 @@ function Navbar({addDealVisibility, addPropertyVisibility}) {
       <nav className="navbar navbar-expand-lg bg-body-tertiary">
         <div class="container-fluid d-flex justify-content-center gap-4">
 
+           <li class="nav-item">
+            <button type="button" class="btn btn-light btn-outline-secondary" onClick={() => addPropertyVisibility()}>
+              Documents
+            </button>
+          </li>
+
           <li class="nav-item">
             <button type="button" class="btn btn-light btn-outline-secondary" onClick={() => addPropertyVisibility()}>
               Properties
