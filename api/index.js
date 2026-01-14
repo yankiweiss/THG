@@ -1,6 +1,7 @@
 import express from 'express';
 import { postAProperty } from './controllers/propertyController';
 const app = express();
+import cors from 'cors'
 
 const PORT = process.env.PORT || 3000;
 
