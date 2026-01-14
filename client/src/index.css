@@ -8,7 +8,7 @@
 }
 
 .outside-wrap{
-    background-color: var(--light-blue);
+    background-color: var(--bg-light);
 }
 .main-header{
     color: var(--dark-blue);

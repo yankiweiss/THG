@@ -2,14 +2,11 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import SyndicatorDetails from "./SyndicatorDetails";
 import { useState } from "react";
 import { FaPlus } from "react-icons/fa";
-import Quarter from "./Quarters";
 import "./index.css";
 
 // function to submit the form to backend
 
 function AddDeal() {
-
- 
 
  
   const [syndicator, setSyndicator] = useState([
@@ -34,7 +31,7 @@ function AddDeal() {
   };
 
 
-   const handleForm = (e) => {
+   const handleForm = async (e) => {
     e.preventDefault();
     const form = e.target;
     const formData = new FormData(form);
@@ -46,8 +43,11 @@ function AddDeal() {
     }
 
     console.log(payload)
-  
-  };
+
+    const response = await fetch('https://thg-seven.vercel.app/api/')
+    console.log(response)
+
+  }
 
 
   return (
