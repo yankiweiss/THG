@@ -28,7 +28,7 @@ function AddDeal() {
     );
   };
 
-  const handleForm = (e) => {
+  const handleForm = async (e) => {
     e.preventDefault();
     const form = e.target;
     const formData = new FormData(form);
@@ -41,15 +41,14 @@ function AddDeal() {
 
     console.log(payload);
 
-    const response = fetch("https://thg-seven.vercel.app/api/properties/addDeal");
-    response
-      .then((data) => {
-        return data.json();
-      })
-      .then((res) => {
-        console.log(res.message);
-      });
-  };
+   await fetch("https://thg-seven.vercel.app/api/properties/addDeal" , {
+      method: 'POST',
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload)
+    });
+  }
 
   return (
     <>
