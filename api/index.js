@@ -1,5 +1,4 @@
 import express from 'express';
-import { postAProperty } from './controllers/propertyController.js';
 const app = express();
 import cors from 'cors'
 import router from './routes/api/property.js';
