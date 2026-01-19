@@ -14,7 +14,7 @@ app.use(cors());
 app.use(express.json());
 
 
-app.use('/properties', router)
+app.use('/api/properties', router)
 
 app.listen(PORT, ()=> {
     console.log(`APP ruining on ${PORT}`)
