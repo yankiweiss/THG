@@ -29,7 +29,9 @@ const postAProperty = async (req, res) => {
 
  await client.query('COMMIT')
   } catch (error) {
-    
+    console.error(error)
+  }  finally {
+    client.release();
   }
 
 };
