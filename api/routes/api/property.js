@@ -1,5 +1,5 @@
 import express from 'express';
-import { postAProperty } from '../../controllers/propertyController';
+import { postAProperty } from '../../controllers/propertyController.js';
 const router = express.Router();
 
 
