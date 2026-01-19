@@ -7,8 +7,6 @@ import "./index.css";
 // function to submit the form to backend
 
 function AddDeal() {
-
- 
   const [syndicator, setSyndicator] = useState([
     { investorName: "", investorAmount: "", investorPercent: "" },
   ]);
@@ -26,12 +24,11 @@ function AddDeal() {
 
   const updateSyndicator = (index, field, value) => {
     setSyndicator((prev) =>
-      prev.map((s, i) => (i === index ? { ...s, [field]: value } : s))
+      prev.map((s, i) => (i === index ? { ...s, [field]: value } : s)),
     );
   };
 
-
-   const handleForm = async (e) => {
+  const handleForm = (e) => {
     e.preventDefault();
     const form = e.target;
     const formData = new FormData(form);
@@ -39,101 +36,87 @@ function AddDeal() {
 
     const payload = {
       ...dataObject,
-      syndicator : syndicator
-    }
+      syndicator: syndicator,
+    };
 
-    console.log(payload)
+    console.log(payload);
 
-    const response = await fetch('https://thg-seven.vercel.app/api/')
-    console.log(response)
-
-  }
-
+    const response = fetch("https://thg-seven.vercel.app/api/properties/addDeal");
+    response
+      .then((data) => {
+        return data.json();
+      })
+      .then((res) => {
+        console.log(res.message);
+      });
+  };
 
   return (
-    <div className="outside-wrap">
-      <h2 className="main-header pt-5">Add New Deal</h2>
+    <>
+    <form onSubmit={handleForm}>
+      <div className="container my-5">
+        <div className="card shadow-sm mb-4">
+          <div className="card-header bg-light fw-bold">Property Details:</div>
 
-      <div className="from-content w-75">
-        <form onSubmit={handleForm}>
-          <h4 className="header-text text-start">Property Details</h4>
+          <div className="card-body">
+            <div className="row g-3">
+              <div className="col-md-3">
+                
+                <label className="form-label">Property Name:</label>
+                <input className="form-control"
+                name="property_name" />
+              </div>
 
-          <hr></hr>
+              <div className="col-md-3">
+                <label className="form-label">Purchase Price</label>
+                <input className="form-control" 
+                name="purchase_price"/>
+              </div>
 
-          <div className="row g-3 d-flex justify-content-center">
-            <div className="col-md-3">
-              <label className="form-label">Property Name:</label>
-              <input autoFocus className="form-control" name="property-name" />
+              <div className="col-md-3">
+                <label className="form-label">Upload Documents</label>
+                <input className="form-control" />
+              </div>
+              <div className="col-md-3">
+                <label className="form-label">Upload Pictures</label>
+                <input className="form-control" />
+              </div>
             </div>
-            <div className="col-md-2">
-              <label className="form-label">Purchase Price:</label>
-              <input
-                type="number"
-                className="form-control"
-                name="purchase-price"
-              />
-            </div>
-
-            <div className="col-md-3">
-              <label class="form-label" for="upload-documents">
-                Upload Documents:
-              </label>
-              <input
-                type="file"
-                class="form-control"
-                id="upload-documents"
-                name="property-documents"
-              />
-            </div>
-             <div className="col-md-3">
-              <label class="form-label" for="upload-documents">
-                Upload Pictures:
-              </label>
-              <input
-                type="file"
-                class="form-control"
-                id="upload-documents"
-                name="property-documents"
-              />
-            </div>
-             <hr></hr>
           </div>
+        </div>
 
-          {/* adding syndicator info: */}
+        <div className="card shadow-sm mb-4">
+          <div className="card-header bg-light fw-bold">Investor Details</div>
 
-          <h4 className="header-text text-start">Investor Details</h4>
-
-          <div className="text-start">
-             <hr></hr>
-            <h5
-              className="add-investor"
-              style={{ cursor: "pointer"}}
+          <div className="card-body">
+            <button type="button"
+              class="btn btn-outline-primary"
               onClick={addSyndicator}
             >
-              <FaPlus />
-              Add Investor
-             
-            </h5>
-             <hr></hr>
-          </div>
-
-          {syndicator.map((syndicator, index) => (
-            <SyndicatorDetails
-              key={index}
-              index={index}
-              data={syndicator}
-              onChange={updateSyndicator}
-            />
-          ))}
-
-          <div className="text-center mt-5">
-            <button type="submit" className="btn btn-primary">
-              Save
+              {" "}
+              <FaPlus /> Add Investor{" "}
             </button>
+
+            {syndicator.map((syndicator, index) => (
+              <SyndicatorDetails
+                key={index}
+                index={index}
+                data={syndicator}
+                onChange={updateSyndicator}
+              />
+            ))}
           </div>
-        </form>
+        </div>
       </div>
-    </div>
+
+      <div className="text-center mt-5">
+        <button type="submit" className="btn btn-primary">
+          Save
+        </button>
+      </div>
+      </form>
+      
+    </>
   );
 }
 

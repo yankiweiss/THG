@@ -9,7 +9,7 @@ function SyndicatorDetails({ index, data, onChange }) {
           <input
             className="form-control"
             value={data.name}
-            onChange={(e) => onChange(index, "investorName", e.target.value)}
+            onChange={(e) => onChange(index, "investor_name", e.target.value)}
           />
         </div>
 

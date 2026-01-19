@@ -1,32 +1,26 @@
-import { useState } from "react";
 import Header from "./Header";
 import Navbar from "./Navbar";
 import AddDeal from "./AddDeal";
 import Properties from "./Properties";
+import {Routes, Route} from 'react-router-dom'
+import Documents from "./Documents";
 
 
 function App() {
-  const [isAddDealVisible, setIsAddDealVisible] = useState(false);
-  const [isPropertyVisibility, setIsPropertyVisibility] = useState(false);
+  
 
-  const addDealVisibility = () => {
-    setIsAddDealVisible(true);
-  };
-
-  const addPropertyVisibility = () => {
-    setIsPropertyVisibility(true);
-  };
+ 
   return (
     <>
       <Header />
-      <Navbar
-        addDealVisibility={addDealVisibility}
-        addPropertyVisibility={addPropertyVisibility}
-      />
+      <Navbar />
+      <Routes>
+        <Route path="/properties" element={<Properties />} />
+        <Route path="/addDeal" element={<AddDeal />} />
+         <Route path="/documents" element={<Documents/>} />
+      </Routes>
 
-      {isAddDealVisible && <AddDeal />}
-      {isPropertyVisibility && <Properties />}
-
+   
       
     </>
   );

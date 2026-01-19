@@ -3,7 +3,7 @@ import { postAProperty } from '../../controllers/propertyController';
 const router = express.Router();
 
 
-router.route('/').get('/', postAProperty)
+router.route('/').post('/addDeal' , postAProperty)
 
 
 export default router;
