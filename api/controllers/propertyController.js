@@ -51,4 +51,14 @@ const getAllProperties = async (req, res) =>  {
 
 }
 
-export { postAProperty, getAllProperties };
+const getPropertyById = (req, res) => {
+    const {id} = req.body;
+
+    const query = ` SELECT FROM properties WHERE id = $1`;
+
+    const result = dataBasePool.query(query, [id])
+
+    res.json(result.rows)
+}
+
+export { postAProperty, getAllProperties , getPropertyById};
