@@ -3,7 +3,7 @@ import postAEvent from '../../controllers/eventController.js';
 const eventRouter = express.Router();
 
 
-router.post('/event', postAEvent)
+eventRouter.post('/event', postAEvent)
 
 
 
