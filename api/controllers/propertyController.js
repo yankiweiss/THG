@@ -51,12 +51,12 @@ const getAllProperties = async (req, res) =>  {
 
 }
 
-const getPropertyById = (req, res) => {
+const getPropertyById = async (req, res) => {
     const {id} = req.body;
 
-    const query = ` SELECT FROM properties WHERE id = $1`;
+    const query = ` SELECT * FROM properties WHERE id = $1`;
 
-    const result = dataBasePool.query(query, [id])
+    const result = await dataBasePool.query(query, [id])
 
     res.json(result.rows)
 }
