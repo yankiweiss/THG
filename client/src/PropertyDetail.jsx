@@ -16,6 +16,7 @@ function PropertyDetail() {
 
   return (
     <>
+    {console.log(property)}
       <div className="container my-5">
         {/* ================= Patient Info ================= */}
 
