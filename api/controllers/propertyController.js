@@ -52,7 +52,7 @@ const getAllProperties = async (req, res) =>  {
 }
 
 const getPropertyById = async (req, res) => {
-    const {id} = req.body;
+    const {id} = req.params;
 
     const query = ` SELECT * FROM properties WHERE id = $1`;
 
