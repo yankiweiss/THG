@@ -60,7 +60,7 @@ const getPropertyById = async (req, res) => {
     [id],
   );
 
-  const investorIDs = investorResult.rows.map(inv => inv.investor_id);
+  const investorIDs = investorResult.rows.map(inv => inv.id);
 
   let eventsResult = {rows: []}
 

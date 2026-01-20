@@ -33,7 +33,8 @@ function PropertyDetail() {
     <>
       <div className="container my-5">
         {/* ================= Patient Info ================= */}
-
+       
+ {console.log(property)}
         <h4 className="m-5">{property.property_name}</h4>
         <div className="card shadow-sm mb-4">
           <div className="card-header bg-light fw-bold">Property Details</div>
