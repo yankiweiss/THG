@@ -7,7 +7,7 @@ function PropertyDetail() {
 
   const [activeInvestor, setActiveInvestor] = useState(null);
 
-  const [event, setEvent ] = useState([])
+  const [event, setEvent] = useState([]);
 
   const { id } = useParams();
 
@@ -18,16 +18,16 @@ function PropertyDetail() {
       .catch((err) => console.error(err));
   }, [id]); // ✅ dependency array
 
-
-  const handleEvent = () => {
-      fetch("https://thg-seven.vercel.app/api/event" , {
-      method: 'POST',
+  const handleEvent = (id) => {
+    const payload = { ...event, investor_id: id };
+    fetch("https://thg-seven.vercel.app/api/event", {
+      method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(event)
+      body: JSON.stringify(payload),
     });
-  }
+  };
 
   return (
     <>
@@ -71,7 +71,10 @@ function PropertyDetail() {
 
         {property.investors?.map((investor) => (
           <div className="card mb-4" key={investor.id}>
-            <div className="card-header fw-bold d-flex justify-content-between"><h4>{investor.investor_name}</h4><h3 class="badge text-bg-light">Investor</h3></div>
+            <div className="card-header fw-bold d-flex justify-content-between">
+              <h4>{investor.investor_name}</h4>
+              <h3 class="badge text-bg-light">Investor</h3>
+            </div>
 
             <div className="card-body">
               {/* Summary */}
@@ -122,8 +125,12 @@ function PropertyDetail() {
                         <input
                           type="date"
                           className="form-control form-control-sm"
-                          onChange={(e) => setEvent((prev) => ({...prev, event_date: e.target.value}))
-                  }
+                          onChange={(e) =>
+                            setEvent((prev) => ({
+                              ...prev,
+                              event_date: e.target.value,
+                            }))
+                          }
                         />
                       </td>
                       {console.log(event)}
@@ -132,18 +139,36 @@ function PropertyDetail() {
                           type="number"
                           className="form-control form-control-sm"
                           placeholder="Amount"
-                         onChange={(e) => setEvent((prev) => ({...prev, event_amount: e.target.value}))}
+                          onChange={(e) =>
+                            setEvent((prev) => ({
+                              ...prev,
+                              event_amount: e.target.value,
+                            }))
+                          }
                         />
                       </td>
                       <td>
-                        <select className="form-select form-select-sm" onChange={(e) => setEvent((prev) => ({...prev, event_type: e.target.value}))}>
-                          <option value={'Investment'}>Investment</option>
-                          <option value={'Capital Call'}>Capital Call</option>
-                          <option value={'Return'}>Return</option>
+                        <select
+                          className="form-select form-select-sm"
+                          onChange={(e) =>
+                            setEvent((prev) => ({
+                              ...prev,
+                              event_type: e.target.value,
+                            }))
+                          }
+                        >
+                          <option value={"Investment"}>Investment</option>
+                          <option value={"Capital Call"}>Capital Call</option>
+                          <option value={"Return"}>Return</option>
                         </select>
                       </td>
                       <td className="d-flex gap-2">
-                        <button className="btn btn-success btn-sm" onClick={() => handleEvent()}>Save</button>
+                        <button
+                          className="btn btn-success btn-sm"
+                          onClick={() => handleEvent(investor.id)}
+                        >
+                          Save
+                        </button>
                         <button
                           className="btn btn-outline-secondary btn-sm"
                           onClick={() => setActiveInvestor(null)}
