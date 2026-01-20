@@ -58,7 +58,7 @@ const getPropertyById = async (req, res) => {
 
     const result = await dataBasePool.query(query, [id])
 
-    res.json(result.rows)
+    res.json(result.rows[0])
 }
 
 export { postAProperty, getAllProperties , getPropertyById};

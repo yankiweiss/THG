@@ -1,26 +1,39 @@
-import { useEffect, useState } from "react"
-import { useParams } from "react-router-dom"
+import "bootstrap/dist/css/bootstrap.min.css";
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 
-function PropertyDetail () {
+function PropertyDetail() {
+  const [property, setProperty] = useState(null);
 
-   const [property, setProperty] = useState(null)
+  const { id } = useParams();
 
-    const {id} = useParams()
-
-    useEffect(() => {
+  useEffect(() => {
     fetch(`https://thg-seven.vercel.app/api/properties/${id}`)
       .then((res) => res.json())
       .then((data) => setProperty(data))
       .catch((err) => console.error(err));
   }, [id]); // ✅ dependency array
 
-    console.log(id)
-    return (
-        <>
-        {console.log(property)}
-        <h1>Property Details</h1>
-        </>
-    )
+  console.log(property)
+
+  return (
+    <>
+      <div className="container my-5">
+        {/* ================= Patient Info ================= */}
+        <div className="card shadow-sm mb-4">
+          <div className="card-header bg-light fw-bold">Properties</div>
+
+          <div className="card-body">
+
+        
+          
+         
+    
+      </div>
+      </div>
+      </div>
+    </>
+  );
 }
 
-export default PropertyDetail
+export default PropertyDetail;
