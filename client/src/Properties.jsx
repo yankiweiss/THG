@@ -26,57 +26,67 @@ function Properties() {
 
   return (
     <>
-      <div className="col-md-2 mx-auto mt-3">
-        <input
-          className="form-control shadow-sm"
-          placeholder="🔍 Search Property..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
-      </div>
-      <div className="container my-5">
-        {/* ================= Patient Info ================= */}
-        <div className="card shadow-sm mb-4">
-          <div className="card-header bg-light fw-bold">Properties</div>
+      <div className="container mt-4 mb-3">
+  <div className="row justify-content-center">
+    <div className="col-md-4">
+      <input
+        className="form-control form-control-lg shadow-sm"
+        placeholder="🔍 Search properties..."
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+      />
+    </div>
+  </div>
+</div>
+      <div className="container">
+  <div className="row g-4">
+    {searchData.length > 0 ? (
+  searchData.map((row) => (
+    <div
+      key={row.id}
+      className="border rounded-4 d-flex align-items-center justify-content-around text-muted  shadow-sm property-card"
+      style={{
+        minHeight: "200px",
+        padding: "1rem",
+        transition: "transform 0.2s, box-shadow 0.2s",
+        cursor: "pointer",
+      }}
+      onClick={() => goToPropertyDetail(row.id)}
+    >
+      {/* Image placeholder */}
+      <img
+        className="img-thumbnail"
+        style={{
+          width: "100px",
+          height: "150px",
+          backgroundColor: "rgba(223, 223, 223, 1)",
+          borderRadius: "0.5rem",
+        }}
+      />
 
-          <div className="card-body">
-            { searchData.length > 0 ? ( [...searchData].map((row) => (
-                <div
-                  className="border rounded-4 d-flex align-items-center justify-content-around text-muted mb-3" key={row.id}
-                  style={{ minHeight: "200px" }}
-                 
-                >
-                    
-                  <img
-                  className="img-thumbnail"
-                    style={{
-                      width: "100px",
-                      height: "150px",
-                      backgroundColor: "rgba(223, 223, 223, 1)",
-                      borderRadius: "8px",
-                    }}
-                  >
-                   
-                  </img>
-                  
+      {/* Property Name */}
+      <h3 className="mx-3">{row.property_name}</h3>
 
-                  <h3>{row.property_name}</h3>
-
-                  <button
-                    type="button"
-                    className="button btn btn-secondary"
-                    onClick={() => goToPropertyDetail(row.id)}
-                  >
-                    View
-                  </button>
-                </div>
-              ))) : (
-                <p style={{textAlign: 'center'}}>No matching data</p>
-              )
-            }
-          </div>
-        </div>
-      </div>
+      {/* View Button */}
+      <button
+        type="button"
+        className="btn btn-outline-primary"
+        onClick={(e) => {
+          e.stopPropagation(); // prevent parent click
+          goToPropertyDetail(row.id);
+        }}
+      >
+        View
+      </button>
+    </div>
+  ))
+) : (
+  <p style={{ textAlign: "center", marginTop: "2rem", color: "#6c757d" }}>
+    No matching data
+  </p>
+)}
+  </div>
+</div>
     </>
   );
 }

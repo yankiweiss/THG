@@ -5,6 +5,10 @@ import { useParams } from "react-router-dom";
 function PropertyDetail() {
   const [property, setProperty] = useState([]);
 
+  const [activeInvestor, setActiveInvestor] = useState(null);
+
+  const [event, setEvent ] = useState([])
+
   const { id } = useParams();
 
   useEffect(() => {
@@ -14,9 +18,19 @@ function PropertyDetail() {
       .catch((err) => console.error(err));
   }, [id]); // ✅ dependency array
 
+
+  const handleEvent = () => {
+      fetch("https://thg-seven.vercel.app/api/event" , {
+      method: 'POST',
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(event)
+    });
+  }
+
   return (
     <>
-    {console.log(property)}
       <div className="container my-5">
         {/* ================= Patient Info ================= */}
 
@@ -44,30 +58,114 @@ function PropertyDetail() {
             </div>
           </div>
         </div>
+      </div>
 
-        <div className="card shadow-sm mb-4">
-          <div className="card-header bg-light fw-bold">Investor Details</div>
+      <div className="container my-5 p-2 border-0 border-rounded bg-light">
+        <div className="d-flex align-items-center mb-3">
+          <h5 className="mb-0 fw-bold">Investors</h5>
+          <span className="badge bg-secondary ms-2">
+            {property.investors?.length || 0}
+          </span>
+        </div>
+        <hr />
 
-          <div className="card-body">
-            <div className="row">
-              <div className="col-md-2">
-                <label className="form-label">Investor Name</label>
-                <input
-                  className="form-control"
-                 
-                ></input>
+        {property.investors?.map((investor) => (
+          <div className="card mb-4" key={investor.id}>
+            <div className="card-header fw-bold d-flex justify-content-between"><h4>{investor.investor_name}</h4><h3 class="badge text-bg-light">Investor</h3></div>
+
+            <div className="card-body">
+              {/* Summary */}
+              <div className="row mb-3">
+                <div className="col-md-4">
+                  <label className="form-label">Total Invested</label>
+                  <input
+                    className="form-control"
+                    value={investor.total_amount}
+                    readOnly
+                  />
+                </div>
               </div>
 
-              <div className="col-md-2">
-                <label className="form-label">Amount Invested</label>
-                <input
-                  className="form-control"
-                
-                ></input>
-              </div>
+              {/* Events Table */}
+              <h6 className="fw-bold">Investment Events</h6>
+
+              <table className="table table-sm table-bordered">
+                <thead className="table-light">
+                  <tr>
+                    <th>Date</th>
+                    <th>Amount</th>
+                    <th>Type</th>
+                    <th>Notes</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {investor.events?.length ? (
+                    investor.events.map((event) => (
+                      <tr key={event.id}>
+                        <td>{event.date}</td>
+                        <td>${event.amount}</td>
+                        <td>{event.type}</td>
+                        <td>{event.note}</td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="4" className="text-center text-muted">
+                        No events yet
+                      </td>
+                    </tr>
+                  )}
+
+                  {activeInvestor === investor.id && (
+                    <tr className="table-light">
+                      <td>
+                        <input
+                          type="date"
+                          className="form-control form-control-sm"
+                          onChange={(e) => setEvent((prev) => ({...prev, event_date: e.target.value}))
+                  }
+                        />
+                      </td>
+                      {console.log(event)}
+                      <td>
+                        <input
+                          type="number"
+                          className="form-control form-control-sm"
+                          placeholder="Amount"
+                         onChange={(e) => setEvent((prev) => ({...prev, event_amount: e.target.value}))}
+                        />
+                      </td>
+                      <td>
+                        <select className="form-select form-select-sm" onChange={(e) => setEvent((prev) => ({...prev, event_type: e.target.value}))}>
+                          <option value={'Investment'}>Investment</option>
+                          <option value={'Capital Call'}>Capital Call</option>
+                          <option value={'Return'}>Return</option>
+                        </select>
+                      </td>
+                      <td className="d-flex gap-2">
+                        <button className="btn btn-success btn-sm" onClick={() => handleEvent()}>Save</button>
+                        <button
+                          className="btn btn-outline-secondary btn-sm"
+                          onClick={() => setActiveInvestor(null)}
+                        >
+                          Cancel
+                        </button>
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+
+              {/* Add Event Button */}
+              <button
+                className="btn btn-outline-primary btn-sm"
+                onClick={() => setActiveInvestor(investor.id)}
+              >
+                + Add Event
+              </button>
             </div>
           </div>
-        </div>
+        ))}
       </div>
     </>
   );
