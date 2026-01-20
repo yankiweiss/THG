@@ -56,11 +56,21 @@ const getPropertyById = async (req, res) => {
   );
 
   const investorResult = await dataBasePool.query(
-    "SELECT * FROM investor WHERE property_id = $1",
+    `SELECT * FROM investor WHERE property_id = $1`,
     [id],
   );
 
-  res.json({ ...propertyResult.rows[0], investors: investorResult.rows });
+  const investorIDs = investorResult.rows.map(inv => inv.investor_id);
+
+  let eventsResult = {rows: []}
+
+  if(investorResult.length > 0){
+    eventsResult = await dataBasePool.query(
+        `SELECT * FROM events WHERE investor_id = ANY($1)`,[investorIDs]
+    )
+  }
+
+  res.json({ ...propertyResult.rows[0], investors: investorResult.rows, events: eventsResult.rows });
 };
 
 export { postAProperty, getAllProperties, getPropertyById };

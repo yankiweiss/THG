@@ -16,7 +16,7 @@ function PropertyDetail() {
       .then((res) => res.json())
       .then((data) => setProperty(data))
       .catch((err) => console.error(err));
-  }, [id]); // ✅ dependency array
+  }, [id]); 
 
   const handleEvent = (id) => {
     const payload = { ...event, investor_id: id };
@@ -105,9 +105,9 @@ function PropertyDetail() {
                   {investor.events?.length ? (
                     investor.events.map((event) => (
                       <tr key={event.id}>
-                        <td>{event.date}</td>
-                        <td>${event.amount}</td>
-                        <td>{event.type}</td>
+                        <td>{event.event_date}</td>
+                        <td>${event.event_amount}</td>
+                        <td>{event.event_type}</td>
                         <td>{event.note}</td>
                       </tr>
                     ))
@@ -133,7 +133,7 @@ function PropertyDetail() {
                           }
                         />
                       </td>
-                      {console.log(event)}
+                  
                       <td>
                         <input
                           type="number"
