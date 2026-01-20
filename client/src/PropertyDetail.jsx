@@ -16,7 +16,7 @@ function PropertyDetail() {
       .then((res) => res.json())
       .then((data) => setProperty(data))
       .catch((err) => console.error(err));
-  }, [id]); 
+  }, [id]);
 
   const handleEvent = (id) => {
     const payload = { ...event, investor_id: id };
@@ -33,8 +33,8 @@ function PropertyDetail() {
     <>
       <div className="container my-5">
         {/* ================= Patient Info ================= */}
-       
- {console.log(property)}
+        {console.log(property)}
+
         <h4 className="m-5">{property.property_name}</h4>
         <div className="card shadow-sm mb-4">
           <div className="card-header bg-light fw-bold">Property Details</div>
@@ -103,10 +103,10 @@ function PropertyDetail() {
                   </tr>
                 </thead>
                 <tbody>
-                  {investor.events?.length ? (
-                    investor.events.map((event) => (
+                  {property.events?.length ? (
+                    property.events.filter((e) => e.investor_id === investor.id).map((event) => (
                       <tr key={event.id}>
-                        <td>{event.event_date}</td>
+                        <td>{new Date(event.event_date).toLocaleDateString("en-US", { month: "2-digit", day: "2-digit", year: "numeric" })}</td>
                         <td>${event.event_amount}</td>
                         <td>{event.event_type}</td>
                         <td>{event.note}</td>
@@ -134,7 +134,7 @@ function PropertyDetail() {
                           }
                         />
                       </td>
-                  
+
                       <td>
                         <input
                           type="number"
@@ -158,6 +158,7 @@ function PropertyDetail() {
                             }))
                           }
                         >
+                          <option selected>Choose Event</option>
                           <option value={"Investment"}>Investment</option>
                           <option value={"Capital Call"}>Capital Call</option>
                           <option value={"Return"}>Return</option>
