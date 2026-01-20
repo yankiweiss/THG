@@ -34,6 +34,9 @@ function PropertyDetail() {
       <div className="container my-5">
         {/* ================= Patient Info ================= */}
         {console.log(property)}
+    <div className="text-center">
+        <img src={property.secure_url} style={{width: '300px'}} className="rounded"></img>
+        </div>
 
         <h4 className="m-5">{property.property_name}</h4>
         <div className="card shadow-sm mb-4">

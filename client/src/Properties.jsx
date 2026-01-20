@@ -54,15 +54,9 @@ function Properties() {
       onClick={() => goToPropertyDetail(row.id)}
     >
       {/* Image placeholder */}
-      <img
-        className="img-thumbnail"
-        style={{
-          width: "100px",
-          height: "150px",
-          backgroundColor: "rgba(223, 223, 223, 1)",
-          borderRadius: "0.5rem",
-        }}
-      />
+      <div className="text-center">
+        <img src={row.secure_url} style={{width: '300px'}} className="rounded"></img>
+        </div>
 
       {/* Property Name */}
       <h3 className="mx-3">{row.property_name}</h3>
