@@ -8,14 +8,14 @@ import "./index.css";
 
 function AddDeal() {
   const [syndicator, setSyndicator] = useState([
-    { investorName: "", investorAmount: "", investorPercent: "" },
+    { investor_name: "", investorAmount: "", investorPercent: "" },
   ]);
 
   const addSyndicator = () => {
     setSyndicator((prev) => [
       ...prev,
       {
-        investorName: "",
+        investor_name: "",
         investorAmount: "",
         investorPercent: "",
       },
