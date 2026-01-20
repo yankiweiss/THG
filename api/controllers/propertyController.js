@@ -46,7 +46,8 @@ const getAllProperties = async (req, res) =>  {
 
     const result = await dataBasePool.query(getAllPropertiesDB)
 
-    res.json(result)
+    res.json(result.fields
+)
 
 }
 
