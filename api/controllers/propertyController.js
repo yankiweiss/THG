@@ -56,7 +56,7 @@ const getPropertyById = async (req, res) => {
   );
 
   const investorResult = await dataBasePool.query(
-    "SELECT FROM investor WHERE property_id = $1",
+    "SELECT * FROM investor WHERE property_id = $1",
     [id],
   );
 
