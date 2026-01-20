@@ -1,7 +1,7 @@
 import dataBasePool from "../model/db.js";
 
 const postAProperty = async (req, res) => {
-  const { property_name, purchase_price, syndicator } = req.body;
+  const { property_name, purchase_price, syndicator,  pictures } = req.body;
 
   const client = await dataBasePool.connect();
 
@@ -9,12 +9,13 @@ const postAProperty = async (req, res) => {
     await client.query("BEGIN");
 
     const putInPropertyTable = `
-  INSERT INTO properties(property_name, purchase_price )
-  VALUES($1, $2 ) RETURNING id`;
+  INSERT INTO properties(property_name, purchase_price, secure_url )
+  VALUES($1, $2, $3) RETURNING id`;
 
     const propertyResult = await client.query(putInPropertyTable, [
       property_name,
       purchase_price,
+      pictures,
     ]);
 
     const propertyID = propertyResult.rows[0].id;
