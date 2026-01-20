@@ -1,4 +1,20 @@
 function Properties() {
+
+const getAllProperties = async () => {
+    const url = 'https://thg-seven.vercel.app/api/properties'
+
+    try {
+        const response = await fetch(url);
+
+        const result = await response.json()
+        console.log(result)
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+getAllProperties()
+
   return (
     <>
       <div className="container my-5">
