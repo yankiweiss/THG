@@ -31,14 +31,14 @@ function PropertyDetail() {
 
   return (
     <>
-      <div className="container my-5">
+      <div className="container my-5 bg-light rounded p-4">
         {/* ================= Patient Info ================= */}
-        {console.log(property)}
+        
     <div className="text-center">
-        <img src={property.secure_url} style={{width: '300px'}} className="rounded"></img>
+        <img src={property.secure_url} style={{width: '350px'}} className="rounded"></img>
+        <h4 className="m-4 ">Property Name: <span className="fw-bold p-1">{property.property_name}</span></h4>
         </div>
 
-        <h4 className="m-5">{property.property_name}</h4>
         <div className="card shadow-sm mb-4">
           <div className="card-header bg-light fw-bold">Property Details</div>
 
@@ -61,10 +61,11 @@ function PropertyDetail() {
               </div>
             </div>
           </div>
-        </div>
-      </div>
+          </div>
+        
+      
 
-      <div className="container my-5 p-2 border-0 border-rounded bg-light">
+      <div className="container my-5 p-2 bg-light rounded">
         <div className="d-flex align-items-center mb-3">
           <h5 className="mb-0 fw-bold">Investors</h5>
           <span className="badge bg-secondary ms-2">
@@ -167,6 +168,19 @@ function PropertyDetail() {
                           <option value={"Return"}>Return</option>
                         </select>
                       </td>
+                     <td>
+                        <textarea
+                          type="text"
+                          className="form-control form-control-sm"
+                          placeholder="Notes"
+                          onChange={(e) =>
+                            setEvent((prev) => ({
+                              ...prev,
+                              notes: e.target.value,
+                            }))
+                          }
+                        />
+                      </td>
                       <td className="d-flex gap-2">
                         <button
                           className="btn btn-success btn-sm"
@@ -195,7 +209,9 @@ function PropertyDetail() {
               </button>
             </div>
           </div>
+          
         ))}
+      </div>
       </div>
     </>
   );
