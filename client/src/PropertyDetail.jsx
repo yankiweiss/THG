@@ -29,14 +29,19 @@ function PropertyDetail() {
     });
   };
 
+  const formatNumber = (value) => {
+  if (!value) return "";
+  return Number(value).toLocaleString("en-US");
+};
+
   return (
     <>
       <div className="container my-5 bg-light rounded p-4">
         {/* ================= Patient Info ================= */}
         
-    <div className="text-center">
-        <img src={property.secure_url} style={{width: '350px'}} className="rounded"></img>
+    <div className="text-center mb-4">
         <h4 className="m-4 ">Property Name: <span className="fw-bold p-1">{property.property_name}</span></h4>
+        <img src={property.secure_url} style={{width: '350px'}} className="rounded"></img>
         </div>
 
         <div className="card shadow-sm mb-4">
@@ -55,8 +60,9 @@ function PropertyDetail() {
               <div className="col-md-2">
                 <label className="form-label">Purchase Price</label>
                 <input
+                 value={"$" + formatNumber(property.purchase_price)}
                   className="form-control"
-                  value={property.purchase_price}
+                
                 ></input>
               </div>
             </div>
@@ -111,9 +117,10 @@ function PropertyDetail() {
                     property.events.filter((e) => e.investor_id === investor.id).map((event) => (
                       <tr key={event.id}>
                         <td>{new Date(event.event_date).toLocaleDateString("en-US", { month: "2-digit", day: "2-digit", year: "numeric" })}</td>
-                        <td>${event.event_amount}</td>
+                        <td>${formatNumber(event.event_amount)}
+                        </td>
                         <td>{event.event_type}</td>
-                        <td>{event.note}</td>
+                        <td>{event.notes}</td>
                       </tr>
                     ))
                   ) : (
