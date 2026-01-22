@@ -40,7 +40,7 @@ function PropertyDetail() {
         {/* ================= Patient Info ================= */}
         
     <div className="text-center mb-4">
-        <h4 className="m-4 ">Property Name: <span className="fw-bold p-1">{property.property_name}</span></h4>
+        <h4 className="m-4 ">Property Name: <span className="fw-bold fs-3 p-2">{property.property_name}</span></h4>
         <img src={property.secure_url} style={{width: '350px'}} className="rounded"></img>
         </div>
 
