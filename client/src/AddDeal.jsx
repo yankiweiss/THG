@@ -8,7 +8,7 @@ import "./index.css";
 
 function AddDeal() {
   const [syndicator, setSyndicator] = useState([
-    { investor_name: "", investorAmount: "", investorPercent: "" },
+    { investor_name: "", invested_amount: "", pref_return: "" },
   ]);
 
   const addSyndicator = () => {
@@ -16,8 +16,8 @@ function AddDeal() {
       ...prev,
       {
         investor_name: "",
-        investorAmount: "",
-        investorPercent: "",
+        invested_amount: "",
+        pref_return: "",
       },
     ]);
   };
@@ -34,8 +34,6 @@ function AddDeal() {
     const form = e.target;
 
     const picFile = form.querySelector('[name="pictures"]').files[0];
-
-    console.log(picFile)
 
     const uploadToCloudinary = async (file) => {
       const fd = new FormData();
@@ -61,9 +59,9 @@ function AddDeal() {
     }
 
     if (!uploadedPicUrl) {
-    alert("Image upload failed");
-    return;
-  }
+      alert("Image upload failed");
+      return;
+    }
 
     const formData = new FormData(form);
     const dataObject = Object.fromEntries(formData.entries());

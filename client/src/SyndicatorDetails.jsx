@@ -8,7 +8,7 @@ function SyndicatorDetails({ index, data, onChange }) {
           <label className="form-label">Investor Name:</label>
           <input
             className="form-control"
-            value={data.name}
+            value={data.investor_name}
             onChange={(e) => onChange(index, "investor_name", e.target.value)}
           />
         </div>
@@ -17,8 +17,8 @@ function SyndicatorDetails({ index, data, onChange }) {
           <label className="form-label">Amount Invested:</label>
           <input
             className="form-control"
-            value={data.amount}
-            onChange={(e) => onChange(index, "investorAmount", e.target.value)}
+            value={data.invested_amount}
+            onChange={(e) => onChange(index, "invested_amount", e.target.value)}
           />
         </div>
 
@@ -26,8 +26,8 @@ function SyndicatorDetails({ index, data, onChange }) {
           <label className="form-label">Preferred Return:</label>
           <input
             className="form-control"
-            value={data.percent}
-            onChange={(e) => onChange(index, "investorPercent", e.target.value)}
+            value={data.pref_return}
+            onChange={(e) => onChange(index, "pref_return", e.target.value)}
           />
         </div>
       </div>

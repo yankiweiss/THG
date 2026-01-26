@@ -11,6 +11,7 @@ function PropertyDetail() {
 
   const { id } = useParams();
 
+
   useEffect(() => {
     fetch(`https://thg-seven.vercel.app/api/properties/${id}`)
       .then((res) => res.json())
@@ -36,6 +37,7 @@ function PropertyDetail() {
 
   return (
     <>
+    {console.log(property)}
       <div className="container my-5 bg-light rounded p-4">
         {/* ================= Patient Info ================= */}
         
@@ -94,7 +96,7 @@ function PropertyDetail() {
                   <label className="form-label">Total Invested</label>
                   <input
                     className="form-control"
-                    value={investor.total_amount}
+                    value={investor.event_amount}
                     readOnly
                   />
                 </div>
@@ -102,6 +104,8 @@ function PropertyDetail() {
 
               {/* Events Table */}
               <h6 className="fw-bold">Investment Events</h6>
+
+              {/* if one investor does not have any events should say no events now. */}
 
               <table className="table table-sm table-bordered">
                 <thead className="table-light">
@@ -113,8 +117,11 @@ function PropertyDetail() {
                   </tr>
                 </thead>
                 <tbody>
-                  {property.events?.length ? (
-                    property.events.filter((e) => e.investor_id === investor.id).map((event) => (
+                  {(() => {
+                    const events = property.events.filter((e) => e.investor_id === investor.id);
+                  
+                 return events.length  ? (
+                    events.map((event) => (
                       <tr key={event.id}>
                         <td>{new Date(event.event_date).toLocaleDateString("en-US", { month: "2-digit", day: "2-digit", year: "numeric" })}</td>
                         <td>${formatNumber(event.event_amount)}
@@ -129,7 +136,8 @@ function PropertyDetail() {
                         No events yet
                       </td>
                     </tr>
-                  )}
+                  )
+                  })()}
 
                   {activeInvestor === investor.id && (
                     <tr className="table-light">
@@ -170,9 +178,10 @@ function PropertyDetail() {
                           }
                         >
                           <option selected>Choose Event</option>
-                          <option value={"Investment"}>Investment</option>
-                          <option value={"Capital Call"}>Capital Call</option>
-                          <option value={"Return"}>Return</option>
+                          <option  value={"Investment"}>Investment</option>
+                          <option  value={"Capital Call"}>Capital Call</option>
+                          <option  value={"Return"}>Pref. Return</option>
+                          <option  value={"ROC"}>ROC</option>
                         </select>
                       </td>
                      <td>
