@@ -6,7 +6,15 @@ import "./index.css";
 
 // function to submit the form to backend
 
-function AddDeal() {
+
+
+function AddDeal({ showForm, setShowForm }) {
+
+  
+
+  const hideForm = () =>  {
+    setShowForm(false)
+  }
   const [syndicator, setSyndicator] = useState([
     { investor_name: "", invested_amount: "", pref_return: "" },
   ]);
@@ -85,29 +93,37 @@ function AddDeal() {
 
   return (
     <>
-      <form onSubmit={handleForm}>
+
+   {showForm && (
+      <form onSubmit={handleForm} >
         <div className="container my-5">
           {/* ---------------- Property Details ---------------- */}
-          <div className="card shadow-sm mb-4">
+          <div className="card shadow-sm mb-3">
             <div className="card-header bg-light fw-bold">Property Details</div>
             <div className="card-body">
-              <div className="row g-3">
-                <div className="col-md-3">
+              
+              <div className="row g-3 ">
+                <div className="col-md-2">
                   <label className="form-label">Property Name</label>
                   <input className="form-control" name="property_name" />
                 </div>
 
-                <div className="col-md-3">
+                <div className="col-md-2">
                   <label className="form-label">Purchase Price</label>
                   <input className="form-control" name="purchase_price" />
                 </div>
 
-                <div className="col-md-3">
+                  <div className="col-md-2">
+                  <label className="form-label">Closing Date</label>
+                  <input type="date" className="form-control" name="purchase_price" />
+                </div>
+
+                <div className="col-md-2">
                   <label className="form-label">Upload Documents</label>
                   <input type="file" className="form-control" multiple />
                 </div>
 
-                <div className="col-md-3">
+                <div className="col-md-2">
                   <label className="form-label">Upload Pictures</label>
                   <input
                     type="file"
@@ -119,6 +135,13 @@ function AddDeal() {
               </div>
             </div>
           </div>
+          
+
+          <div className="d-flex justify-content-center">
+          
+         
+          </div>
+          
 
           {/* ---------------- Investors Section ---------------- */}
           <div className="card shadow-sm mb-4">
@@ -162,12 +185,13 @@ function AddDeal() {
 
           {/* ---------------- Save Button ---------------- */}
           <div className="text-center mb-5">
-            <button type="submit" className="btn btn-primary btn-lg">
+            <button type="submit" className="btn btn-primary btn-lg" onClick={hideForm}>
               Save Deal
             </button>
           </div>
         </div>
       </form>
+   )}
     </>
   );
 }

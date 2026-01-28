@@ -2,7 +2,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import { useNavigate, useLocation } from "react-router-dom";
 
-function Navbar() {
+function Navbar({ setShowForm }) {
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -81,7 +81,8 @@ function Navbar() {
           <div className="d-flex">
             <button
               className="btn btn-primary rounded-pill px-4"
-              onClick={() => navigate("/addDeal")}
+              onClick={() => {navigate("/addDeal"); setShowForm(true)}}
+              
             >
               + New Deal
             </button>

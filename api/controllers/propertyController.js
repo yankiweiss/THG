@@ -79,6 +79,8 @@ const getPropertyById = async (req, res) => {
         investors: investorResult.rows,
         events: eventsResult.rows,
     });
+
+    
 };
 
 export { postAProperty, getAllProperties, getPropertyById };
