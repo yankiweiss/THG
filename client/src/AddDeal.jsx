@@ -115,7 +115,7 @@ function AddDeal({ showForm, setShowForm }) {
 
                   <div className="col-md-2">
                   <label className="form-label">Closing Date</label>
-                  <input type="date" className="form-control" name="purchase_price" />
+                  <input type="date" className="form-control" name="closing_date" />
                 </div>
 
                 <div className="col-md-2">

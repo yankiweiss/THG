@@ -9,6 +9,7 @@ import { useState } from "react";
 
 
 
+
 function App() {
   
 const [showForm, setShowForm] = useState(true);
@@ -16,6 +17,7 @@ const [showForm, setShowForm] = useState(true);
   return (
     <>
       <Header />
+   
       <Navbar  setShowForm={setShowForm}/>
       <Routes>
         <Route path="/properties" element={<Properties />} />

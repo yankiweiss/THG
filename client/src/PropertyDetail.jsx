@@ -5,6 +5,8 @@ import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import { Doughnut } from "react-chartjs-2";
 ChartJS.register(ArcElement, Tooltip, Legend);
 
+
+
 function PropertyDetail() {
   const [property, setProperty] = useState([]);
 
@@ -62,6 +64,8 @@ function PropertyDetail() {
 
   return (
     <>
+
+   {console.log(property)}
       <div className="container my-5 bg-light rounded p-4">
         <div className="row g-4 mb-1 d-flex justify-content-center">
           {/* LEFT */}
@@ -112,8 +116,6 @@ function PropertyDetail() {
         <hr className="mb-5" />
 
         <h4 className="fw-bold mb-3">Investors</h4>
-
-        {console.log(property)}
 
         {property.investors?.map((investor) => {
           const investorEvents =

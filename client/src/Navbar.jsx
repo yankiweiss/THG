@@ -1,6 +1,7 @@
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import { useNavigate, useLocation } from "react-router-dom";
+import MyBarChart from "./Chatrs";
 
 function Navbar({ setShowForm }) {
   const navigate = useNavigate();
@@ -9,6 +10,7 @@ function Navbar({ setShowForm }) {
   const isActive = (path) => location.pathname === path;
 
   return (
+    
     <nav className="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top">
       <div className="container">
         {/* Brand / Logo */}
