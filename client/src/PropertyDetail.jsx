@@ -26,6 +26,7 @@ function PropertyDetail() {
     event_amount: "",
     notes: "",
   });
+  const [investorMode, setInvestorMode] = useState(null);
 
   const { id } = useParams();
 
@@ -106,9 +107,9 @@ function PropertyDetail() {
           actuals[q] += amount;
         }
 
-        const amountInvested = property.investors.map((e) => e.invested_amount);
 
-        console.log(amountInvested);
+
+       
       });
 
     return {
@@ -289,11 +290,10 @@ function PropertyDetail() {
                         <div className="d-flex gap-2">
                           <button
                             className="btn btn-outline-primary btn-sm"
-                            onClick={() =>
-                              setActiveInvestor(
-                                activeInvestor === inv.id ? null : inv.id,
-                              )
-                            }
+                            onClick={() => {
+                              setActiveInvestor(inv.id);
+                              setInvestorMode("view");
+                            }}
                           >
                             {activeInvestor === inv.id
                               ? "Hide Events"
@@ -301,11 +301,10 @@ function PropertyDetail() {
                           </button>
                           <button
                             className="btn btn-outline-success btn-sm"
-                            onClick={() =>
-                              setActiveInvestor(
-                                activeInvestor === inv.id ? null : inv.id,
-                              )
-                            }
+                            onClick={() => {
+                              setActiveInvestor(inv.id);
+                              setInvestorMode("add");
+                            }}
                           >
                             Add Event
                           </button>
@@ -315,108 +314,117 @@ function PropertyDetail() {
                       {/* COLLAPSIBLE EVENTS + FORM */}
                       {activeInvestor === inv.id && (
                         <div className="mt-3">
-                          {investorEvents.length ? (
-                            <ul className="list-group mb-3">
-                              {investorEvents.map((e) => (
-                                <li
-                                  key={e.id}
-                                  className="list-group-item d-flex justify-content-between align-items-center"
-                                >
-                                  <div>
-                                    <div>{formatDate(e.event_date)}</div>
-                                    <small className="text-muted">
-                                      {e.event_type}
-                                    </small>
-                                  </div>
-                                  <div className="fw-semibold">
-                                    ${formatNumber(e.event_amount)}
-                                  </div>
-                                </li>
-                              ))}
-                            </ul>
-                          ) : (
-                            <p className="text-muted">No events yet</p>
-                          )}
+                          {investorMode ===
+                            "view" && (
+                              <>
+                                {investorEvents.length ? (
+                                  <ul className="list-group mb-3">
+                                    {investorEvents.map((e) => (
+                                      <li
+                                        key={e.id}
+                                        className="list-group-item d-flex justify-content-between align-items-center"
+                                      >
+                                        <div>
+                                          <div>{formatDate(e.event_date)}</div>
+                                          <small className="text-muted">
+                                            {e.event_type}
+                                          </small>
+                                        </div>
+                                        <div className="fw-semibold">
+                                          ${formatNumber(e.event_amount)}
+                                        </div>
+                                      </li>
+                                    ))}
+                                  </ul>
+                                ) : (
+                                  <p className="text-muted">No events yet</p>
+                                )}
+                              </>
+                            )}
 
-                          {/* ADD EVENT FORM */}
-                          <div className="card card-body bg-light p-3">
-                            <div className="row g-2">
-                              <div className="col-4">
-                                <input
-                                  type="date"
-                                  className="form-control form-control-sm"
-                                  value={newEvent.event_date}
-                                  onChange={(e) =>
-                                    setNewEvent((prev) => ({
-                                      ...prev,
-                                      event_date: e.target.value,
-                                    }))
-                                  }
-                                />
-                              </div>
-                              <div className="col-4">
-                                <input
-                                  type="number"
-                                  className="form-control form-control-sm"
-                                  placeholder="Amount"
-                                  value={newEvent.event_amount}
-                                  onChange={(e) =>
-                                    setNewEvent((prev) => ({
-                                      ...prev,
-                                      event_amount: e.target.value,
-                                    }))
-                                  }
-                                />
-                              </div>
-                              <div className="col-4">
-                                <select
-                                  className="form-select form-select-sm"
-                                  value={newEvent.event_type}
-                                  onChange={(e) =>
-                                    setNewEvent((prev) => ({
-                                      ...prev,
-                                      event_type: e.target.value,
-                                    }))
-                                  }
-                                >
-                                  <option value="">Event Type</option>
-                                  <option value="Investment">Investment</option>
-                                  <option value="Capital Call">
-                                    Capital Call
-                                  </option>
-                                  <option value="Return">Pref. Return</option>
-                                  <option value="ROC">ROC</option>
-                                </select>
-                              </div>
-                              <div className="col-12 mt-2">
-                                <textarea
-                                  className="form-control form-control-sm"
-                                  placeholder="Notes"
-                                  value={newEvent.notes}
-                                  onChange={(e) =>
-                                    setNewEvent((prev) => ({
-                                      ...prev,
-                                      notes: e.target.value,
-                                    }))
-                                  }
-                                ></textarea>
-                              </div>
-                              <div className="col-12 mt-2 d-flex gap-2">
-                                <button
-                                  className="btn btn-success btn-sm"
-                                  onClick={() => handleEvent(inv.id)}
-                                >
-                                  Save
-                                </button>
-                                <button
-                                  className="btn btn-outline-secondary btn-sm"
-                                  onClick={() => setActiveInvestor(null)}
-                                >
-                                  Cancel
-                                </button>
+                          {investorMode === "add" && (
+                            <div className="card card-body bg-light p-3">
+                              <div className="row g-2">
+                                <div className="col-4">
+                                  <input
+                                    type="date"
+                                    className="form-control form-control-sm"
+                                    value={newEvent.event_date}
+                                    onChange={(e) =>
+                                      setNewEvent((prev) => ({
+                                        ...prev,
+                                        event_date: e.target.value,
+                                      }))
+                                    }
+                                  />
+                                </div>
+                                <div className="col-4">
+                                  <input
+                                    type="number"
+                                    className="form-control form-control-sm"
+                                    placeholder="Amount"
+                                    value={newEvent.event_amount}
+                                    onChange={(e) =>
+                                      setNewEvent((prev) => ({
+                                        ...prev,
+                                        event_amount: e.target.value,
+                                      }))
+                                    }
+                                  />
+                                </div>
+                                <div className="col-4">
+                                  <select
+                                    className="form-select form-select-sm"
+                                    value={newEvent.event_type}
+                                    onChange={(e) =>
+                                      setNewEvent((prev) => ({
+                                        ...prev,
+                                        event_type: e.target.value,
+                                      }))
+                                    }
+                                  >
+                                    <option value="">Event Type</option>
+                                    <option value="Investment">
+                                      Investment
+                                    </option>
+                                    <option value="Capital Call">
+                                      Capital Call
+                                    </option>
+                                    <option value="Return">Pref. Return</option>
+                                    <option value="ROC">ROC</option>
+                                  </select>
+                                </div>
+                                <div className="col-12 mt-2">
+                                  <textarea
+                                    className="form-control form-control-sm"
+                                    placeholder="Notes"
+                                    value={newEvent.notes}
+                                    onChange={(e) =>
+                                      setNewEvent((prev) => ({
+                                        ...prev,
+                                        notes: e.target.value,
+                                      }))
+                                    }
+                                  ></textarea>
+                                </div>
+                                <div className="col-12 mt-2 d-flex gap-2">
+                                  <button
+                                    className="btn btn-success btn-sm"
+                                    onClick={() => handleEvent(inv.id)}
+                                  >
+                                    Save
+                                  </button>
+                                  <button
+                                    className="btn btn-outline-secondary btn-sm"
+                                    onClick={() => setInvestorMode('view')}
+
+                                  >
+                                    Cancel
+                                  </button>
+                                </div>
                               </div>
                             </div>
-                          </div>
+                          )}
                         </div>
                       )}
                     </div>
