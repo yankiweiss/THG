@@ -94,23 +94,28 @@ function PropertyDetail() {
     const actuals = [0, 0, 0, 0];
     const expecteds = [0, 0, 0, 0];
 
-    events
-      .filter((e) => e.investor_id === investor)
+    const investorEvents = events.filter((e) => e.investor_id === investor && new Date(e.event_date).getFullYear() === year);
 
-      .filter((e) => new Date(e.event_date).getFullYear() === year)
-      .forEach((e) => {
-        const q = getQuarter(e.event_date);
-        const amount = Number(e.event_amount || 0);
+investorEvents.forEach((e) => {
+    const q = getQuarter(e.event_date);
+    const amount = Number(e.event_amount || 0);
 
-        // Separate logic for Actual vs Expected
-        if (e.event_type === "Return") {
-          actuals[q] += amount;
-        }
+    if(e.event_type === 'Return'){
+        actuals[q] += amount
+    }
+})
 
+const current = property.investors?.find((e) => e.id === investor);
 
+if(current) {
+    const prefRate = Number(current.pref_return || 0) / 100;
+    const prefAmount = Number(current.invested_amount || 0) * prefRate;
 
-       
-      });
+    const perQuarter = prefAmount / 4;
+    for (let i = 0; i < 4; i++){
+        expecteds[i] = perQuarter;
+    }
+}
 
     return {
       labels: [
@@ -314,33 +319,32 @@ function PropertyDetail() {
                       {/* COLLAPSIBLE EVENTS + FORM */}
                       {activeInvestor === inv.id && (
                         <div className="mt-3">
-                          {investorMode ===
-                            "view" && (
-                              <>
-                                {investorEvents.length ? (
-                                  <ul className="list-group mb-3">
-                                    {investorEvents.map((e) => (
-                                      <li
-                                        key={e.id}
-                                        className="list-group-item d-flex justify-content-between align-items-center"
-                                      >
-                                        <div>
-                                          <div>{formatDate(e.event_date)}</div>
-                                          <small className="text-muted">
-                                            {e.event_type}
-                                          </small>
-                                        </div>
-                                        <div className="fw-semibold">
-                                          ${formatNumber(e.event_amount)}
-                                        </div>
-                                      </li>
-                                    ))}
-                                  </ul>
-                                ) : (
-                                  <p className="text-muted">No events yet</p>
-                                )}
-                              </>
-                            )}
+                          {investorMode === "view" && (
+                            <>
+                              {investorEvents.length ? (
+                                <ul className="list-group mb-3">
+                                  {investorEvents.map((e) => (
+                                    <li
+                                      key={e.id}
+                                      className="list-group-item d-flex justify-content-between align-items-center"
+                                    >
+                                      <div>
+                                        <div>{formatDate(e.event_date)}</div>
+                                        <small className="text-muted">
+                                          {e.event_type}
+                                        </small>
+                                      </div>
+                                      <div className="fw-semibold">
+                                        ${formatNumber(e.event_amount)}
+                                      </div>
+                                    </li>
+                                  ))}
+                                </ul>
+                              ) : (
+                                <p className="text-muted">No events yet</p>
+                              )}
+                            </>
+                          )}
 
                           {investorMode === "add" && (
                             <div className="card card-body bg-light p-3">
@@ -416,8 +420,7 @@ function PropertyDetail() {
                                   </button>
                                   <button
                                     className="btn btn-outline-secondary btn-sm"
-                                    onClick={() => setInvestorMode('view')}
-
+                                    onClick={() => setInvestorMode("view")}
                                   >
                                     Cancel
                                   </button>
