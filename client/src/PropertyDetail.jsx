@@ -1,17 +1,25 @@
 import "bootstrap/dist/css/bootstrap.min.css";
+import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
-import { Doughnut } from "react-chartjs-2";
-ChartJS.register(ArcElement, Tooltip, Legend);
+import { useMemo } from "react";
 
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Tooltip,
+  Legend,
+} from "chart.js";
 
+import { Bar } from "react-chartjs-2";
+
+ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip, Legend);
 
 function PropertyDetail() {
   const [property, setProperty] = useState([]);
-
   const [activeInvestor, setActiveInvestor] = useState(null);
-
   const [newEvent, setNewEvent] = useState({
     event_date: "",
     event_type: "",
@@ -28,33 +36,47 @@ function PropertyDetail() {
       .catch((err) => console.error(err));
   }, [id]);
 
+  const years = useMemo(() => {
+    if (!property.events?.length) return [];
+
+    return [
+      ...new Set(
+        property.events.map((e) => new Date(e.event_date).getFullYear()),
+      ),
+    ].sort((a, b) => a - b);
+  }, [property.events]);
+
+  const [activeYear, setActiveYear] = useState(null);
+
+  // ✅ Safe: runs AFTER render
+  useEffect(() => {
+    if (years.length && !activeYear) {
+      setActiveYear(years[0]); // set default first year
+    }
+  }, [years, activeYear]);
+
   const handleEvent = async (investorId) => {
     const payload = { ...newEvent, investor_id: investorId };
-   
-    const res = await fetch(
-        "https://thg-seven.vercel.app/api/event",
-        {
-            method: 'POST',
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify(payload),
-        }
-    );
 
-    const {event } = await res.json();
+    const res = await fetch("https://thg-seven.vercel.app/api/event", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+
+    const { event } = await res.json();
 
     setProperty((prev) => ({
-        ...prev, 
-        events: [...(prev.events || []), event],
+      ...prev,
+      events: [...(prev.events || []), event],
     }));
 
     setNewEvent({
-    event_date: "",
-    event_type: "",
-    event_amount: "",
-    notes: "",
-  });
-
-  setActiveInvestor(null)
+      event_date: "",
+      event_type: "",
+      event_amount: "",
+      notes: "",
+    });
   };
 
   const formatNumber = (value) => {
@@ -62,275 +84,274 @@ function PropertyDetail() {
     return Number(value).toLocaleString("en-US");
   };
 
+  function getQuarter(dateString) {
+    const month = new Date(dateString).getMonth(); // 0–11
+    return Math.floor(month / 3); // 0–3
+  }
+
+  function buildChartData(events, year) {
+    const quarters = [0, 0, 0, 0];
+
+    events
+      .filter((e) => new Date(e.event_date).getFullYear() === year)
+      .forEach((e) => {
+        const q = getQuarter(e.event_date);
+        quarters[q] += Number(e.event_amount || 0);
+      });
+
+    return {
+      labels: [
+        "First Quarter",
+        "Second Quarter",
+        "Third Quarter",
+        "Fourth Quarter",
+      ],
+      datasets: [
+        {
+          label: "Total Amount",
+          data: quarters,
+          barThickness: 35,
+          categoryPercentage: 0.6,
+          barPercentage: 0.8,
+        },
+      ],
+    };
+  }
+
+  function formatDate(dateComingIn) {
+    const date = new Date(dateComingIn);
+
+    return `${date.getMonth() + 1}/${date.getDate()}/${date.getFullYear()}`;
+  }
+
   return (
     <>
-
-   {console.log(property)}
-      <div className="container my-5 bg-light rounded p-4">
-        <div className="row g-4 mb-1 d-flex justify-content-center">
-          {/* LEFT */}
-          <div className="col-md-3 d-flex">
+      {console.log(property)}
+      <div className="container my-4">
+        {/* PROPERTY HEADER */}
+        <div className="row mb-4 align-items-center">
+          <div className="col-md-3">
             <img
               src={property.secure_url}
-              className="rounded-4 shadow-sm w-75"
-              style={{ height: "100%", objectFit: "cover" }}
+              alt="Property"
+              className="rounded shadow w-100"
+              style={{ objectFit: "cover", height: "200px" }}
             />
           </div>
-
-          {/* RIGHT */}
-          <div className="col-md-8">
-            {/* TOP ROW: Header + Stats */}
-            <div className="row g-3 align-items-start mb-1">
-              {/* Header (TEXT ONLY) */}
-              <div className="col-md-6">
-                <h1 className="fw-bold mb-1">{property.property_name}</h1>
-                <div className="text-muted small">Purchase Price</div>
-                <div className="fs-4 fw-semibold">
+          <div className="col-md-9">
+            <h2 className="fw-bold">{property.property_name}</h2>
+            <div className="d-flex gap-4 mt-2">
+              <div className="text-muted">
+                Purchase Price <br />
+                <span className="fw-semibold fs-5">
                   ${formatNumber(property.purchase_price)}
-                </div>
+                </span>
               </div>
-
-              {/* Total Investors */}
-              <div className="col-md-2 d-flex">
-                <div className="card shadow-sm rounded-4 text-center p-3 w-100">
-                  <div className="text-muted small">Total Investors</div>
-                  <div className="fs-2 fw-bold">
-                    {property.investors?.length || 0}
-                  </div>
-                </div>
+              <div className="text-muted">
+                Closing Date <br />
+                <span className="fw-semibold fs-5">
+                  {formatDate(property.closing_date)}
+                </span>
               </div>
-
-              {/* Total Events */}
-              <div className="col-md-2 d-flex">
-                <div className="card shadow-sm rounded-4 text-center p-3 w-100">
-                  <div className="text-muted small">Total Events</div>
-                  <div className="fs-2 fw-bold">
-                    {property.events?.length || 0}
-                  </div>
-                </div>
+              <div className="text-muted">
+                Total Investors <br />
+                <span className="fw-semibold fs-5">
+                  {property.investors?.length || 0}
+                </span>
+              </div>
+              <div className="text-muted">
+                Total Events <br />
+                <span className="fw-semibold fs-5">
+                  {property.events?.length || 0}
+                </span>
               </div>
             </div>
           </div>
         </div>
 
-        <hr className="mb-5" />
+        {/* YEAR TAB + CHART */}
+        <ul className="nav nav-tabs mb-3">
+          {years.map((year) => (
+            <li className="nav-item" key={year}>
+              <button
+                className={`nav-link ${year === activeYear ? "active" : ""}`}
+                onClick={() => setActiveYear(year)}
+              >
+                {year}
+              </button>
+            </li>
+          ))}
+        </ul>
+        <div style={{ height: "400px" }}>
+          {activeYear && (
+            <Bar
+              data={buildChartData(property.events || [], activeYear)}
+              options={{ maintainAspectRatio: false }}
+            />
+          )}
+        </div>
 
-        <h4 className="fw-bold mb-3">Investors</h4>
+        {/* INVESTORS */}
+        <h4 className="fw-bold my-4">Investors</h4>
+        <div className="row g-3">
+          {property.investors?.map((inv) => {
+            const investorEvents =
+              property.events?.filter((e) => e.investor_id === inv.id) || [];
+            const totalInvestment = investorEvents
+              .filter(
+                (e) =>
+                  e.event_type === "Investment" ||
+                  e.event_type === "Capital Call",
+              )
+              .reduce((sum, e) => sum + Number(e.event_amount || 0), 0);
 
-        {property.investors?.map((investor) => {
-          const investorEvents =
-            property.events?.filter((e) => e.investor_id === investor.id) || [];
-
-          const investorChartData = {
-            labels: ["Investment", "Capital Call", "Return", "ROC"],
-            datasets: [
-              {
-                data: [
-                  investorEvents
-                    .filter((e) => e.event_type === "Investment")
-                    .reduce((a, b) => a + Number(b.event_amount), 0),
-                  investorEvents
-                    .filter((e) => e.event_type === "Capital Call")
-                    .reduce((a, b) => a + Number(b.event_amount), 0),
-                  investorEvents
-                    .filter((e) => e.event_type === "Return")
-                    .reduce((a, b) => a + Number(b.event_amount), 0),
-                  investorEvents
-                    .filter((e) => e.event_type === "ROC")
-                    .reduce((a, b) => a + Number(b.event_amount), 0),
-                ],
-                backgroundColor: ["#0d6efd", "#ffc107", "#198754", "#6f42c1"],
-              },
-            ],
-          };
-
-          return (
-            <div
-              key={investor.id}
-              className="bg-white rounded-4 shadow-sm mb-3 p-3"
-            >
-              {/* LEFT: Name + Total */}
-              <div className="d-flex align-items-center justify-content-between">
-                {/* LEFT: Name + Total + Buttons */}
-                <div>
-                  <div className="fw-semibold">{investor.investor_name}</div>
-                  <div className="text-muted small mb-2">
-                    Total Invested: ${formatNumber(investor.event_amount)}
-                  </div>
-
-                  <div className="d-flex gap-2">
-                    <button
-                      className="btn btn-outline-primary btn-sm"
-                      onClick={() =>
-                        setActiveInvestor(
-                          activeInvestor === investor.id ? null : investor.id,
-                        )
-                      }
-                    >
-                      {" "}
-                      View Events
-                    </button>
-                  </div>
-                </div>
-
-                {/* RIGHT: Doughnut with labels side-by-side */}
-                <div className="d-flex align-items-center gap-3">
-                  <div style={{ width: 120, height: 120 }}>
-                    <Doughnut
-                      data={investorChartData}
-                      options={{ plugins: { legend: { display: false } } }}
-                    />
-                  </div>
-
-                  {/* Labels */}
-                  <div>
-                    {investorChartData.labels.map((label, index) => (
-                      <div
-                        key={label}
-                        className="d-flex align-items-center mb-1"
+            return (
+              <div key={inv.id} className="col-md-6">
+                <div className="card shadow-sm p-3 h-100">
+                  <div className="d-flex justify-content-between align-items-start">
+                    <div>
+                      <h5 className="fw-semibold">{inv.investor_name}</h5>
+                      <small className="text-muted">
+                        Initial: ${formatNumber(inv.invested_amount)} <br />
+                        To Date: ${formatNumber(totalInvestment)}
+                      </small>
+                    </div>
+                    <div className="d-flex gap-2">
+                      <button
+                        className="btn btn-outline-primary btn-sm"
+                        onClick={() =>
+                          setActiveInvestor(
+                            activeInvestor === inv.id ? null : inv.id,
+                          )
+                        }
                       >
-                        <span
-                          style={{
-                            display: "inline-block",
-                            width: "12px",
-                            height: "12px",
-                            backgroundColor:
-                              investorChartData.datasets[0].backgroundColor[
-                                index
-                              ],
-                            marginRight: "6px",
-                            borderRadius: "2px",
-                          }}
-                        />
-                        <span className="small">{label}</span>
-                      </div>
-                    ))}
+                        {activeInvestor === inv.id
+                          ? "Hide Events"
+                          : "View Events"}
+                      </button>
+                      <button
+                        className="btn btn-outline-success btn-sm"
+                        onClick={() =>
+                          setActiveInvestor(
+                            activeInvestor === inv.id ? null : inv.id,
+                          )
+                        }
+                      >
+                        Add Event
+                      </button>
+                    </div>
                   </div>
-                </div>
-              </div>
 
-              {activeInvestor === investor.id && (
-                <div className="mt-3">
-                  <table className="table table-sm align-middle">
-                    <thead className="table-light">
-                      <tr>
-                        <th>Date</th>
-                        <th className="text-end">Amount</th>
-                        <th>Type</th>
-                        <th>Notes</th>
-                      </tr>
-                    </thead>
-                    <tbody>
+                  {/* COLLAPSIBLE EVENTS + FORM */}
+                  {activeInvestor === inv.id && (
+                    <div className="mt-3">
                       {investorEvents.length ? (
-                        investorEvents.map((event) => (
-                          <tr key={event.id}>
-                            <td>
-                              {new Date(event.event_date).toLocaleDateString()}
-                            </td>
-                            <td className="text-end fw-semibold">
-                              ${formatNumber(event.event_amount)}
-                            </td>
-                            <td>
-                              <span className="badge bg-light text-dark">
-                                {event.event_type}
-                              </span>
-                            </td>
-                            <td>{event.notes}</td>
-                          </tr>
-                        ))
+                        <ul className="list-group mb-3">
+                          {investorEvents.map((e) => (
+                            <li
+                              key={e.id}
+                              className="list-group-item d-flex justify-content-between align-items-center"
+                            >
+                              <div>
+                                <div>{formatDate(e.event_date)}</div>
+                                <small className="text-muted">
+                                  {e.event_type}
+                                </small>
+                              </div>
+                              <div className="fw-semibold">
+                                ${formatNumber(e.event_amount)}
+                              </div>
+                            </li>
+                          ))}
+                        </ul>
                       ) : (
-                        <tr>
-                          <td colSpan="4" className="text-center text-muted">
-                            No events yet
-                          </td>
-                        </tr>
+                        <p className="text-muted">No events yet</p>
                       )}
 
-                      {/* ADD EVENT ROW */}
-                      <tr>
-                        <td>
-                          <input
-                            type="date"
-                            className="form-control form-control-sm"
-                            value={newEvent.event_date}
-                            onChange={(e) =>
-                              setNewEvent((prev) => ({
-                                ...prev,
-                                event_date: e.target.value,
-                              }))
-                            }
-                          />
-                        </td>
-                        <td>
-                          <input
-                            type="number"
-                            value={newEvent.event_amount}
-                            className="form-control form-control-sm"
-                            placeholder="Amount"
-                            onChange={(e) =>
-                              setNewEvent((prev) => ({
-                                ...prev,
-                                event_amount: e.target.value,
-                              }))
-                            }
-                          />
-                        </td>
-                        <td>
-                          <select
-                            className="form-select form-select-sm"
-                            value={newEvent.event_type}
-                            onChange={(e) =>
-                              setNewEvent((prev) => ({
-                                ...prev,
-                                event_type: e.target.value,
-                              }))
-                            }
-                          >
-                            <option value="">Choose Event</option>
-                            <option value="Investment">Investment</option>
-                            <option value="Capital Call">Capital Call</option>
-                            <option value="Return">Pref. Return</option>
-                            <option value="ROC">ROC</option>
-                          </select>
-                        </td>
-                        <td>
-                          <textarea
-                            className="form-control form-control-sm"
-                            placeholder="Notes"
-                            value={newEvent.notes}
-                            onChange={(e) =>
-                              setNewEvent((prev) => ({
-                                ...prev,
-                                notes: e.target.value,
-                              }))
-                            }
-                          />
-                        </td>
-                      </tr>
-                      <tr className="d-flex justify-content-center">
-                        <td className="d-flex gap-2">
-                          <button
-                            className="btn btn-success btn-sm"
-                            onClick={() => handleEvent(investor.id)}
-                          >
-                            Save
-                          </button>
-                          <button
-                            className="btn btn-outline-secondary btn-sm"
-                            onClick={() => setActiveInvestor(null)}
-                          >
-                            {console.log(event)}
-                            Cancel
-                          </button>
-                        </td>
-                      </tr>
-                    </tbody>
-                  </table>
+                      {/* ADD EVENT FORM */}
+                      <div className="card card-body bg-light p-3">
+                        <div className="row g-2">
+                          <div className="col-4">
+                            <input
+                              type="date"
+                              className="form-control form-control-sm"
+                              value={newEvent.event_date}
+                              onChange={(e) =>
+                                setNewEvent((prev) => ({
+                                  ...prev,
+                                  event_date: e.target.value,
+                                }))
+                              }
+                            />
+                          </div>
+                          <div className="col-4">
+                            <input
+                              type="number"
+                              className="form-control form-control-sm"
+                              placeholder="Amount"
+                              value={newEvent.event_amount}
+                              onChange={(e) =>
+                                setNewEvent((prev) => ({
+                                  ...prev,
+                                  event_amount: e.target.value,
+                                }))
+                              }
+                            />
+                          </div>
+                          <div className="col-4">
+                            <select
+                              className="form-select form-select-sm"
+                              value={newEvent.event_type}
+                              onChange={(e) =>
+                                setNewEvent((prev) => ({
+                                  ...prev,
+                                  event_type: e.target.value,
+                                }))
+                              }
+                            >
+                              <option value="">Event Type</option>
+                              <option value="Investment">Investment</option>
+                              <option value="Capital Call">Capital Call</option>
+                              <option value="Return">Pref. Return</option>
+                              <option value="ROC">ROC</option>
+                            </select>
+                          </div>
+                          <div className="col-12 mt-2">
+                            <textarea
+                              className="form-control form-control-sm"
+                              placeholder="Notes"
+                              value={newEvent.notes}
+                              onChange={(e) =>
+                                setNewEvent((prev) => ({
+                                  ...prev,
+                                  notes: e.target.value,
+                                }))
+                              }
+                            ></textarea>
+                          </div>
+                          <div className="col-12 mt-2 d-flex gap-2">
+                            <button
+                              className="btn btn-success btn-sm"
+                              onClick={() => handleEvent(inv.id)}
+                            >
+                              Save
+                            </button>
+                            <button
+                              className="btn btn-outline-secondary btn-sm"
+                              onClick={() => setActiveInvestor(null)}
+                            >
+                              Cancel
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
-          );
-        })}
+              </div>
+            );
+          })}
+        </div>
       </div>
     </>
   );

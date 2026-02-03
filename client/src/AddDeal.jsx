@@ -8,13 +8,11 @@ import "./index.css";
 
 
 
-function AddDeal({ showForm, setShowForm }) {
+function AddDeal() {
 
   
 
-  const hideForm = () =>  {
-    setShowForm(false)
-  }
+ 
   const [syndicator, setSyndicator] = useState([
     { investor_name: "", invested_amount: "", pref_return: "" },
   ]);
@@ -94,7 +92,7 @@ function AddDeal({ showForm, setShowForm }) {
   return (
     <>
 
-   {showForm && (
+   {
       <form onSubmit={handleForm} >
         <div className="container my-5">
           {/* ---------------- Property Details ---------------- */}
@@ -185,13 +183,13 @@ function AddDeal({ showForm, setShowForm }) {
 
           {/* ---------------- Save Button ---------------- */}
           <div className="text-center mb-5">
-            <button type="submit" className="btn btn-primary btn-lg" onClick={hideForm}>
+            <button type="submit" className="btn btn-primary btn-lg">
               Save Deal
             </button>
           </div>
         </div>
       </form>
-   )}
+}
     </>
   );
 }
