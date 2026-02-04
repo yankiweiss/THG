@@ -9,13 +9,23 @@ import {
   CategoryScale,
   LinearScale,
   BarElement,
+  LineElement,
+  PointElement, // <-- add this
   Tooltip,
   Legend,
 } from "chart.js";
 
 import { Bar } from "react-chartjs-2";
 
-ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip, Legend);
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  LineElement, // <-- add this
+  PointElement, // <-- add this
+  Tooltip,
+  Legend,
+);
 
 function PropertyDetail() {
   const [property, setProperty] = useState([]);
@@ -26,7 +36,8 @@ function PropertyDetail() {
     event_amount: "",
     notes: "",
   });
-  const [investorMode, setInvestorMode] = useState(null);
+  const [investorMode, setInvestorMode] = useState("view");
+  const [addActiveInvestor, setAddActiveInvestor] = useState(null);
 
   const { id } = useParams();
 
@@ -85,65 +96,116 @@ function PropertyDetail() {
     return Number(value).toLocaleString("en-US");
   };
 
-  function getQuarter(dateString) {
-    const month = new Date(dateString).getMonth(); // 0–11
-    return Math.floor(month / 3); // 0–3
+  //  function getQuarter(dateString) {
+  //    const month = new Date(dateString).getMonth(); // 0–11
+  //    return Math.floor(month / 3); // 0–3
+  //  }
+
+  function getReturnsToDate(events, investor) {
+    const investorEvents = (events || []).filter(
+      (e) => e.investor_id === investor && e.event_type === "Return",
+    );
+
+    const actual = investorEvents.reduce(
+      (sum, e) => sum + Number(e.event_amount || 0),
+      0,
+    );
+
+    // Expected to date based on pref return & invested amount
+    const currentInvestor = property.investors?.find((i) => i.id === investor);
+    let expected = 0;
+    if (currentInvestor) {
+      const prefRate = Number(currentInvestor.pref_return || 0) / 100;
+      const invested = Number(currentInvestor.invested_amount || 0);
+      expected = invested * prefRate;
+    }
+
+    return { actual, expected };
   }
 
   function buildChartData(events, year, investor) {
-    const actuals = [0, 0, 0, 0];
-    const expecteds = [0, 0, 0, 0];
+    const quarterlyActuals = [0, 0, 0, 0];
+    const quarterlyExpected = [0, 0, 0, 0];
 
-    const investorEvents = events.filter((e) => e.investor_id === investor && new Date(e.event_date).getFullYear() === year);
+    const investorEvents = events.filter(
+      (e) =>
+        e.investor_id === investor &&
+        new Date(e.event_date).getFullYear() === year,
+    );
 
-investorEvents.forEach((e) => {
-    const q = getQuarter(e.event_date);
-    const amount = Number(e.event_amount || 0);
+    // Sum quarterly actual returns
+    investorEvents.forEach((e) => {
+      const quarter = Math.floor(new Date(e.event_date).getMonth() / 3);
+      if (e.event_type === "Return")
+        quarterlyActuals[quarter] += Number(e.event_amount || 0);
+    });
 
-    if(e.event_type === 'Return'){
-        actuals[q] += amount
+    // Expected return per quarter
+    const currentInvestor = property.investors?.find((e) => e.id === investor);
+    if (currentInvestor) {
+      const prefAmount =
+        Number(currentInvestor.invested_amount || 0) *
+        (Number(currentInvestor.pref_return || 0) / 100);
+      const perQuarter = prefAmount / 4;
+      for (let i = 0; i < 4; i++) quarterlyExpected[i] = perQuarter;
     }
-})
 
-const current = property.investors?.find((e) => e.id === investor);
-
-if(current) {
-    const prefRate = Number(current.pref_return || 0) / 100;
-    const prefAmount = Number(current.invested_amount || 0) * prefRate;
-
-    const perQuarter = prefAmount / 4;
-    for (let i = 0; i < 4; i++){
-        expecteds[i] = perQuarter;
-    }
-}
+    // Build cumulative returns
+    const cumulativeActual = [];
+    const cumulativeExpected = [];
+    quarterlyActuals.reduce((sum, val, i) => {
+      cumulativeActual[i] = sum + val;
+      return cumulativeActual[i];
+    }, 0);
+    quarterlyExpected.reduce((sum, val, i) => {
+      cumulativeExpected[i] = sum + val;
+      return cumulativeExpected[i];
+    }, 0);
 
     return {
-      labels: [
-        "First Quarter",
-        "Second Quarter",
-        "Third Quarter",
-        "Fourth Quarter",
-      ],
+      labels: ["Q1", "Q2", "Q3", "Q4"],
       datasets: [
         {
-          label: "Actual Return",
-          data: actuals,
-          categoryPercentage: 0.65,
-          barPercentage: 0.55,
-          backgroundColor: "rgba(54, 162, 235, 0.7)", // blue
-          borderColor: "rgba(54, 162, 235, 1)",
+          type: "bar",
+          label: "Quarter Actual Return",
+          data: quarterlyActuals,
+          backgroundColor: "rgba(54, 162, 235, 0.7)",
         },
         {
-          label: "Expected Return",
-          data: expecteds,
-          categoryPercentage: 0.65,
-          barPercentage: 0.55,
-          backgroundColor: "rgba(255, 99, 132, 0.7)", // red
-          borderColor: "rgba(255, 99, 132, 1)",
+          type: "bar",
+          label: "Quarter Expected Return",
+          data: quarterlyExpected,
+          backgroundColor: "rgba(255, 99, 132, 0.7)",
         },
       ],
     };
   }
+
+  const chartOptions = {
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { position: "top" },
+      tooltip: {
+        mode: "index",
+        intersect: false,
+        callbacks: {
+          label: function (context) {
+            const value = `$${context.raw.toLocaleString()}`;
+            return context.dataset.label.includes("Return to Date")
+              ? `${context.dataset.label}: ${value}`
+              : `${context.dataset.label}: ${value}`;
+          },
+        },
+      },
+    },
+    scales: {
+      x: { ticks: { maxRotation: 0, minRotation: 0 } },
+      y: {
+        beginAtZero: true,
+        ticks: { callback: (val) => `$${val.toLocaleString()}` },
+      },
+    },
+  };
 
   function formatDate(dateComingIn) {
     const date = new Date(dateComingIn);
@@ -156,7 +218,7 @@ if(current) {
       {console.log(property)}
       <div className="container my-4">
         {/* PROPERTY HEADER */}
-        <div className="row mb-4 align-items-center">
+        <div className="row mb-4 align-items-center m-5">
           <div className="col-md-3">
             <img
               src={property.secure_url}
@@ -166,37 +228,49 @@ if(current) {
             />
           </div>
           <div className="col-md-9">
-            <h2 className="fw-bold">{property.property_name}</h2>
-            <div className="d-flex gap-4 mt-2">
-              <div className="text-muted">
-                Purchase Price <br />
-                <span className="fw-semibold fs-5">
-                  ${formatNumber(property.purchase_price)}
-                </span>
+            <h2 className="fw-bold m-5">{property.property_name}</h2>
+
+            <div className="row g-3 px-4 pb-3">
+              <div className="col-3">
+                <div className="border rounded p-3 text-center bg-light">
+                  <div className="text-muted small">Purchase Price:</div>
+                  <div className="fw-bold fs-6">
+                    ${formatNumber(property.purchase_price)}
+                  </div>
+                </div>
               </div>
-              <div className="text-muted">
-                Closing Date <br />
-                <span className="fw-semibold fs-5">
-                  {formatDate(property.closing_date)}
-                </span>
+
+              <div className="col-3">
+                <div className="border rounded p-3 text-center bg-light">
+                  <div className="text-muted small">Closing Date</div>
+                  <div className="fw-bold fs-6">
+                    {formatDate(property.closing_date)}
+                  </div>
+                </div>
               </div>
-              <div className="text-muted">
-                Total Investors <br />
-                <span className="fw-semibold fs-5">
-                  {property.investors?.length || 0}
-                </span>
+
+              <div className="col-3">
+                <div className="border rounded p-3 text-center bg-light">
+                  <div className="text-muted small">Total Investors</div>
+                  <div className="fw-bold fs-6">
+                    {property.investors?.length || 0}
+                  </div>
+                </div>
               </div>
-              <div className="text-muted">
-                Total Events <br />
-                <span className="fw-semibold fs-5">
-                  {property.events?.length || 0}
-                </span>
+
+              <div className="col-3">
+                <div className="border rounded p-3 text-center bg-light">
+                  <div className="text-muted small">Total Events</div>
+                  <div className="fw-bold fs-6">
+                    {property.events?.length || 0}
+                  </div>
+                </div>
               </div>
             </div>
           </div>
         </div>
 
-        <div className="card shadow-sm mb-4">
+        <div className="card shadow-sm mb-4 mt-5">
           <div className="card-body">
             {/* YEAR TAB + CHART */}
             <div className="row g-3 align-items-end mb-3 d-flex justify-content-center">
@@ -236,7 +310,7 @@ if(current) {
               {/* RESET */}
               <div className="col-md-2">
                 <button
-                  className="btn btn-outline-secondary w-100"
+                  className="btn btn-outline-secondary w-50"
                   onClick={() => {
                     setActiveInvestor(null);
                     setActiveYear(years[0]);
@@ -247,32 +321,64 @@ if(current) {
               </div>
             </div>
 
-            <div style={{ height: "360px" }}>
-              {activeYear && (
-                <Bar
-                  data={buildChartData(
-                    property.events || [],
-                    activeYear,
+            {activeInvestor && (
+              <div className="row g-3 mb-3">
+                {(() => {
+                  const { actual, expected } = getReturnsToDate(
+                    property.events,
                     activeInvestor,
-                  )}
-                  options={{
-                    maintainAspectRatio: false,
-                    plugins: {
-                      legend: { position: "top" },
-                      tooltip: { mode: "index", intersect: false },
-                    },
-                  }}
-                />
-              )}
+                  );
+                  return (
+                    <>
+                      <div className="col-md-6">
+                        <div className="p-3 bg-light border rounded text-center">
+                          <div className="text-muted small">
+                            Return to Date (Actual)
+                          </div>
+                          <div className="fw-bold fs-5">
+                            ${actual.toLocaleString()}
+                          </div>
+                        </div>
+                      </div>
+                      <div className="col-md-6">
+                        <div className="p-3 bg-light border rounded text-center">
+                          <div className="text-muted small">
+                            Return to Date (Expected)
+                          </div>
+                          <div className="fw-bold fs-5">
+                            ${expected.toLocaleString()}
+                          </div>
+                        </div>
+                      </div>
+                    </>
+                  );
+                })()}
+              </div>
+            )}
+
+            <div style={{ height: "400px" }}>
+              <Bar
+                data={buildChartData(
+                  property.events || [],
+                  activeYear,
+                  activeInvestor,
+                )}
+                options={chartOptions}
+              />
             </div>
+
+            {/* Return to Date stat above the chart */}
 
             {/* INVESTORS */}
             <h4 className="fw-bold my-4">Investors</h4>
             <div className="row g-3">
               {property.investors?.map((inv) => {
-                const investorEvents =
-                  property.events?.filter((e) => e.investor_id === inv.id) ||
-                  [];
+                const investorEvents = property.events
+                  ?.filter((e) => e.investor_id === inv.id)
+                  .slice()
+                  .sort(
+                    (a, b) => new Date(b.event_date) - new Date(a.event_date),
+                  );
                 const totalInvestment = investorEvents
                   .filter(
                     (e) =>
@@ -283,153 +389,206 @@ if(current) {
 
                 return (
                   <div key={inv.id} className="col-md-6">
-                    <div className="card shadow-sm p-3 h-100">
-                      <div className="d-flex justify-content-between align-items-start">
+                    <div className="card shadow-sm p-3 auto">
+                      <div className="d-flex justify-content-between p-4">
                         <div>
                           <h5 className="fw-semibold">{inv.investor_name}</h5>
-                          <small className="text-muted">
-                            Initial: ${formatNumber(inv.invested_amount)} <br />
-                            To Date: ${formatNumber(totalInvestment)}
-                          </small>
                         </div>
+
                         <div className="d-flex gap-2">
-                          <button
-                            className="btn btn-outline-primary btn-sm"
+                          <a
+                            href="#C4"
+                            className="btn btn-outline-success btn-sm text-decoration-none"
                             onClick={() => {
-                              setActiveInvestor(inv.id);
-                              setInvestorMode("view");
-                            }}
-                          >
-                            {activeInvestor === inv.id
-                              ? "Hide Events"
-                              : "View Events"}
-                          </button>
-                          <button
-                            className="btn btn-outline-success btn-sm"
-                            onClick={() => {
-                              setActiveInvestor(inv.id);
-                              setInvestorMode("add");
+                              setAddActiveInvestor(inv.id);
                             }}
                           >
                             Add Event
-                          </button>
+                          </a>
+                        </div>
+                      </div>
+                      <div className="row g-3 px-4 pb-3">
+                        <div className="col-4">
+                          <div className="border rounded p-3 text-center bg-light">
+                            <div className="text-muted small">Initial</div>
+                            <div className="fw-bold fs-6">
+                              ${formatNumber(inv.invested_amount)}
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="col-4">
+                          <div className="border rounded p-3 text-center bg-light">
+                            <div className="text-muted small">To Date</div>
+                            <div className="fw-bold fs-6">
+                              ${formatNumber(totalInvestment)}
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="col-4">
+                          <div className="border rounded p-3 text-center bg-light">
+                            <div className="text-muted small">Pref Return</div>
+                            <div className="fw-bold fs-6">
+                              {formatNumber(inv.pref_return)}%
+                            </div>
+                          </div>
                         </div>
                       </div>
 
-                      {/* COLLAPSIBLE EVENTS + FORM */}
-                      {activeInvestor === inv.id && (
-                        <div className="mt-3">
-                          {investorMode === "view" && (
-                            <>
-                              {investorEvents.length ? (
-                                <ul className="list-group mb-3">
-                                  {investorEvents.map((e) => (
-                                    <li
-                                      key={e.id}
-                                      className="list-group-item d-flex justify-content-between align-items-center"
-                                    >
-                                      <div>
-                                        <div>{formatDate(e.event_date)}</div>
-                                        <small className="text-muted">
-                                          {e.event_type}
-                                        </small>
-                                      </div>
-                                      <div className="fw-semibold">
-                                        ${formatNumber(e.event_amount)}
-                                      </div>
-                                    </li>
-                                  ))}
-                                </ul>
-                              ) : (
-                                <p className="text-muted">No events yet</p>
-                              )}
-                            </>
-                          )}
+                      {console.log(investorEvents)}
 
-                          {investorMode === "add" && (
-                            <div className="card card-body bg-light p-3">
-                              <div className="row g-2">
-                                <div className="col-4">
-                                  <input
-                                    type="date"
-                                    className="form-control form-control-sm"
-                                    value={newEvent.event_date}
-                                    onChange={(e) =>
-                                      setNewEvent((prev) => ({
-                                        ...prev,
-                                        event_date: e.target.value,
-                                      }))
-                                    }
-                                  />
-                                </div>
-                                <div className="col-4">
-                                  <input
-                                    type="number"
-                                    className="form-control form-control-sm"
-                                    placeholder="Amount"
-                                    value={newEvent.event_amount}
-                                    onChange={(e) =>
-                                      setNewEvent((prev) => ({
-                                        ...prev,
-                                        event_amount: e.target.value,
-                                      }))
-                                    }
-                                  />
-                                </div>
-                                <div className="col-4">
-                                  <select
-                                    className="form-select form-select-sm"
-                                    value={newEvent.event_type}
-                                    onChange={(e) =>
-                                      setNewEvent((prev) => ({
-                                        ...prev,
-                                        event_type: e.target.value,
-                                      }))
-                                    }
+                      {/* COLLAPSIBLE EVENTS + FORM */}
+
+                      <div className="mt-3">
+                        {investorMode === "view" && (
+                          <>
+                            {investorEvents.length ? (
+                              <ul className="list-group mb-3 border">
+                                {investorEvents.map((e) => (
+                                  <li
+                                    key={e.id}
+                                    className="list-group-item d-flex justify-content-between align-items-start"
                                   >
-                                    <option value="">Event Type</option>
-                                    <option value="Investment">
-                                      Investment
-                                    </option>
-                                    <option value="Capital Call">
-                                      Capital Call
-                                    </option>
-                                    <option value="Return">Pref. Return</option>
-                                    <option value="ROC">ROC</option>
-                                  </select>
-                                </div>
-                                <div className="col-12 mt-2">
-                                  <textarea
-                                    className="form-control form-control-sm"
-                                    placeholder="Notes"
-                                    value={newEvent.notes}
-                                    onChange={(e) =>
-                                      setNewEvent((prev) => ({
-                                        ...prev,
-                                        notes: e.target.value,
-                                      }))
-                                    }
-                                  ></textarea>
-                                </div>
-                                <div className="col-12 mt-2 d-flex gap-2">
-                                  <button
-                                    className="btn btn-success btn-sm"
-                                    onClick={() => handleEvent(inv.id)}
-                                  >
-                                    Save
-                                  </button>
-                                  <button
-                                    className="btn btn-outline-secondary btn-sm"
-                                    onClick={() => setInvestorMode("view")}
-                                  >
-                                    Cancel
-                                  </button>
-                                </div>
+                                    
+                                    {/* Date + Type */}
+                                    <div
+                                      className="me-3"
+                                      style={{ minWidth: "120px" }}
+                                    >
+                                      <div className="fw-semibold">
+                                        {formatDate(e.event_date)}
+                                      </div>
+                                      <small className="text-muted">
+                                        {e.event_type}
+                                      </small>
+                                    </div>
+
+                                    {/* Amount */}
+                                    <div
+                                      className=" text-center fw-bold"
+                                      style={{ minWidth: "150px" }}
+                                    >
+                                      ${formatNumber(e.event_amount)}
+                                    </div>
+
+                                    {/* Notes */}
+                                    <div className="flex-grow-1">
+                                      {e.notes ? (
+                                        <span
+                                          className="badge bg-light text-dark"
+                                          style={{
+                                            display: "inline-block",
+                                            whiteSpace: "pre-wrap",
+                                            wordBreak: "break-word",
+                                            maxWidth: "100%",
+                                          }}
+                                          title={e.notes} // hover to see full note
+                                        >
+                                          {e.notes.length > 80
+                                            ? e.notes.slice(0, 80) + "…"
+                                            : e.notes}
+                                        </span>
+                                      ) : (
+                                        <span className="text-muted">—</span>
+                                      )}
+                                    </div>
+                                  </li>
+                                ))}
+                              </ul>
+                            ) : (
+                              <p className="text-muted">No events yet</p>
+                            )}
+                          </>
+                        )}
+
+                        {addActiveInvestor === inv.id && (
+                          <div className="card card-body bg-light p-3">
+                            <div className="row g-2 " id="C4">
+                              <div className="col-4">
+                                <input
+                                  type="date"
+                                  className="form-control form-control-sm"
+                                  value={newEvent.event_date}
+                                  onChange={(e) =>
+                                    setNewEvent((prev) => ({
+                                      ...prev,
+                                      event_date: e.target.value,
+                                    }))
+                                  }
+                                />
+                              </div>
+                              <div className="col-4">
+                                <input
+                                  type="number"
+                                  className="form-control form-control-sm"
+                                  placeholder="Amount"
+                                  value={newEvent.event_amount}
+                                  onChange={(e) =>
+                                    setNewEvent((prev) => ({
+                                      ...prev,
+                                      event_amount: e.target.value,
+                                    }))
+                                  }
+                                />
+                              </div>
+                              <div className="col-4">
+                                <select
+                                  className="form-select form-select-sm"
+                                  value={newEvent.event_type}
+                                  onChange={(e) =>
+                                    setNewEvent((prev) => ({
+                                      ...prev,
+                                      event_type: e.target.value,
+                                    }))
+                                  }
+                                >
+                                  <option value="">Event Type</option>
+                                  <option value="Investment">Investment</option>
+                                  <option value="Capital Call">
+                                    Capital Call
+                                  </option>
+                                  <option value="Return">Pref. Return</option>
+                                  <option value="ROC">ROC</option>
+                                </select>
+                              </div>
+                              <div className="col-12 mt-2">
+                                <textarea
+                                  className="form-control form-control-sm"
+                                  placeholder="Notes"
+                                  value={newEvent.notes}
+                                  onChange={(e) =>
+                                    setNewEvent((prev) => ({
+                                      ...prev,
+                                      notes: e.target.value,
+                                    }))
+                                  }
+                                ></textarea>
+                              </div>
+                              <div className="col-12 mt-2 d-flex gap-2">
+                                <button
+                                  className="btn btn-success btn-sm"
+                                  onClick={() => {
+                                    handleEvent(inv.id);
+                                    setAddActiveInvestor(null);
+                                  }}
+                                >
+                                  Save
+                                </button>
+                                <button
+                                  className="btn btn-outline-secondary btn-sm"
+                                  onClick={() => {
+                                    setAddActiveInvestor(null);
+                                    setInvestorMode("view");
+                                  }}
+                                >
+                                  Cancel
+                                </button>
                               </div>
                             </div>
-                          )}
-                        </div>
-                      )}
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
                 );

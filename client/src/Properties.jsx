@@ -12,6 +12,36 @@ function Properties() {
     navigate(`/property/${id}`)
   }
 
+ const deleteProperty = async (propertyId) => {
+  if (!propertyId) return;
+
+  // Optional: Ask user for confirmation
+  const confirmed = window.confirm(
+    "Are you sure you want to delete this property? This cannot be undone."
+  );
+  if (!confirmed) return;
+
+  try {
+    const res = await fetch(`https://thg-seven.vercel.app/api/properties/${propertyId}`, {
+      method: "DELETE",
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      alert(`Failed to delete: ${data.error || 'Unknown error'}`);
+      return;
+    }
+
+    alert("Property deleted successfully!");
+    // Optional: refresh the list or redirect
+    window.location.reload(); // simple way to refresh
+  } catch (err) {
+    console.error(err);
+    alert("Error deleting property");
+  }
+};
+
   
 
   useEffect(() => {
@@ -62,6 +92,7 @@ function Properties() {
       <h3 className="mx-3">{row.property_name}</h3>
 
       {/* View Button */}
+      <div className="d-flex gap-2">
       <button
         type="button"
         className="btn btn-outline-primary"
@@ -72,6 +103,17 @@ function Properties() {
       >
         View
       </button>
+       <button
+        type="button"
+        className="btn btn-outline-danger"
+        onClick={(e) => {
+          e.stopPropagation(); // prevent parent click
+         deleteProperty(row.id)
+        }}
+      >
+        Delete
+      </button>
+      </div>
     </div>
   ))
 ) : (
