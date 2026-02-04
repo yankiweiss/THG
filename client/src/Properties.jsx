@@ -1,129 +1,134 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-
-
 function Properties() {
   const navigate = useNavigate();
   const [data, setData] = useState([]);
-  const [search, setSearch] = useState('');
+  const [search, setSearch] = useState("");
+  const [loading, setLoading] = useState(true);
 
   const goToPropertyDetail = (id) => {
-    navigate(`/property/${id}`)
-  }
+    navigate(`/property/${id}`);
+  };
 
- const deleteProperty = async (propertyId) => {
-  if (!propertyId) return;
+  const deleteProperty = async (propertyId) => {
+    if (!propertyId) return;
 
-  // Optional: Ask user for confirmation
-  const confirmed = window.confirm(
-    "Are you sure you want to delete this property? This cannot be undone."
-  );
-  if (!confirmed) return;
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this property? This cannot be undone."
+    );
+    if (!confirmed) return;
 
-  try {
-    const res = await fetch(`https://thg-seven.vercel.app/api/properties/${propertyId}`, {
-      method: "DELETE",
-    });
+    try {
+      const res = await fetch(
+        `https://thg-seven.vercel.app/api/properties/${propertyId}`,
+        {
+          method: "DELETE",
+        }
+      );
+      const result = await res.json();
 
-    const data = await res.json();
+      if (!res.ok) {
+        alert(`Failed to delete: ${result.error || "Unknown error"}`);
+        return;
+      }
 
-    if (!res.ok) {
-      alert(`Failed to delete: ${data.error || 'Unknown error'}`);
-      return;
+      // Remove deleted property from state for smoother UX
+      setData((prev) => prev.filter((p) => p.id !== propertyId));
+      alert("Property deleted successfully!");
+    } catch (err) {
+      console.error(err);
+      alert("Error deleting property");
     }
-
-    alert("Property deleted successfully!");
-    // Optional: refresh the list or redirect
-    window.location.reload(); // simple way to refresh
-  } catch (err) {
-    console.error(err);
-    alert("Error deleting property");
-  }
-};
-
-  
+  };
 
   useEffect(() => {
-    fetch("https://thg-seven.vercel.app/api/properties")
-      .then((res) => res.json())
-      .then((data) => setData(data));
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const res = await fetch("https://thg-seven.vercel.app/api/properties");
+        const result = await res.json();
+        setData(result);
+      } catch (err) {
+        console.error(err);
+      }
+      setLoading(false);
+    };
+    fetchData();
   }, []);
 
   const searchData = data.filter((row) =>
-    row.property_name?.toLowerCase().includes(search.toLocaleLowerCase())
+    row.property_name?.toLowerCase().includes(search.toLowerCase())
   );
 
   return (
-    <>
-      <div className="container mt-4 mb-3">
-  <div className="row justify-content-center">
-    <div className="col-md-4">
-      <input
-        className="form-control form-control-lg shadow-sm"
-        placeholder="🔍 Search properties..."
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-      />
-    </div>
-  </div>
-</div>
-      <div className="container">
-  <div className="row g-4">
-    {searchData.length > 0 ? (
-  searchData.map((row) => (
-    <div
-      key={row.id}
-      className="border rounded-4 d-flex align-items-center justify-content-around text-muted  shadow-sm property-card"
-      style={{
-        minHeight: "200px",
-        padding: "1rem",
-        transition: "transform 0.2s, box-shadow 0.2s",
-        cursor: "pointer",
-      }}
-      onClick={() => goToPropertyDetail(row.id)}
-    >
-      {/* Image placeholder */}
-      <div className="text-center">
-        <img src={row.secure_url} style={{width: '300px'}} className="rounded"></img>
+    <div className="container my-4">
+      {/* Search Bar */}
+      <div className="row justify-content-center mb-4">
+        <div className="col-md-6">
+          <input
+            className="form-control form-control-lg shadow-sm"
+            placeholder="🔍 Search properties..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
         </div>
-
-      {/* Property Name */}
-      <h3 className="mx-3">{row.property_name}</h3>
-
-      {/* View Button */}
-      <div className="d-flex gap-2">
-      <button
-        type="button"
-        className="btn btn-outline-primary"
-        onClick={(e) => {
-          e.stopPropagation(); // prevent parent click
-          goToPropertyDetail(row.id);
-        }}
-      >
-        View
-      </button>
-       <button
-        type="button"
-        className="btn btn-outline-danger"
-        onClick={(e) => {
-          e.stopPropagation(); // prevent parent click
-         deleteProperty(row.id)
-        }}
-      >
-        Delete
-      </button>
       </div>
+
+      {/* Properties Grid */}
+      {loading ? (
+        <p className="text-center text-muted">Loading properties...</p>
+      ) : searchData.length > 0 ? (
+        <div className="row g-4">
+          {searchData.map((row) => (
+            <div key={row.id} className="col-md-6 col-lg-4">
+              <div
+                className="card shadow-sm property-card h-100"
+                style={{ cursor: "pointer", transition: "transform 0.2s" }}
+                onClick={() => goToPropertyDetail(row.id)}
+              >
+                {/* Property Image */}
+                <img
+                  src={row.secure_url}
+                  alt={row.property_name}
+                  className="card-img-top"
+                  style={{ objectFit: "cover", height: "180px" }}
+                />
+
+                <div className="card-body d-flex flex-column">
+                  {/* Property Name */}
+                  <h5 className="card-title">{row.property_name}</h5>
+
+                  {/* Details row */}
+                  <div className="mt-auto d-flex justify-content-between align-items-center">
+                    <button
+                      className="btn btn-outline-primary btn-sm"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        goToPropertyDetail(row.id);
+                      }}
+                    >
+                      View
+                    </button>
+                    <button
+                      className="btn btn-outline-danger btn-sm"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        deleteProperty(row.id);
+                      }}
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <p className="text-center text-muted mt-5">No matching properties found.</p>
+      )}
     </div>
-  ))
-) : (
-  <p style={{ textAlign: "center", marginTop: "2rem", color: "#6c757d" }}>
-    No matching data
-  </p>
-)}
-  </div>
-</div>
-    </>
   );
 }
 

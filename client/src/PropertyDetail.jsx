@@ -101,27 +101,47 @@ function PropertyDetail() {
   //    return Math.floor(month / 3); // 0–3
   //  }
 
-  function getReturnsToDate(events, investor) {
-    const investorEvents = (events || []).filter(
-      (e) => e.investor_id === investor && e.event_type === "Return",
-    );
+  function daysBetween(start, end) {
+  const msPerDay = 1000 * 60 * 60 * 24;
+  return Math.max(0, Math.floor((end - start) / msPerDay));
+}
 
-    const actual = investorEvents.reduce(
-      (sum, e) => sum + Number(e.event_amount || 0),
-      0,
-    );
+  function getReturnsToDate(investorEvents, investorId, property) {
+    
+  const closingDate = new Date(property.closing_date);
+  const today = new Date();
 
-    // Expected to date based on pref return & invested amount
-    const currentInvestor = property.investors?.find((i) => i.id === investor);
-    let expected = 0;
-    if (currentInvestor) {
-      const prefRate = Number(currentInvestor.pref_return || 0) / 100;
-      const invested = Number(currentInvestor.invested_amount || 0);
-      expected = invested * prefRate;
-    }
+  // ---- ACTUAL RETURNS TO DATE ----
+  const actual = (investorEvents || [])
+    .filter(
+      (e) =>
+        e.investor_id === investorId &&
+        e.event_type === "Return" &&
+        new Date(e.event_date) >= closingDate &&
+        new Date(e.event_date) <= today
+    )
+    .reduce((sum, e) => sum + Number(e.event_amount || 0), 0);
 
-    return { actual, expected };
+  // ---- EXPECTED RETURNS TO DATE ----
+  const investor = property.investors?.find((i) => i.id === investorId);
+  let expected = 0;
+
+  if (investor) {
+    const invested = Number(investor.invested_amount || 0);
+    const annualPrefRate = Number(investor.pref_return || 0) / 100;
+
+    const daysElapsed = daysBetween(closingDate, today);
+
+    // annual pref → daily pref → elapsed days
+    expected =
+      invested * annualPrefRate * (daysElapsed / 365);
   }
+
+  return {
+    actual: Number(actual.toFixed(2)),
+    expected: Number(expected.toFixed(2)),
+  };
+}
 
   function buildChartData(events, year, investor) {
     const quarterlyActuals = [0, 0, 0, 0];
@@ -151,17 +171,7 @@ function PropertyDetail() {
     }
 
     // Build cumulative returns
-    const cumulativeActual = [];
-    const cumulativeExpected = [];
-    quarterlyActuals.reduce((sum, val, i) => {
-      cumulativeActual[i] = sum + val;
-      return cumulativeActual[i];
-    }, 0);
-    quarterlyExpected.reduce((sum, val, i) => {
-      cumulativeExpected[i] = sum + val;
-      return cumulativeExpected[i];
-    }, 0);
-
+   
     return {
       labels: ["Q1", "Q2", "Q3", "Q4"],
       datasets: [
@@ -272,6 +282,12 @@ function PropertyDetail() {
 
         <div className="card shadow-sm mb-4 mt-5">
           <div className="card-body">
+           <div className="d-flex flex-column mb-4 border-bottom pb-3">
+  <h4 className="fw-bold mb-1">Return Performance Breakdown</h4>
+  <span className="text-muted small">
+    View actual vs expected returns by investor and year
+  </span>
+</div>
             {/* YEAR TAB + CHART */}
             <div className="row g-3 align-items-end mb-3 d-flex justify-content-center">
               {/* INVESTOR SELECT */}
@@ -325,12 +341,14 @@ function PropertyDetail() {
               <div className="row g-3 mb-3">
                 {(() => {
                   const { actual, expected } = getReturnsToDate(
+                    
                     property.events,
                     activeInvestor,
+                    property,
                   );
                   return (
                     <>
-                      <div className="col-md-6">
+                      <div className="col-md-4">
                         <div className="p-3 bg-light border rounded text-center">
                           <div className="text-muted small">
                             Return to Date (Actual)
@@ -340,13 +358,23 @@ function PropertyDetail() {
                           </div>
                         </div>
                       </div>
-                      <div className="col-md-6">
+                      <div className="col-md-4">
                         <div className="p-3 bg-light border rounded text-center">
                           <div className="text-muted small">
                             Return to Date (Expected)
                           </div>
                           <div className="fw-bold fs-5">
                             ${expected.toLocaleString()}
+                          </div>
+                        </div>
+                      </div>
+                         <div className="col-md-4">
+                        <div className="p-3 bg-light border rounded text-center">
+                          <div className="text-muted small">
+                            Since
+                          </div>
+                          <div className="fw-bold fs-5">
+                            {formatDate(property.closing_date)}
                           </div>
                         </div>
                       </div>
