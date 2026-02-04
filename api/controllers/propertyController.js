@@ -89,7 +89,7 @@ const deleteProperty = async (req, res) => {
     const {id } = req.params;
 
   const result = await dataBasePool.query(
-     `DELETE FROM property WHERE id = $1 RETURNING *`,
+     `DELETE FROM properties WHERE id = $1 RETURNING *`,
       [id]
   );
 
