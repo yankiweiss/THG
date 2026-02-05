@@ -599,13 +599,13 @@ function PropertyDetail() {
                   .sort(
                     (a, b) => new Date(b.event_date) - new Date(a.event_date),
                   );
-                const totalInvestment = investorEvents
+                const totalInvested = investorEvents
                   .filter(
                     (e) =>
                       e.event_type === "Investment" ||
                       e.event_type === "Capital Call",
                   )
-                  .reduce((sum, e) => sum + Number(e.event_amount || 0), 0);
+                  .reduce((sum, e) => sum + Number(e.event_amount || 0), 0) + inv.invested_amount;
 
                 return (
                   <div key={inv.id} className="col-6">
@@ -634,7 +634,7 @@ function PropertyDetail() {
                           <div className="col-4">
                             <div className="text-center p-2 bg-light rounded">
                               <div className="text-muted small">Total Investment </div>
-                              <div className="fw-bold">${formatNumber(totalInvestment)}</div>
+                              <div className="fw-bold">${formatNumber(totalInvested)}</div>
                             </div>
                           </div>
                           <div className="col-4">
