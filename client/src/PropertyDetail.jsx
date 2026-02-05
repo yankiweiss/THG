@@ -416,65 +416,64 @@ function PropertyDetail() {
 
             {/* INVESTORS */}
 
-            <div className="d-flex justify-content-between align-items-center m-5">
+            <div className="border-bottom d-flex justify-content-between m-5">
               <div>
-                <h4 className="fw-bold mb-0">Investors</h4>
+                <h4 className="fw-bold">Investors</h4>
                 <small className="text-muted">
                   Manage ownership, capital, and returns
                 </small>
               </div>
-
-              <button
-                className="btn btn-primary"
-                onClick={() => setInvestorMode("add")}
-              >
-                + Add Investor
-              </button>
+              <div>
+                <button
+                  className="btn btn-primary"
+                  onClick={() => setInvestorMode("add")}
+                >
+                  + Add Investor
+                </button>
+              </div>
             </div>
             {investorMode === "add" && (
-  <div className="card shadow-sm mb-4 border-primary">
-    <div className="card-body">
-      <h5 className="fw-semibold mb-3">Add New Investor</h5>
+              <div className="card shadow-sm mb-4 border-primary">
+                <div className="card-body">
+                  <h5 className="fw-semibold mb-3">Add New Investor</h5>
 
-      <div className="row g-3">
-        <div className="col-md-4">
-          <label className="form-label">Investor Name</label>
-          <input className="form-control" placeholder="John Doe" />
-        </div>
+                  <div className="row g-3">
+                    <div className="col-md-4">
+                      <label className="form-label">Investor Name</label>
+                      <input className="form-control" placeholder="John Doe" />
+                    </div>
 
-        <div className="col-md-4">
-          <label className="form-label">Initial Investment</label>
-          <input
-            type="number"
-            className="form-control"
-            placeholder="100000"
-          />
-        </div>
+                    <div className="col-md-4">
+                      <label className="form-label">Initial Investment</label>
+                      <input
+                        type="number"
+                        className="form-control"
+                        placeholder="100000"
+                      />
+                    </div>
 
-        <div className="col-md-4">
-          <label className="form-label">Preferred Return (%)</label>
-          <input
-            type="number"
-            className="form-control"
-            placeholder="8"
-          />
-        </div>
-      </div>
+                    <div className="col-md-4">
+                      <label className="form-label">Preferred Return (%)</label>
+                      <input
+                        type="number"
+                        className="form-control"
+                        placeholder="8"
+                      />
+                    </div>
+                  </div>
 
-      <div className="mt-4 d-flex gap-2">
-        <button className="btn btn-success">
-          Save Investor
-        </button>
-        <button
-          className="btn btn-outline-secondary"
-          onClick={() => setInvestorMode("view")}
-        >
-          Cancel
-        </button>
-      </div>
-    </div>
-  </div>
-)}
+                  <div className="mt-4 d-flex gap-2">
+                    <button className="btn btn-success">Save Investor</button>
+                    <button
+                      className="btn btn-outline-secondary"
+                      onClick={() => setInvestorMode("view")}
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
             <div className="row g-3">
               {property.investors?.map((inv) => {
                 const investorEvents = property.events
