@@ -279,7 +279,7 @@ function PropertyDetail() {
           position: absolute;
           bottom: 0;
           left: 0;
-          width: 60px;
+          width: 200px;
           height: 3px;
           background: linear-gradient(to right, #0d6efd, transparent);
         }
@@ -299,7 +299,7 @@ function PropertyDetail() {
        
 
       {console.log(property)}
-      <div className="container-fluid px-4 py-4 bg-light min-vh-100">
+      <div className="container-fluid px-4 py-3 bg-light min-vh-100">
         {/* HEADER SECTION */}
         <div className="mb-4">
           <div className="d-flex align-items-center justify-content-between">
@@ -591,7 +591,7 @@ function PropertyDetail() {
             )}
 
             {/* INVESTOR ACTIVITY CARDS */}
-            <div className="row g-4">
+            <div className="row g-3 ">
               {property.investors?.map((inv) => {
                 const investorEvents = property.events
                   ?.filter((e) => e.investor_id === inv.id)
@@ -608,8 +608,8 @@ function PropertyDetail() {
                   .reduce((sum, e) => sum + Number(e.event_amount || 0), 0);
 
                 return (
-                  <div key={inv.id} className="col-lg-6">
-                    <div className="card h-100 border">
+                  <div key={inv.id} className="col-6">
+                    <div className="card h-100 border-secondary">
                       <div className="card-header bg-white border-bottom">
                         <div className="d-flex justify-content-between align-items-center">
                           <h5 className="mb-0 fw-bold">{inv.investor_name}</h5>
@@ -633,7 +633,7 @@ function PropertyDetail() {
                           </div>
                           <div className="col-4">
                             <div className="text-center p-2 bg-light rounded">
-                              <div className="text-muted small">To Date</div>
+                              <div className="text-muted small">Total Investment </div>
                               <div className="fw-bold">${formatNumber(totalInvestment)}</div>
                             </div>
                           </div>
