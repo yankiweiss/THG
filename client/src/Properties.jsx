@@ -276,9 +276,7 @@ function Properties() {
                           className="card-img-top"
                           style={{ objectFit: "cover", height: "220px" }}
                         />
-                        <div className="stats-badge">
-                          <small className="text-primary">Active</small>
-                        </div>
+                        
                       </div>
 
                       <div className="card-body d-flex flex-column">
