@@ -105,7 +105,25 @@ const deleteProperty = async (req, res) => {
 };
 
 
+const postAInvestor = async (req, res) => {
+  const { investor_name, invested_amount, pref_return, property_id } = req.body;
+
+  const postInvestor = `
+  INSERT INTO investor (investor_name, invested_amount, pref_return, property_id) VALUES($1, $2, $3, $4)
+  RETURNING *`;
+
+  const results = await dataBasePool.query(postInvestor, [
+    investor_name,
+    invested_amount,
+    pref_return,
+    property_id,
+  ]);
+
+  res.json({ investor: results.rows[0] });
+};
 
 
 
-export { postAProperty, getAllProperties, getPropertyById, deleteProperty };
+
+
+export { postAProperty, getAllProperties, getPropertyById, deleteProperty, postAInvestor };

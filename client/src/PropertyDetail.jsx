@@ -67,6 +67,34 @@ function PropertyDetail() {
       setActiveInvestor(property.investors[0].id);
   }, [years, property.investors]);
 
+    const handleInvestor = async (e) => {
+        e.preventDefault()
+
+        const propertyID = id;
+
+        const form = e.target;
+        const formData = new FormData(form);
+        const dataObject = Object.fromEntries(formData.entries());
+
+        const payload = { ...dataObject, property_id: propertyID }
+
+        const res = await fetch("https://thg-seven.vercel.app/api/postInvestor", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+        });
+
+        const { investor } = await res.json();
+
+        setProperty((prev) => ({
+            ...prev,
+            investors: [...(prev.investors || []), investor],
+        }));
+
+
+
+    };
+
   const handleEvent = async (investorId) => {
     const payload = { ...newEvent, investor_id: investorId };
 
@@ -437,10 +465,12 @@ function PropertyDetail() {
                 <div className="card-body">
                   <h5 className="fw-semibold mb-3">Add New Investor</h5>
 
+                  <form onSubmit={handleInvestor}>
+
                   <div className="row g-3">
                     <div className="col-md-4">
                       <label className="form-label">Investor Name</label>
-                      <input className="form-control" placeholder="John Doe" />
+                      <input className="form-control" placeholder="John Doe" name="investor_name" />
                     </div>
 
                     <div className="col-md-4">
@@ -449,6 +479,7 @@ function PropertyDetail() {
                         type="number"
                         className="form-control"
                         placeholder="100000"
+                        name="invested_amount"
                       />
                     </div>
 
@@ -458,12 +489,18 @@ function PropertyDetail() {
                         type="number"
                         className="form-control"
                         placeholder="8"
+                        name="pref_return"
                       />
                     </div>
                   </div>
 
                   <div className="mt-4 d-flex gap-2">
-                    <button className="btn btn-success">Save Investor</button>
+                    <button type="submit"
+                      className="btn btn-success"
+                      
+                    >
+                      Save Investor
+                    </button>
                     <button
                       className="btn btn-outline-secondary"
                       onClick={() => setInvestorMode("view")}
@@ -471,8 +508,12 @@ function PropertyDetail() {
                       Cancel
                     </button>
                   </div>
+                   </form>
+                 
                 </div>
+                 
               </div>
+             
             )}
             <div className="row g-3">
               {property.investors?.map((inv) => {

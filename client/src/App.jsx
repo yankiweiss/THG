@@ -5,6 +5,7 @@ import { Routes, Route } from "react-router-dom";
 import Documents from "./Documents";
 import PropertyDetail from "./PropertyDetail";
 import AddDealCS from "./AddDeailCS";
+import Reports from "./Reports";
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
 
         <Route path="/documents" element={<Documents />} />
         <Route path="/property/:id" element={<PropertyDetail />} />
+        <Route path="/reports" element={<Reports />} />
       </Routes>
     </>
   );
