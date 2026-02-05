@@ -103,12 +103,12 @@ function AddDeal() {
               <div className="row g-3 ">
                 <div className="col-md-2">
                   <label className="form-label">Property Name</label>
-                  <input className="form-control" name="property_name" />
+                  <input className="form-control" name="property_name" placeholder="Property LLC . . . " />
                 </div>
 
                 <div className="col-md-2">
                   <label className="form-label">Purchase Price</label>
-                  <input className="form-control" name="purchase_price" />
+                  <input className="form-control" name="purchase_price" placeholder="10000000"/>
                 </div>
 
                   <div className="col-md-2">

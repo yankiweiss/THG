@@ -300,7 +300,7 @@ function PropertyDetail() {
 
         <div className="card shadow-sm mb-4 mt-5">
           <div className="card-body">
-            <div className="d-flex flex-column mb-4 border-bottom pb-3">
+            <div className="d-flex flex-column m-5 border-bottom pb-3">
               <h4 className="fw-bold mb-1">Return Performance Breakdown</h4>
               <span className="text-muted small">
                 View actual vs expected returns by investor and year
@@ -416,7 +416,7 @@ function PropertyDetail() {
 
             {/* INVESTORS */}
 
-            <div className="d-flex justify-content-between align-items-center my-4">
+            <div className="d-flex justify-content-between align-items-center m-5">
               <div>
                 <h4 className="fw-bold mb-0">Investors</h4>
                 <small className="text-muted">
