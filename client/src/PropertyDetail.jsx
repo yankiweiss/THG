@@ -67,33 +67,28 @@ function PropertyDetail() {
       setActiveInvestor(property.investors[0].id);
   }, [years, property.investors]);
 
-    const handleInvestor = async (e) => {
-        e.preventDefault()
+  const handleInvestor = async (e) => {
+    e.preventDefault();
+    const propertyID = id;
+    const form = e.target;
+    const formData = new FormData(form);
+    const dataObject = Object.fromEntries(formData.entries());
+    const payload = { ...dataObject, property_id: propertyID };
+    const res = await fetch("https://thg-seven.vercel.app/api/properties/postInvestor", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
 
-        const propertyID = id;
+    const { investor } = await res.json();
 
-        const form = e.target;
-        const formData = new FormData(form);
-        const dataObject = Object.fromEntries(formData.entries());
+    setProperty((prev) => ({
+      ...prev,
+      investors: [...(prev.investors || []), investor],
+    }));
 
-        const payload = { ...dataObject, property_id: propertyID }
-
-        const res = await fetch("https://thg-seven.vercel.app/api/postInvestor", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload),
-        });
-
-        const { investor } = await res.json();
-
-        setProperty((prev) => ({
-            ...prev,
-            investors: [...(prev.investors || []), investor],
-        }));
-
-
-
-    };
+    setInvestorMode('view')
+  };
 
   const handleEvent = async (investorId) => {
     const payload = { ...newEvent, investor_id: investorId };
@@ -466,55 +461,56 @@ function PropertyDetail() {
                   <h5 className="fw-semibold mb-3">Add New Investor</h5>
 
                   <form onSubmit={handleInvestor}>
+                    <div className="row g-3">
+                      <div className="col-md-4">
+                        <label className="form-label">Investor Name</label>
+                        <input
+                          className="form-control"
+                          placeholder="John Doe"
+                          name="investor_name"
+                        />
+                      </div>
 
-                  <div className="row g-3">
-                    <div className="col-md-4">
-                      <label className="form-label">Investor Name</label>
-                      <input className="form-control" placeholder="John Doe" name="investor_name" />
+                      <div className="col-md-4">
+                        <label className="form-label">Initial Investment</label>
+                        <input
+                          type="number"
+                          className="form-control"
+                          placeholder="100000"
+                          name="invested_amount"
+                        />
+                      </div>
+
+                      <div className="col-md-4">
+                        <label className="form-label">
+                          Preferred Return (%)
+                        </label>
+                        <input
+                          type="number"
+                          className="form-control"
+                          placeholder="8"
+                          name="pref_return"
+                        />
+                      </div>
                     </div>
 
-                    <div className="col-md-4">
-                      <label className="form-label">Initial Investment</label>
-                      <input
-                        type="number"
-                        className="form-control"
-                        placeholder="100000"
-                        name="invested_amount"
-                      />
+                    <div className="mt-4 d-flex gap-2">
+                      <button type="submit" className="btn btn-success">
+                        Save Investor
+                      </button>
+                      <button
+                        className="btn btn-outline-secondary"
+                        onClick={() => setInvestorMode("view")}
+                      >
+                        Cancel
+                      </button>
                     </div>
-
-                    <div className="col-md-4">
-                      <label className="form-label">Preferred Return (%)</label>
-                      <input
-                        type="number"
-                        className="form-control"
-                        placeholder="8"
-                        name="pref_return"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="mt-4 d-flex gap-2">
-                    <button type="submit"
-                      className="btn btn-success"
-                      
-                    >
-                      Save Investor
-                    </button>
-                    <button
-                      className="btn btn-outline-secondary"
-                      onClick={() => setInvestorMode("view")}
-                    >
-                      Cancel
-                    </button>
-                  </div>
-                   </form>
-                 
+                  </form>
                 </div>
-                 
               </div>
-             
             )}
+
+            
             <div className="row g-3">
               {property.investors?.map((inv) => {
                 const investorEvents = property.events
@@ -640,7 +636,7 @@ function PropertyDetail() {
                                 ))}
                               </ul>
                             ) : (
-                              <p className="text-muted">No events yet</p>
+                              <p className="text-muted text-center">No events yet</p>
                             )}
                           </>
                         )}
