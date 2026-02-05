@@ -102,46 +102,45 @@ function PropertyDetail() {
   //  }
 
   function daysBetween(start, end) {
-  const msPerDay = 1000 * 60 * 60 * 24;
-  return Math.max(0, Math.floor((end - start) / msPerDay));
-}
+    const msPerDay = 1000 * 60 * 60 * 24;
 
-  function getReturnsToDate(investorEvents, investorId, property) {
-    
-  const closingDate = new Date(property.closing_date);
-  const today = new Date();
-
-  // ---- ACTUAL RETURNS TO DATE ----
-  const actual = (investorEvents || [])
-    .filter(
-      (e) =>
-        e.investor_id === investorId &&
-        e.event_type === "Return" &&
-        new Date(e.event_date) >= closingDate &&
-        new Date(e.event_date) <= today
-    )
-    .reduce((sum, e) => sum + Number(e.event_amount || 0), 0);
-
-  // ---- EXPECTED RETURNS TO DATE ----
-  const investor = property.investors?.find((i) => i.id === investorId);
-  let expected = 0;
-
-  if (investor) {
-    const invested = Number(investor.invested_amount || 0);
-    const annualPrefRate = Number(investor.pref_return || 0) / 100;
-
-    const daysElapsed = daysBetween(closingDate, today);
-
-    // annual pref → daily pref → elapsed days
-    expected =
-      invested * annualPrefRate * (daysElapsed / 365);
+    return Math.max(0, Math.floor((end - start) / msPerDay));
   }
 
-  return {
-    actual: Number(actual.toFixed(2)),
-    expected: Number(expected.toFixed(2)),
-  };
-}
+  function getReturnsToDate(investorEvents, investorId, property) {
+    const closingDate = new Date(property.closing_date);
+    const today = new Date();
+
+    // ---- ACTUAL RETURNS TO DATE ----
+    const actual = (investorEvents || [])
+      .filter(
+        (e) =>
+          e.investor_id === investorId &&
+          e.event_type === "Return" &&
+          new Date(e.event_date) >= closingDate &&
+          new Date(e.event_date) <= today,
+      )
+      .reduce((sum, e) => sum + Number(e.event_amount || 0), 0);
+
+    // ---- EXPECTED RETURNS TO DATE ----
+    const investor = property.investors?.find((i) => i.id === investorId);
+    let expected = 0;
+
+    if (investor) {
+      const invested = Number(investor.invested_amount || 0);
+      const annualPrefRate = Number(investor.pref_return || 0) / 100;
+
+      const daysElapsed = daysBetween(closingDate, today);
+
+      // annual pref → daily pref → elapsed days
+      expected = invested * annualPrefRate * (daysElapsed / 365);
+    }
+
+    return {
+      actual: Number(actual.toFixed(2)),
+      expected: Number(expected.toFixed(2)),
+    };
+  }
 
   function buildChartData(events, year, investor) {
     const quarterlyActuals = [0, 0, 0, 0];
@@ -171,7 +170,7 @@ function PropertyDetail() {
     }
 
     // Build cumulative returns
-   
+
     return {
       labels: ["Q1", "Q2", "Q3", "Q4"],
       datasets: [
@@ -238,14 +237,29 @@ function PropertyDetail() {
             />
           </div>
           <div className="col-md-9">
-            <h2 className="fw-bold m-5">{property.property_name}</h2>
+            <input
+              value={property.property_name}
+              className="form-control fs-1 fw-bold m-5 border-0"
+              onChange={(e) =>
+                setProperty({ ...property, property_name: e.target.value })
+              }
+            />
 
             <div className="row g-3 px-4 pb-3">
               <div className="col-3">
                 <div className="border rounded p-3 text-center bg-light">
                   <div className="text-muted small">Purchase Price:</div>
-                  <div className="fw-bold fs-6">
-                    ${formatNumber(property.purchase_price)}
+                  <div>
+                    <input
+                      value={formatNumber(property.purchase_price)}
+                      className="form-control border-0 text-center bg-transparent"
+                      onChange={(e) =>
+                        setProperty({
+                          ...property,
+                          purchase_price: e.target.value,
+                        })
+                      }
+                    />
                   </div>
                 </div>
               </div>
@@ -253,9 +267,13 @@ function PropertyDetail() {
               <div className="col-3">
                 <div className="border rounded p-3 text-center bg-light">
                   <div className="text-muted small">Closing Date</div>
-                  <div className="fw-bold fs-6">
-                    {formatDate(property.closing_date)}
-                  </div>
+                  <input
+                    value={formatDate(property.closing_date)}
+                    className="form-control border-0 text-center bg-transparent"
+                    onChange={(e) =>
+                      setProperty({ ...property, closing_date: e.target.value })
+                    }
+                  />
                 </div>
               </div>
 
@@ -282,12 +300,12 @@ function PropertyDetail() {
 
         <div className="card shadow-sm mb-4 mt-5">
           <div className="card-body">
-           <div className="d-flex flex-column mb-4 border-bottom pb-3">
-  <h4 className="fw-bold mb-1">Return Performance Breakdown</h4>
-  <span className="text-muted small">
-    View actual vs expected returns by investor and year
-  </span>
-</div>
+            <div className="d-flex flex-column mb-4 border-bottom pb-3">
+              <h4 className="fw-bold mb-1">Return Performance Breakdown</h4>
+              <span className="text-muted small">
+                View actual vs expected returns by investor and year
+              </span>
+            </div>
             {/* YEAR TAB + CHART */}
             <div className="row g-3 align-items-end mb-3 d-flex justify-content-center">
               {/* INVESTOR SELECT */}
@@ -341,40 +359,39 @@ function PropertyDetail() {
               <div className="row g-3 mb-3">
                 {(() => {
                   const { actual, expected } = getReturnsToDate(
-                    
                     property.events,
                     activeInvestor,
                     property,
                   );
                   return (
                     <>
-                      <div className="col-md-4">
-                        <div className="p-3 bg-light border rounded text-center">
-                          <div className="text-muted small">
-                            Return to Date (Actual)
-                          </div>
-                          <div className="fw-bold fs-5">
-                            ${actual.toLocaleString()}
-                          </div>
-                        </div>
-                      </div>
-                      <div className="col-md-4">
-                        <div className="p-3 bg-light border rounded text-center">
-                          <div className="text-muted small">
-                            Return to Date (Expected)
-                          </div>
-                          <div className="fw-bold fs-5">
-                            ${expected.toLocaleString()}
+                      <div className="d-flex justify-content-center gap-4">
+                        <div className="col-md-3">
+                          <div className="p-3 bg-light border rounded text-center">
+                            <div className="text-muted small">
+                              Return to Date (Actual)
+                            </div>
+                            <div className="fw-bold fs-5">
+                              ${actual.toLocaleString()}
+                            </div>
                           </div>
                         </div>
-                      </div>
-                         <div className="col-md-4">
-                        <div className="p-3 bg-light border rounded text-center">
-                          <div className="text-muted small">
-                            Since
+                        <div className="col-md-3">
+                          <div className="p-3 bg-light border rounded text-center">
+                            <div className="text-muted small">
+                              Return to Date (Expected)
+                            </div>
+                            <div className="fw-bold fs-5">
+                              ${expected.toLocaleString()}
+                            </div>
                           </div>
-                          <div className="fw-bold fs-5">
-                            {formatDate(property.closing_date)}
+                        </div>
+                        <div className="col-md-3">
+                          <div className="p-3 bg-light border rounded text-center">
+                            <div className="text-muted small">Since</div>
+                            <div className="fw-bold fs-5">
+                              {formatDate(property.closing_date)}
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -398,7 +415,66 @@ function PropertyDetail() {
             {/* Return to Date stat above the chart */}
 
             {/* INVESTORS */}
-            <h4 className="fw-bold my-4">Investors</h4>
+
+            <div className="d-flex justify-content-between align-items-center my-4">
+              <div>
+                <h4 className="fw-bold mb-0">Investors</h4>
+                <small className="text-muted">
+                  Manage ownership, capital, and returns
+                </small>
+              </div>
+
+              <button
+                className="btn btn-primary"
+                onClick={() => setInvestorMode("add")}
+              >
+                + Add Investor
+              </button>
+            </div>
+            {investorMode === "add" && (
+  <div className="card shadow-sm mb-4 border-primary">
+    <div className="card-body">
+      <h5 className="fw-semibold mb-3">Add New Investor</h5>
+
+      <div className="row g-3">
+        <div className="col-md-4">
+          <label className="form-label">Investor Name</label>
+          <input className="form-control" placeholder="John Doe" />
+        </div>
+
+        <div className="col-md-4">
+          <label className="form-label">Initial Investment</label>
+          <input
+            type="number"
+            className="form-control"
+            placeholder="100000"
+          />
+        </div>
+
+        <div className="col-md-4">
+          <label className="form-label">Preferred Return (%)</label>
+          <input
+            type="number"
+            className="form-control"
+            placeholder="8"
+          />
+        </div>
+      </div>
+
+      <div className="mt-4 d-flex gap-2">
+        <button className="btn btn-success">
+          Save Investor
+        </button>
+        <button
+          className="btn btn-outline-secondary"
+          onClick={() => setInvestorMode("view")}
+        >
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+)}
             <div className="row g-3">
               {property.investors?.map((inv) => {
                 const investorEvents = property.events
@@ -478,7 +554,6 @@ function PropertyDetail() {
                                     key={e.id}
                                     className="list-group-item d-flex justify-content-between align-items-start"
                                   >
-                                    
                                     {/* Date + Type */}
                                     <div
                                       className="me-3"
