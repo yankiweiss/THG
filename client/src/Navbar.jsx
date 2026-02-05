@@ -2,19 +2,20 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import { useNavigate, useLocation } from "react-router-dom";
 import MyBarChart from "./Chatrs";
+import logo from '../src/assets/logo.png'
 
-function Navbar({ setShowForm }) {
+function Navbar() {
   const navigate = useNavigate();
   const location = useLocation();
 
   const isActive = (path) => location.pathname === path;
 
   return (
-    
     <nav className="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top">
       <div className="container">
+
+        <img src={logo} alt="logo" style={{display: 'block', width: '170px'}} onClick={() => navigate("/")}/>
         {/* Brand / Logo */}
-       
 
         {/* Mobile Toggle */}
         <button
@@ -28,67 +29,62 @@ function Navbar({ setShowForm }) {
 
         <div className="collapse navbar-collapse" id="mainNavbar">
           {/* Left Nav */}
-          <ul className="navbar-nav mx-auto gap-lg-3">
-            <li className="nav-item">
-              <button
-                className={`nav-link btn btn-link ${isActive("/documents") ? "fw-bold text-primary" : "text-dark"}`}
-                onClick={() => navigate("/documents")}
-              >
-                Documents
-              </button>
-            </li>
+   
 
-            <li className="nav-item">
-              <button
-                className={`nav-link btn btn-link ${isActive("/properties") ? "fw-bold text-primary" : "text-dark"}`}
-                onClick={() => navigate("/properties")}
-              >
-                Properties
-              </button>
-            </li>
+            <ul className="navbar-nav mx-auto gap-2">
 
-            {/* Add Deal Dropdown */}
-            <li className="nav-item dropdown">
-              <button
-                className="nav-link dropdown-toggle btn btn-link text-dark"
-                data-bs-toggle="dropdown"
-              >
-                Add Deal
-              </button>
-              <ul className="dropdown-menu shadow-sm">
-                <li>
-                  <button className="dropdown-item" onClick={() => navigate("/addDeal")}>Sponsor</button>
-                </li>
-                <li>
-                  <button className="dropdown-item">Limited Partner</button>
-                </li>
-                <li><hr className="dropdown-divider" /></li>
-                <li>
-                  <button className="dropdown-item">Sponsor / GP</button>
-                </li>
-              </ul>
-            </li>
-
-            <li className="nav-item">
-              <button
-                className={`nav-link btn btn-link ${isActive("/reports") ? "fw-bold text-primary" : "text-dark"}`}
-                onClick={() => navigate("/reports")}
-              >
-                Reports
-              </button>
-            </li>
+            {[
+              { label: "Documents", path: "/documents" },
+              { label: "Properties", path: "/properties" },
+              { label: "Reports", path: "/reports" },
+            ].map((item) => (
+              <li className="nav-item" key={item.path}>
+                <button
+                  onClick={() => navigate(item.path)}
+                  className={`nav-link px-3 rounded-pill fw-medium ${
+                    isActive(item.path)
+                      ? "bg-primary text-white"
+                      : "text-dark"
+                  }`}
+                >
+                  {item.label}
+                </button>
+              </li>
+            ))}
           </ul>
 
-          {/* Right CTA */}
-          <div className="d-flex">
+         
+         
+
+          <div className="dropdown ms-auto">
             <button
-              className="btn btn-primary rounded-pill px-4"
-              onClick={() => {navigate("/addDeal"); setShowForm(true)}}
-              
+              className="btn btn-primary rounded-pill px-4 fw-semibold"
+              data-bs-toggle="dropdown"
             >
               + New Deal
             </button>
+
+            <ul className="dropdown-menu dropdown-menu-end shadow-sm border-0 mt-2">
+              <li>
+                <button
+                  className="dropdown-item"
+                  onClick={() => navigate("/addDealLP")}
+                >
+                  Limited Partner (LP)
+                </button>
+              </li>
+              <li>
+                <button
+                  className="dropdown-item"
+                  onClick={() => navigate("/addDealCS")}
+                >
+                  Co-Sponsors
+                </button>
+              </li>
+            </ul>
           </div>
+
+        
         </div>
       </div>
     </nav>

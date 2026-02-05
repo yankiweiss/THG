@@ -64,7 +64,7 @@ function Properties() {
   return (
     <div className="container my-4">
       {/* Search Bar */}
-      <div className="row justify-content-center mb-4">
+      <div className="row justify-content-center m-5">
         <div className="col-md-6">
           <input
             className="form-control form-control-lg shadow-sm"
@@ -81,7 +81,7 @@ function Properties() {
       ) : searchData.length > 0 ? (
         <div className="row g-4">
           {searchData.map((row) => (
-            <div key={row.id} className="col-md-6 col-lg-4">
+            <div key={row.id} className="col-md-6 col-lg-4 mt-5">
               <div
                 className="card shadow-sm property-card h-100"
                 style={{ cursor: "pointer", transition: "transform 0.2s" }}

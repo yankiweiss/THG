@@ -1,30 +1,20 @@
-import Header from "./Header";
 import Navbar from "./Navbar";
-import AddDeal from "./AddDeal";
+import AddDealLP from "./AddDealLP";
 import Properties from "./Properties";
 import { Routes, Route } from "react-router-dom";
 import Documents from "./Documents";
 import PropertyDetail from "./PropertyDetail";
-import { useState } from "react";
-
-
-
-
+import AddDealCS from "./AddDeailCS";
 
 function App() {
-  
-const [showForm, setShowForm] = useState(true);
-
   return (
     <>
-      <Header />
-      
-      
-   
-      <Navbar  setShowForm={setShowForm}/>
+      <Navbar />
       <Routes>
         <Route path="/properties" element={<Properties />} />
-        <Route path="/addDeal" element={<AddDeal showForm={showForm} setShowForm={setShowForm}/>} />
+        <Route path="/addDealLP" element={<AddDealLP />} />
+        <Route path="/addDealCS" element={<AddDealCS />} />
+
         <Route path="/documents" element={<Documents />} />
         <Route path="/property/:id" element={<PropertyDetail />} />
       </Routes>

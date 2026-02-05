@@ -8,11 +8,9 @@ import "./index.css";
 
 
 
-function AddDeal() {
+function AddDealCS() {
 
   
-
- 
   const [syndicator, setSyndicator] = useState([
     { investor_name: "", invested_amount: "", pref_return: "" },
   ]);
@@ -94,46 +92,100 @@ function AddDeal() {
 
    {
       <form onSubmit={handleForm} >
-        <div className="container my-5">
+          <div className="container my-5" style={{ maxWidth: "1100px" }}>
+
+             <div className="mb-4 text-center">
+                
+      <h2 className="fw-bold">Create New Property,</h2>
+      <p className="text-muted">
+        Set up your property details to start tracking investors and returns
+      </p>
+    </div>
+
+    <div className="d-flex justify-content-center">
+        <h2 className="bg-info bg-gradient p-3 border rounded mb-5">Co-Sponsors</h2>
+    </div>
+
+    <div className="card shadow-sm mb-4">
+      <div className="card-body">
+        <h5 className="fw-semibold mb-3">Property Information</h5>
           {/* ---------------- Property Details ---------------- */}
-          <div className="card shadow-sm mb-3">
-            <div className="card-header bg-light fw-bold">Property Details</div>
-            <div className="card-body">
-              
-              <div className="row g-3 ">
-                <div className="col-md-2">
-                  <label className="form-label">Property Name</label>
-                  <input className="form-control" name="property_name" placeholder="Property LLC . . . " />
-                </div>
-
-                <div className="col-md-2">
-                  <label className="form-label">Purchase Price</label>
-                  <input className="form-control" name="purchase_price" placeholder="10000000"/>
-                </div>
-
-                  <div className="col-md-2">
-                  <label className="form-label">Closing Date</label>
-                  <input type="date" className="form-control" name="closing_date" />
-                </div>
-
-                <div className="col-md-2">
-                  <label className="form-label">Upload Documents</label>
-                  <input type="file" className="form-control" multiple />
-                </div>
-
-                <div className="col-md-2">
-                  <label className="form-label">Upload Pictures</label>
-                  <input
-                    type="file"
-                    className="form-control"
-                    name="pictures"
-                    multiple
-                  />
-                </div>
-              </div>
-            </div>
+            <div className="row g-4">
+          <div className="col-md-6">
+            <label className="form-label fw-semibold">
+              Property Name
+            </label>
+            <input
+              className="form-control form-control"
+              name="property_name"
+              placeholder="18 Pulaski St LLC"
+              required
+            />
+            <small className="text-muted">
+              Internal name or legal entity
+            </small>
           </div>
-          
+
+          <div className="col-md-3">
+            <label className="form-label fw-semibold">
+              Purchase Price
+            </label>
+            <input
+              className="form-control"
+              name="purchase_price"
+              placeholder="1,000,000"
+            />
+          </div>
+
+          <div className="col-md-3">
+            <label className="form-label fw-semibold">
+              Closing Date
+            </label>
+            <input
+              type="date"
+              className="form-control"
+              name="closing_date"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+ <div className="card shadow-sm mb-4">
+      <div className="card-body">
+        <h5 className="fw-semibold mb-3">Documents & Media</h5>
+
+        <div className="row g-4">
+          <div className="col-md-6">
+            <label className="form-label fw-semibold">
+              Property Documents
+            </label>
+            <input
+              type="file"
+              className="form-control"
+              multiple
+            />
+            <small className="text-muted">
+              Operating agreement, PPM, contracts
+            </small>
+          </div>
+
+          <div className="col-md-6">
+            <label className="form-label fw-semibold">
+              Property Images
+            </label>
+            <input
+              type="file"
+              className="form-control"
+              name="pictures"
+              multiple
+            />
+            <small className="text-muted">
+              Used for overview and investor visibility
+            </small>
+          </div>
+        </div>
+      </div>
+    </div>
 
           <div className="d-flex justify-content-center">
           
@@ -144,7 +196,7 @@ function AddDeal() {
           {/* ---------------- Investors Section ---------------- */}
           <div className="card shadow-sm mb-4">
             <div className="card-header bg-light fw-bold d-flex justify-content-between align-items-center">
-              <span>Investor Details</span>
+              <span>Investor Details:</span>
               <button
                 type="button"
                 className="btn btn-outline-primary btn-sm"
@@ -194,4 +246,4 @@ function AddDeal() {
   );
 }
 
-export default AddDeal;
+export default AddDealCS;
