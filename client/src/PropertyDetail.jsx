@@ -249,6 +249,7 @@ function PropertyDetail() {
     <>
       {console.log(property)}
       <div className="container my-4">
+        <h3 className="mb-5 fw-bold text-primary">Property Overview:</h3>
         {/* PROPERTY HEADER */}
         <div className="row mb-4 align-items-center m-5">
           <div className="col-md-3">
@@ -320,6 +321,29 @@ function PropertyDetail() {
             </div>
           </div>
         </div>
+
+<div className="row g-3 w-100 m-auto my-4">
+    <h3 className="m-3 text-center" >Investors</h3>
+  {property.investors?.map((i) => (
+    <div key={i.id} className="col-md-3">
+      <div className="card shadow-sm p-3 h-100 hover-shadow">
+        <h5 className="fw-semibold">{i.investor_name}</h5>
+        <p className="mb-1">
+          <span className="text-muted">Invested:</span>{" "}
+          <strong>
+            {new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(i.invested_amount)}
+          </strong>
+        </p>
+        <p className="mb-2">
+          <span className="text-muted">Pref Return:</span> {i.pref_return}%
+        </p>
+        
+      </div>
+    </div>
+  ))}
+</div>
+
+<hr className="m-5"/>
 
         <div className="card shadow-sm mb-4 mt-5">
           <div className="card-body">
@@ -441,7 +465,7 @@ function PropertyDetail() {
 
             <div className="border-bottom d-flex justify-content-between m-5">
               <div>
-                <h4 className="fw-bold">Investors</h4>
+                <h4 className="fw-bold">Capital Activity</h4>
                 <small className="text-muted">
                   Manage ownership, capital, and returns
                 </small>
