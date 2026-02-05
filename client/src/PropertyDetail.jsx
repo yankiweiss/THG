@@ -247,119 +247,172 @@ function PropertyDetail() {
 
   return (
     <>
+    <style>{`
+        .stat-card {
+          transition: all 0.2s ease;
+        }
+        .stat-card:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .investor-card {
+          transition: all 0.3s ease;
+          border-left: 4px solid transparent;
+        }
+        .investor-card:hover {
+          border-left-color: #0d6efd;
+          transform: translateX(4px);
+        }
+        .event-item {
+          transition: background-color 0.2s ease;
+        }
+        .event-item:hover {
+          background-color: #f8f9fa;
+        }
+        .section-header {
+          position: relative;
+          padding-bottom: 1rem;
+          margin-bottom: 2rem;
+        }
+        .section-header::after {
+          content: '';
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          width: 60px;
+          height: 3px;
+          background: linear-gradient(to right, #0d6efd, transparent);
+        }
+        .badge-event {
+          padding: 0.35rem 0.75rem;
+          border-radius: 6px;
+          font-weight: 500;
+          font-size: 0.75rem;
+        }
+        .btn-icon {
+          display: inline-flex;
+          align-items: center;
+          gap: 0.5rem;
+        }
+      `}</style>
+
+       
+
       {console.log(property)}
-      <div className="container my-4">
-        <h3 className="mb-5 fw-bold text-primary">Property Overview:</h3>
-        {/* PROPERTY HEADER */}
-        <div className="row mb-4 align-items-center m-5">
-          <div className="col-md-3">
-            <img
-              src={property.secure_url}
-              alt="Property"
-              className="rounded shadow w-100"
-              style={{ objectFit: "cover", height: "200px" }}
-            />
+      <div className="container-fluid px-4 py-4 bg-light min-vh-100">
+        {/* HEADER SECTION */}
+        <div className="mb-4">
+          <div className="d-flex align-items-center justify-content-between">
+            <div>
+              <h2 className="mb-1 fw-bold text-dark">Property Overview</h2>
+              <p className="text-muted mb-0">Manage property details and investor activity</p>
+            </div>
           </div>
-          <div className="col-md-9">
-            <input
-              value={property.property_name}
-              className="form-control fs-1 fw-bold m-5 border-0"
-              onChange={(e) =>
-                setProperty({ ...property, property_name: e.target.value })
-              }
-            />
+        </div>
+        
+         <div className="card shadow-sm border-0 mb-4">
+          <div className="card-body p-4">
+            <div className="row align-items-center">
+              <div className="col-md-3 mb-3 mb-md-0">
+                <img
+                  src={property.secure_url}
+                  alt="Property"
+                  className="rounded shadow-sm w-100"
+                  style={{ objectFit: "cover", height: "220px" }}
+                />
+              </div>
+              <div className="col-md-9">
+                <input
+                  value={property.property_name}
+                  className="form-control fs-3 fw-bold mb-4 border-0 bg-transparent px-0"
+                  onChange={(e) =>
+                    setProperty({ ...property, property_name: e.target.value })
+                  }
+                  placeholder="Property Name"
+                />
 
-            <div className="row g-3 px-4 pb-3">
-              <div className="col-3">
-                <div className="border rounded p-3 text-center bg-light">
-                  <div className="text-muted small">Purchase Price:</div>
-                  <div>
-                    <input
-                      value={formatNumber(property.purchase_price)}
-                      className="form-control border-0 text-center bg-transparent"
-                      onChange={(e) =>
-                        setProperty({
-                          ...property,
-                          purchase_price: e.target.value,
-                        })
-                      }
-                    />
+                <div className="row g-3">
+                  <div className="col-6 col-lg-3">
+                    <div className="stat-card border rounded-3 p-3 text-center bg-white h-100">
+                      <div className="text-muted small mb-2">Purchase Price</div>
+                      <div className="fw-bold fs-5 text-primary">
+                        ${formatNumber(property.purchase_price)}
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
 
-              <div className="col-3">
-                <div className="border rounded p-3 text-center bg-light">
-                  <div className="text-muted small">Closing Date</div>
-                  <input
-                    value={formatDate(property.closing_date)}
-                    className="form-control border-0 text-center bg-transparent"
-                    onChange={(e) =>
-                      setProperty({ ...property, closing_date: e.target.value })
-                    }
-                  />
-                </div>
-              </div>
-
-              <div className="col-3">
-                <div className="border rounded p-3 text-center bg-light">
-                  <div className="text-muted small">Total Investors</div>
-                  <div className="fw-bold fs-6">
-                    {property.investors?.length || 0}
+                  <div className="col-6 col-lg-3">
+                    <div className="stat-card border rounded-3 p-3 text-center bg-white h-100">
+                      <div className="text-muted small mb-2">Closing Date</div>
+                      <div className="fw-bold fs-6">
+                        {formatDate(property.closing_date)}
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </div>
 
-              <div className="col-3">
-                <div className="border rounded p-3 text-center bg-light">
-                  <div className="text-muted small">Total Events</div>
-                  <div className="fw-bold fs-6">
-                    {property.events?.length || 0}
+                  <div className="col-6 col-lg-3">
+                    <div className="stat-card border rounded-3 p-3 text-center bg-white h-100">
+                      <div className="text-muted small mb-2">Total Investors</div>
+                      <div className="fw-bold fs-5 text-success">
+                        {property.investors?.length || 0}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="col-6 col-lg-3">
+                    <div className="stat-card border rounded-3 p-3 text-center bg-white h-100">
+                      <div className="text-muted small mb-2">Total Events</div>
+                      <div className="fw-bold fs-5 text-info">
+                        {property.events?.length || 0}
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
-
-<div className="row g-3 w-100 m-auto my-4">
-    <h3 className="m-3 text-center" >Investors</h3>
-  {property.investors?.map((i) => (
-    <div key={i.id} className="col-md-3">
-      <div className="card shadow-sm p-3 h-100 hover-shadow">
-        <h5 className="fw-semibold">{i.investor_name}</h5>
-        <p className="mb-1">
-          <span className="text-muted">Invested:</span>{" "}
-          <strong>
-            {new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(i.invested_amount)}
-          </strong>
-        </p>
-        <p className="mb-2">
-          <span className="text-muted">Pref Return:</span> {i.pref_return}%
-        </p>
-        
-      </div>
-    </div>
-  ))}
-</div>
-
-<hr className="m-5"/>
-
-        <div className="card shadow-sm mb-4 mt-5">
-          <div className="card-body">
-            <div className="d-flex flex-column m-5 border-bottom pb-3">
-              <h4 className="fw-bold mb-1">Return Performance Breakdown</h4>
-              <span className="text-muted small">
-                View actual vs expected returns by investor and year
-              </span>
+        <div className="card shadow-sm border-0 mb-4">
+          <div className="card-body p-4">
+            <h4 className="section-header fw-bold">Investor Portfolio</h4>
+            <div className="row g-3">
+              {property.investors?.map((i) => (
+                <div key={i.id} className="col-md-6 col-lg-3">
+                  <div className="card investor-card h-100 border">
+                    <div className="card-body p-3">
+                      <h6 className="fw-bold mb-3 text-truncate">{i.investor_name}</h6>
+                      <div className="d-flex justify-content-between align-items-center mb-2">
+                        <span className="text-muted small">Invested</span>
+                        <strong className="text-success">
+                          {new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(i.invested_amount)}
+                        </strong>
+                      </div>
+                      <div className="d-flex justify-content-between align-items-center">
+                        <span className="text-muted small">Pref Return</span>
+                        <span className="badge bg-primary">{i.pref_return}%</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
-            {/* YEAR TAB + CHART */}
-            <div className="row g-3 align-items-end mb-3 d-flex justify-content-center">
-              {/* INVESTOR SELECT */}
-              <div className="col-md-5 ">
-                <label className="form-label fw-semibold">Investor</label>
+          </div>
+        </div>
+        </div>
+
+      
+
+<div className="card shadow-sm border-0 mb-4">
+          <div className="card-body p-4">
+            <h4 className="section-header fw-bold">Return Performance Analysis</h4>
+            <p className="text-muted mb-4">Compare actual vs expected returns by investor and quarter</p>
+
+            {/* FILTERS */}
+            <div className="row g-3 mb-4">
+              <div className="col-md-5">
+                <label className="form-label fw-semibold small text-muted">SELECT INVESTOR</label>
                 <select
-                  className="form-select"
+                  className="form-select form-select-lg"
                   value={activeInvestor || ""}
                   onChange={(e) => setActiveInvestor(Number(e.target.value))}
                 >
@@ -372,11 +425,10 @@ function PropertyDetail() {
                 </select>
               </div>
 
-              {/* YEAR SELECT */}
-              <div className="col-md-3">
-                <label className="form-label fw-semibold">Year</label>
+              <div className="col-md-4">
+                <label className="form-label fw-semibold small text-muted">SELECT YEAR</label>
                 <select
-                  className="form-select"
+                  className="form-select form-select-lg"
                   value={activeYear || ""}
                   onChange={(e) => setActiveYear(Number(e.target.value))}
                 >
@@ -388,22 +440,22 @@ function PropertyDetail() {
                 </select>
               </div>
 
-              {/* RESET */}
-              <div className="col-md-2">
+              <div className="col-md-3 d-flex align-items-end">
                 <button
-                  className="btn btn-outline-secondary w-50"
+                  className="btn btn-outline-secondary w-100"
                   onClick={() => {
                     setActiveInvestor(null);
                     setActiveYear(years[0]);
                   }}
                 >
-                  Reset
+                  Reset Filters
                 </button>
               </div>
             </div>
 
+            {/* RETURN TO DATE STATS */}
             {activeInvestor && (
-              <div className="row g-3 mb-3">
+              <div className="row g-3 mb-4">
                 {(() => {
                   const { actual, expected } = getReturnsToDate(
                     property.events,
@@ -412,33 +464,27 @@ function PropertyDetail() {
                   );
                   return (
                     <>
-                      <div className="d-flex justify-content-center gap-4">
-                        <div className="col-md-3">
-                          <div className="p-3 bg-light border rounded text-center">
-                            <div className="text-muted small">
-                              Return to Date (Actual)
-                            </div>
-                            <div className="fw-bold fs-5">
-                              ${actual.toLocaleString()}
-                            </div>
+                      <div className="col-md-4">
+                        <div className="p-4 bg-light border-start border-5 border-success rounded">
+                          <div className="text-muted small mb-1">Actual Return to Date</div>
+                          <div className="fw-bold fs-4 text-success">
+                            ${actual.toLocaleString()}
                           </div>
                         </div>
-                        <div className="col-md-3">
-                          <div className="p-3 bg-light border rounded text-center">
-                            <div className="text-muted small">
-                              Return to Date (Expected)
-                            </div>
-                            <div className="fw-bold fs-5">
-                              ${expected.toLocaleString()}
-                            </div>
+                      </div>
+                      <div className="col-md-4">
+                        <div className="p-4 bg-light border-start border-5 border-warning rounded">
+                          <div className="text-muted small mb-1">Expected Return to Date</div>
+                          <div className="fw-bold fs-4 text-warning">
+                            ${expected.toLocaleString()}
                           </div>
                         </div>
-                        <div className="col-md-3">
-                          <div className="p-3 bg-light border rounded text-center">
-                            <div className="text-muted small">Since</div>
-                            <div className="fw-bold fs-5">
-                              {formatDate(property.closing_date)}
-                            </div>
+                      </div>
+                      <div className="col-md-4">
+                        <div className="p-4 bg-light border-start border-5 border-primary rounded">
+                          <div className="text-muted small mb-1">Investment Start Date</div>
+                          <div className="fw-bold fs-5">
+                            {formatDate(property.closing_date)}
                           </div>
                         </div>
                       </div>
@@ -448,7 +494,8 @@ function PropertyDetail() {
               </div>
             )}
 
-            <div style={{ height: "400px" }}>
+            {/* CHART */}
+            <div style={{ height: "400px" }} className="mt-4">
               <Bar
                 data={buildChartData(
                   property.events || [],
@@ -458,63 +505,71 @@ function PropertyDetail() {
                 options={chartOptions}
               />
             </div>
+          </div>
+        </div>
 
-            {/* Return to Date stat above the chart */}
-
-            {/* INVESTORS */}
-
-            <div className="border-bottom d-flex justify-content-between m-5">
+        {/* CAPITAL ACTIVITY */}
+        <div className="card shadow-sm border-0">
+          <div className="card-body p-4">
+            <div className="d-flex justify-content-between align-items-center mb-4">
               <div>
-                <h4 className="fw-bold">Capital Activity</h4>
-                <small className="text-muted">
-                  Manage ownership, capital, and returns
-                </small>
+                <h4 className="fw-bold mb-1">Capital Activity</h4>
+                <p className="text-muted small mb-0">Manage ownership, capital calls, and distributions</p>
               </div>
-              <div>
-                <button
-                  className="btn btn-primary"
-                  onClick={() => setInvestorMode("add")}
-                >
-                  + Add Investor
-                </button>
-              </div>
+              <button
+                className="btn btn-primary btn-icon"
+                onClick={() => setInvestorMode("add")}
+              >
+                <span>+</span> Add Investor
+              </button>
             </div>
-            {investorMode === "add" && (
-              <div className="card shadow-sm mb-4 border-primary">
-                <div className="card-body">
-                  <h5 className="fw-semibold mb-3">Add New Investor</h5>
 
+            {/* ADD INVESTOR FORM */}
+            {investorMode === "add" && (
+              <div className="card border-primary mb-4">
+                <div className="card-header bg-primary text-white">
+                  <h5 className="mb-0">Add New Investor</h5>
+                </div>
+                <div className="card-body">
                   <form onSubmit={handleInvestor}>
                     <div className="row g-3">
                       <div className="col-md-4">
-                        <label className="form-label">Investor Name</label>
+                        <label className="form-label fw-semibold">Investor Name</label>
                         <input
                           className="form-control"
                           placeholder="John Doe"
                           name="investor_name"
+                          required
                         />
                       </div>
 
                       <div className="col-md-4">
-                        <label className="form-label">Initial Investment</label>
-                        <input
-                          type="number"
-                          className="form-control"
-                          placeholder="100000"
-                          name="invested_amount"
-                        />
+                        <label className="form-label fw-semibold">Initial Investment</label>
+                        <div className="input-group">
+                          <span className="input-group-text">$</span>
+                          <input
+                            type="number"
+                            className="form-control"
+                            placeholder="100,000"
+                            name="invested_amount"
+                            required
+                          />
+                        </div>
                       </div>
 
                       <div className="col-md-4">
-                        <label className="form-label">
-                          Preferred Return (%)
-                        </label>
-                        <input
-                          type="number"
-                          className="form-control"
-                          placeholder="8"
-                          name="pref_return"
-                        />
+                        <label className="form-label fw-semibold">Preferred Return (%)</label>
+                        <div className="input-group">
+                          <input
+                            type="number"
+                            className="form-control"
+                            placeholder="8"
+                            name="pref_return"
+                            step="0.1"
+                            required
+                          />
+                          <span className="input-group-text">%</span>
+                        </div>
                       </div>
                     </div>
 
@@ -523,6 +578,7 @@ function PropertyDetail() {
                         Save Investor
                       </button>
                       <button
+                        type="button"
                         className="btn btn-outline-secondary"
                         onClick={() => setInvestorMode("view")}
                       >
@@ -534,8 +590,8 @@ function PropertyDetail() {
               </div>
             )}
 
-            
-            <div className="row g-3">
+            {/* INVESTOR ACTIVITY CARDS */}
+            <div className="row g-4">
               {property.investors?.map((inv) => {
                 const investorEvents = property.events
                   ?.filter((e) => e.investor_id === inv.id)
@@ -552,205 +608,188 @@ function PropertyDetail() {
                   .reduce((sum, e) => sum + Number(e.event_amount || 0), 0);
 
                 return (
-                  <div key={inv.id} className="col-md-6">
-                    <div className="card shadow-sm p-3 auto">
-                      <div className="d-flex justify-content-between p-4">
-                        <div>
-                          <h5 className="fw-semibold">{inv.investor_name}</h5>
-                        </div>
-
-                        <div className="d-flex gap-2">
-                          <a
-                            href="#C4"
-                            className="btn btn-outline-success btn-sm text-decoration-none"
-                            onClick={() => {
-                              setAddActiveInvestor(inv.id);
-                            }}
+                  <div key={inv.id} className="col-lg-6">
+                    <div className="card h-100 border">
+                      <div className="card-header bg-white border-bottom">
+                        <div className="d-flex justify-content-between align-items-center">
+                          <h5 className="mb-0 fw-bold">{inv.investor_name}</h5>
+                          <button
+                            className="btn btn-sm btn-success"
+                            onClick={() => setAddActiveInvestor(inv.id)}
                           >
-                            Add Event
-                          </a>
-                        </div>
-                      </div>
-                      <div className="row g-3 px-4 pb-3">
-                        <div className="col-4">
-                          <div className="border rounded p-3 text-center bg-light">
-                            <div className="text-muted small">Initial</div>
-                            <div className="fw-bold fs-6">
-                              ${formatNumber(inv.invested_amount)}
-                            </div>
-                          </div>
-                        </div>
-
-                        <div className="col-4">
-                          <div className="border rounded p-3 text-center bg-light">
-                            <div className="text-muted small">To Date</div>
-                            <div className="fw-bold fs-6">
-                              ${formatNumber(totalInvestment)}
-                            </div>
-                          </div>
-                        </div>
-
-                        <div className="col-4">
-                          <div className="border rounded p-3 text-center bg-light">
-                            <div className="text-muted small">Pref Return</div>
-                            <div className="fw-bold fs-6">
-                              {formatNumber(inv.pref_return)}%
-                            </div>
-                          </div>
+                            + Add Event
+                          </button>
                         </div>
                       </div>
 
-                      {console.log(investorEvents)}
+                      <div className="card-body">
+                        {/* STATS ROW */}
+                        <div className="row g-2 mb-4">
+                          <div className="col-4">
+                            <div className="text-center p-2 bg-light rounded">
+                              <div className="text-muted small">Initial</div>
+                              <div className="fw-bold">${formatNumber(inv.invested_amount)}</div>
+                            </div>
+                          </div>
+                          <div className="col-4">
+                            <div className="text-center p-2 bg-light rounded">
+                              <div className="text-muted small">To Date</div>
+                              <div className="fw-bold">${formatNumber(totalInvestment)}</div>
+                            </div>
+                          </div>
+                          <div className="col-4">
+                            <div className="text-center p-2 bg-light rounded">
+                              <div className="text-muted small">Pref Rate</div>
+                              <div className="fw-bold">{formatNumber(inv.pref_return)}%</div>
+                            </div>
+                          </div>
+                        </div>
 
-                      {/* COLLAPSIBLE EVENTS + FORM */}
-
-                      <div className="mt-3">
-                        {investorMode === "view" && (
-                          <>
-                            {investorEvents.length ? (
-                              <ul className="list-group mb-3 border">
-                                {investorEvents.map((e) => (
-                                  <li
-                                    key={e.id}
-                                    className="list-group-item d-flex justify-content-between align-items-start"
+                        {/* ADD EVENT FORM */}
+                        {addActiveInvestor === inv.id && (
+                          <div className="card bg-light mb-3">
+                            <div className="card-body">
+                              <h6 className="fw-bold mb-3">New Event</h6>
+                              <div className="row g-2">
+                                <div className="col-md-6">
+                                  <label className="form-label small">Date</label>
+                                  <input
+                                    type="date"
+                                    className="form-control"
+                                    value={newEvent.event_date}
+                                    onChange={(e) =>
+                                      setNewEvent((prev) => ({
+                                        ...prev,
+                                        event_date: e.target.value,
+                                      }))
+                                    }
+                                  />
+                                </div>
+                                <div className="col-md-6">
+                                  <label className="form-label small">Event Type</label>
+                                  <select
+                                    className="form-select"
+                                    value={newEvent.event_type}
+                                    onChange={(e) =>
+                                      setNewEvent((prev) => ({
+                                        ...prev,
+                                        event_type: e.target.value,
+                                      }))
+                                    }
                                   >
-                                    {/* Date + Type */}
-                                    <div
-                                      className="me-3"
-                                      style={{ minWidth: "120px" }}
-                                    >
-                                      <div className="fw-semibold">
-                                        {formatDate(e.event_date)}
-                                      </div>
-                                      <small className="text-muted">
-                                        {e.event_type}
-                                      </small>
-                                    </div>
+                                    <option value="">Select Type</option>
+                                    <option value="Investment">Investment</option>
+                                    <option value="Capital Call">Capital Call</option>
+                                    <option value="Return">Pref. Return</option>
+                                    <option value="ROC">ROC</option>
+                                  </select>
+                                </div>
+                                <div className="col-12">
+                                  <label className="form-label small">Amount</label>
+                                  <div className="input-group">
+                                    <span className="input-group-text">$</span>
+                                    <input
+                                      type="number"
+                                      className="form-control"
+                                      placeholder="0.00"
+                                      value={newEvent.event_amount}
+                                      onChange={(e) =>
+                                        setNewEvent((prev) => ({
+                                          ...prev,
+                                          event_amount: e.target.value,
+                                        }))
+                                      }
+                                    />
+                                  </div>
+                                </div>
+                                <div className="col-12">
+                                  <label className="form-label small">Notes (optional)</label>
+                                  <textarea
+                                    className="form-control"
+                                    rows="2"
+                                    placeholder="Add any additional details..."
+                                    value={newEvent.notes}
+                                    onChange={(e) =>
+                                      setNewEvent((prev) => ({
+                                        ...prev,
+                                        notes: e.target.value,
+                                      }))
+                                    }
+                                  ></textarea>
+                                </div>
+                                <div className="col-12 d-flex gap-2 mt-2">
+                                  <button
+                                    className="btn btn-success btn-sm"
+                                    onClick={() => {
+                                      handleEvent(inv.id);
+                                      setAddActiveInvestor(null);
+                                    }}
+                                  >
+                                    Save Event
+                                  </button>
+                                  <button
+                                    className="btn btn-outline-secondary btn-sm"
+                                    onClick={() => {
+                                      setAddActiveInvestor(null);
+                                      setNewEvent({
+                                        event_date: "",
+                                        event_type: "",
+                                        event_amount: "",
+                                        notes: "",
+                                      });
+                                    }}
+                                  >
+                                    Cancel
+                                  </button>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        )}
 
-                                    {/* Amount */}
-                                    <div
-                                      className=" text-center fw-bold"
-                                      style={{ minWidth: "150px" }}
-                                    >
-                                      ${formatNumber(e.event_amount)}
-                                    </div>
-
-                                    {/* Notes */}
+                        {/* EVENTS LIST */}
+                        <div>
+                          <h6 className="fw-bold mb-3">Transaction History</h6>
+                          {investorEvents?.length ? (
+                            <div className="list-group">
+                              {investorEvents.map((e) => (
+                                <div
+                                  key={e.id}
+                                  className="list-group-item event-item border-0 border-bottom px-0"
+                                >
+                                  <div className="d-flex justify-content-between align-items-start">
                                     <div className="flex-grow-1">
-                                      {e.notes ? (
-                                        <span
-                                          className="badge bg-light text-dark"
-                                          style={{
-                                            display: "inline-block",
-                                            whiteSpace: "pre-wrap",
-                                            wordBreak: "break-word",
-                                            maxWidth: "100%",
-                                          }}
-                                          title={e.notes} // hover to see full note
-                                        >
-                                          {e.notes.length > 80
-                                            ? e.notes.slice(0, 80) + "…"
-                                            : e.notes}
+                                      <div className="d-flex align-items-center gap-2 mb-1">
+                                        <span className="fw-semibold">{formatDate(e.event_date)}</span>
+                                        <span className={`badge-event ${
+                                          e.event_type === 'Return' ? 'bg-success' :
+                                          e.event_type === 'Investment' ? 'bg-primary' :
+                                          e.event_type === 'Capital Call' ? 'bg-warning' :
+                                          'bg-secondary'
+                                        }`}>
+                                          {e.event_type}
                                         </span>
-                                      ) : (
-                                        <span className="text-muted">—</span>
+                                      </div>
+                                      {e.notes && (
+                                        <p className="text-muted small mb-0" title={e.notes}>
+                                          {e.notes.length > 60 ? e.notes.slice(0, 60) + "…" : e.notes}
+                                        </p>
                                       )}
                                     </div>
-                                  </li>
-                                ))}
-                              </ul>
-                            ) : (
-                              <p className="text-muted text-center">No events yet</p>
-                            )}
-                          </>
-                        )}
-
-                        {addActiveInvestor === inv.id && (
-                          <div className="card card-body bg-light p-3">
-                            <div className="row g-2 " id="C4">
-                              <div className="col-4">
-                                <input
-                                  type="date"
-                                  className="form-control form-control-sm"
-                                  value={newEvent.event_date}
-                                  onChange={(e) =>
-                                    setNewEvent((prev) => ({
-                                      ...prev,
-                                      event_date: e.target.value,
-                                    }))
-                                  }
-                                />
-                              </div>
-                              <div className="col-4">
-                                <input
-                                  type="number"
-                                  className="form-control form-control-sm"
-                                  placeholder="Amount"
-                                  value={newEvent.event_amount}
-                                  onChange={(e) =>
-                                    setNewEvent((prev) => ({
-                                      ...prev,
-                                      event_amount: e.target.value,
-                                    }))
-                                  }
-                                />
-                              </div>
-                              <div className="col-4">
-                                <select
-                                  className="form-select form-select-sm"
-                                  value={newEvent.event_type}
-                                  onChange={(e) =>
-                                    setNewEvent((prev) => ({
-                                      ...prev,
-                                      event_type: e.target.value,
-                                    }))
-                                  }
-                                >
-                                  <option value="">Event Type</option>
-                                  <option value="Investment">Investment</option>
-                                  <option value="Capital Call">
-                                    Capital Call
-                                  </option>
-                                  <option value="Return">Pref. Return</option>
-                                  <option value="ROC">ROC</option>
-                                </select>
-                              </div>
-                              <div className="col-12 mt-2">
-                                <textarea
-                                  className="form-control form-control-sm"
-                                  placeholder="Notes"
-                                  value={newEvent.notes}
-                                  onChange={(e) =>
-                                    setNewEvent((prev) => ({
-                                      ...prev,
-                                      notes: e.target.value,
-                                    }))
-                                  }
-                                ></textarea>
-                              </div>
-                              <div className="col-12 mt-2 d-flex gap-2">
-                                <button
-                                  className="btn btn-success btn-sm"
-                                  onClick={() => {
-                                    handleEvent(inv.id);
-                                    setAddActiveInvestor(null);
-                                  }}
-                                >
-                                  Save
-                                </button>
-                                <button
-                                  className="btn btn-outline-secondary btn-sm"
-                                  onClick={() => {
-                                    setAddActiveInvestor(null);
-                                    setInvestorMode("view");
-                                  }}
-                                >
-                                  Cancel
-                                </button>
-                              </div>
+                                    <div className="fw-bold text-end ms-3">
+                                      ${formatNumber(e.event_amount)}
+                                    </div>
+                                  </div>
+                                </div>
+                              ))}
                             </div>
-                          </div>
-                        )}
+                          ) : (
+                            <div className="text-center py-4 text-muted">
+                              <p className="mb-0">No transactions yet</p>
+                              <small>Click "Add Event" to record your first transaction</small>
+                            </div>
+                          )}
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -759,7 +798,8 @@ function PropertyDetail() {
             </div>
           </div>
         </div>
-      </div>
+      
+      
     </>
   );
 }
