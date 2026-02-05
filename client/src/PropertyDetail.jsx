@@ -299,7 +299,7 @@ function PropertyDetail() {
        
 
       {console.log(property)}
-      <div className="container-fluid px-4 py-3 bg-light min-vh-100">
+      <div className="container-fluid px-3 py-4 bg-light ">
         {/* HEADER SECTION */}
         <div className="mb-4">
           <div className="d-flex align-items-center justify-content-between">
