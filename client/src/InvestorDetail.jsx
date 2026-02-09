@@ -5,16 +5,18 @@ function InvestorDetail () {
 
     const [investor , setInvestor] = useState()
 
-    const investorID = useParams()
+    const id = useParams()
+
+    console.log(id)
 
     console.log(investor)
 
      useEffect(() => {
-        fetch(`https://thg-seven.vercel.app/api/investor/${investorID}`)
+        fetch(`https://thg-seven.vercel.app/api/investor/${id}`)
           .then((res) => res.json())
           .then((data) => setInvestor(data))
           .catch((err) => console.error(err));
-      }, [investorID]);
+      }, [id]);
 
    
     return (

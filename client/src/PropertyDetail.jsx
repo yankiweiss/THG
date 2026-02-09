@@ -34,8 +34,8 @@ function PropertyDetail() {
   const [property, setProperty] = useState([]);
   const [activeInvestor, setActiveInvestor] = useState(null);
   
- const goToInvestorDetail = (investorDetail) => {
-    navigate(`/investorDetail/${investorDetail}`);
+ const goToInvestorDetail = (id) => {
+    navigate(`/investorDetail/${id}`);
   };
 
   const { id } = useParams();

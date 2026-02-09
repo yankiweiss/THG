@@ -18,12 +18,12 @@ const postAInvestor = async (req, res) => {
 };
 
 const getInvestorByID = async (req, res) => {
-    const {investorID } = req.params;
+    const {id } = req.params;
 
     try {
         const investorResult = await dataBasePool.query(
     `SELECT * FROM investor WHERE id = $1`,
-    [investorID],
+    [id],
         )
         
 
@@ -33,7 +33,7 @@ const getInvestorByID = async (req, res) => {
 
         const eventsResults = await dataBasePool.query(
              `SELECT * FROM events WHERE investor_id = $1`,
-             [investorID]
+             [id]
         )
 
         res.json({
