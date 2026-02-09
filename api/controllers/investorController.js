@@ -38,7 +38,7 @@ const getInvestorByID = async (req, res) => {
 
   res.json({
     
-    investors: investorResult.rows,
+    ...investorResult.rows[0],
     events: eventsResult.rows,
   });
 };
