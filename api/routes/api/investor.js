@@ -1,5 +1,5 @@
 import express from 'express';
-import { getInvestorByID } from '../../controllers/investorController';
+import { getInvestorByID } from '../../controllers/investorController.js';
 
 const investorRouter = express.Router();
 

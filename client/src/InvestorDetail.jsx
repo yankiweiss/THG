@@ -7,6 +7,8 @@ function InvestorDetail () {
 
     const investorDetail = useParams()
 
+    console.log(investor)
+
      useEffect(() => {
         fetch(`https://thg-seven.vercel.app/api/investor/${investorDetail}`)
           .then((res) => res.json())
