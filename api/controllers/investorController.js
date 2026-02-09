@@ -17,9 +17,38 @@ const postAInvestor = async (req, res) => {
   res.json({ investor: results.rows[0] });
 };
 
+const getInvestorByID = async (req, res) => {
+    const {investorID } = req.params;
 
+    try {
+        const investorResult = await dataBasePool.query(
+    `SELECT * FROM investor WHERE id = $1`,
+    [investorID],
+        )
+        
 
+        if(investorResult.rows.length === 0){
+            return res.status(404).json({message: 'no investor was found!'})
+        };
 
+        const eventsResults = await dataBasePool.query(
+             `SELECT * FROM events WHERE investor_id = $1`,
+             [investorID]
+        )
+
+        res.json({
+            investor : investorResult.rows[0],
+            events: eventsResults.rows,
+        })
+    } catch (err) {
+        console.error(err);
+    res.status(500).json({ message: "Server error" });
+        
+    }
+
+   
+  
+}
 
 
 export {
