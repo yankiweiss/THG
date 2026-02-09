@@ -7,28 +7,6 @@ import { useNavigate } from "react-router-dom";
 
 
 
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  LineElement,
-  PointElement, // <-- add this
-  Tooltip,
-  Legend,
-} from "chart.js";
-
-import { Bar } from "react-chartjs-2";
-
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  LineElement, // <-- add this
-  PointElement, // <-- add this
-  Tooltip,
-  Legend,
-);
 
 function PropertyDetail() {
   const [property, setProperty] = useState([]);
