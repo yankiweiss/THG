@@ -5,7 +5,7 @@ function InvestorDetail () {
 
     const [investor , setInvestor] = useState()
 
-    const id = useParams()
+    const { id } = useParams()
 
     console.log(id)
 
