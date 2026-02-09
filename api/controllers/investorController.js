@@ -17,31 +17,7 @@ const postAInvestor = async (req, res) => {
   res.json({ investor: results.rows[0] });
 };
 
-const getInvestorByID = async (req, res) => {
-    const {investorID } = req.params;
 
-    const investorResult = await dataBasePool.query(
-    `SELECT * FROM investor WHERE id = $1`,
-    [investorID],
-  );
-
-  const foundInvestorID  = investorResult;
-
-  let eventsResult = { rows: [] };
-
-  if (foundInvestorID) {
-    eventsResult = await dataBasePool.query(
-      `SELECT * FROM events WHERE investor_id = $1`,
-      [foundInvestorID],
-    );
-  }
-
-  res.json({
-    
-    investor :investorResult.rows,
-    events: eventsResult.rows,
-  });
-};
 
 
 
