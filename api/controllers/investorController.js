@@ -25,20 +25,20 @@ const getInvestorByID = async (req, res) => {
     [investorID],
   );
 
-  const investorIDs = investorResult.rows.map((inv) => inv.id);
+  const foundInvestorID  = investorResult;
 
   let eventsResult = { rows: [] };
 
-  if (investorIDs.length > 0) {
+  if (foundInvestorID) {
     eventsResult = await dataBasePool.query(
-      `SELECT * FROM events WHERE investor_id = ANY($1)`,
-      [investorIDs],
+      `SELECT * FROM events WHERE investor_id = $1`,
+      [foundInvestorID],
     );
   }
 
   res.json({
     
-    ...investorResult.rows[0],
+    investor :investorResult.rows,
     events: eventsResult.rows,
   });
 };
