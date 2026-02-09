@@ -88,9 +88,8 @@ function PropertyDetail() {
   const navigate = useNavigate();
 
   return (
-    
     <>
-    <style>{`
+      <style>{`
         .stat-card {
           transition: all 0.2s ease;
         }
@@ -139,21 +138,23 @@ function PropertyDetail() {
         }
       `}</style>
 
-       
-
       {console.log(property)}
       <div className="container-fluid px-3 py-5 bg-light ">
         {/* HEADER SECTION */}
         <div className="mb-4">
           <div className="d-flex align-items-center justify-content-between">
             <div>
-              <h2 className="mb-1 fw-bold section-header text-dark">Property Overview</h2>
-              <p className="text-muted mb-0">Manage property details and investor activity</p>
+              <h2 className="mb-1 fw-bold section-header text-dark">
+                Property Overview
+              </h2>
+              <p className="text-muted mb-0">
+                Manage property details and investor activity
+              </p>
             </div>
           </div>
         </div>
-        
-         <div className="card shadow-sm border-0 mb-4">
+
+        <div className="card shadow-sm border-0 mb-4">
           <div className="card-body p-4">
             <div className="row align-items-center">
               <div className="col-md-3 mb-3 mb-md-0">
@@ -166,21 +167,26 @@ function PropertyDetail() {
               </div>
               <div className="col-md-9">
                 <div className="d-flex align-items-center">
-                <label className="form-label w-25">Property Name:</label>
-                <input
-                  value={property.property_name}
-                  className="form-control fs-3 fw-bold mb-4 border-0 bg-transparent px-0"
-                  onChange={(e) =>
-                    setProperty({ ...property, property_name: e.target.value })
-                  }
-                  placeholder="Property Name"
-                />
+                  <label className="form-label w-25">Property Name:</label>
+                  <input
+                    value={property.property_name}
+                    className="form-control fs-3 fw-bold mb-4 border-0 bg-transparent px-0"
+                    onChange={(e) =>
+                      setProperty({
+                        ...property,
+                        property_name: e.target.value,
+                      })
+                    }
+                    placeholder="Property Name"
+                  />
                 </div>
 
                 <div className="row g-3">
                   <div className="col-6 col-lg-3">
                     <div className="stat-card border rounded-3 p-3 text-center bg-white h-100">
-                      <div className="text-muted small mb-2">Purchase Price</div>
+                      <div className="text-muted small mb-2">
+                        Purchase Price
+                      </div>
                       <div className="fw-bold fs-5 text-primary">
                         ${formatNumber(property.purchase_price)}
                       </div>
@@ -198,14 +204,26 @@ function PropertyDetail() {
 
                   <div className="col-6 col-lg-3">
                     <div className="stat-card border rounded-3 p-3 text-center bg-white h-100">
-                      <div className="text-muted small mb-2">Total Investors</div>
+                      <div className="text-muted small mb-2">
+                        Total Investors
+                      </div>
                       <div className="fw-bold fs-5 text-success">
                         {property.investors?.length || 0}
                       </div>
                     </div>
                   </div>
 
-              
+                  <div>
+                    <h1>Investors:</h1>
+                    <div className="d-flex ">
+
+                      {property.investors?.map((i) => (
+                        <div className="stat-card border rounded-3 p-3 text-center bg-white h-100 m-3">
+                        <p>{i.investor_name}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -213,50 +231,70 @@ function PropertyDetail() {
         </div>
         <div className="card shadow-sm border-0 mb-4">
           <div className="card-body p-4">
-            <h2 className="mb-1 fw-bold section-header text-dark">Investor Portfolio</h2>
-            <h6 className="text-muted mb-3">A summary of all investors and their key details.</h6>
+            <h2 className="mb-1 fw-bold section-header text-dark">
+              Investor Portfolio
+            </h2>
+            <h6 className="text-muted mb-3">
+              A summary of all investors and their key details.
+            </h6>
             <div className="row">
               {property.investors?.map((i) => (
                 <div key={i.id} className="mb-3">
                   <div className="card investor-card h-100 border ">
                     <div className="card-body p-3">
-                      <h6 className="fw-bold mb-3 text-truncate"><span className="text-muted">Investor Name:</span><br/> {i.investor_name}</h6>
+                      <h6 className="fw-bold mb-3 text-truncate">
+                        <span className="text-muted">Investor Name:</span>
+                        <br /> {i.investor_name}
+                      </h6>
                       <div className="d-flex gap-3 align-items-center justify-content-center">
-                      <div className="d-flex gap-3 align-items-center justify-content-center mb-2">
-                        <div>
-                        <span className="text-muted small">Invested</span>
-                        <div>
-                        <strong className="text-success">
-                          {new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" }).format(i.invested_amount)}
-                        </strong>
-                        </div>
-                        </div>
-                      
-                      <div>
-                      <hr className="border-start border border-dark " style={{ height: '40px' }}/>
-                      </div>
-                      </div>
+                        <div className="d-flex gap-3 align-items-center justify-content-center mb-2">
+                          <div>
+                            <span className="text-muted small">Invested</span>
+                            <div>
+                              <strong className="text-success">
+                                {new Intl.NumberFormat("en-US", {
+                                  style: "currency",
+                                  currency: "USD",
+                                }).format(i.invested_amount)}
+                              </strong>
+                            </div>
+                          </div>
 
-                           <div className="d-flex gap-3 align-items-center justify-content-center mb-2">
-                        <div>
-                        <span className="text-muted small">Pref Return</span>
-                        <div>
-                            <span className="badge bg-primary">{i.pref_return}%</span>
-                        
+                          <div>
+                            <hr
+                              className="border-start border border-dark "
+                              style={{ height: "40px" }}
+                            />
+                          </div>
                         </div>
+
+                        <div className="d-flex gap-3 align-items-center justify-content-center mb-2">
+                          <div>
+                            <span className="text-muted small">
+                              Pref Return
+                            </span>
+                            <div>
+                              <span className="badge bg-primary">
+                                {i.pref_return}%
+                              </span>
+                            </div>
+                          </div>
+
+                          <div></div>
+                          <hr
+                            className="border-start border border-dark "
+                            style={{ height: "40px" }}
+                          />
                         </div>
-                      
-                      <div>
-                        </div>
-                      <hr className="border-start border border-dark " style={{ height: '40px' }}/>
                       </div>
-                     </div>
                       <div className="d-flex justify-content-end">
-                      <button type="button" className="btn btn btn-primary" 
-                      onClick={() => goToInvestorDetail(i.id) }>
-                        View Details
-                      </button>
-                    
+                        <button
+                          type="button"
+                          className="btn btn btn-primary"
+                          onClick={() => goToInvestorDetail(i.id)}
+                        >
+                          View Details
+                        </button>
                       </div>
                     </div>
                   </div>
@@ -266,15 +304,7 @@ function PropertyDetail() {
             </div>
           </div>
         </div>
-        </div>
-
-      
-
-
-
-     
-      
-      
+      </div>
     </>
   );
 }
