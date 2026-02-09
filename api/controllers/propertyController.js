@@ -84,46 +84,31 @@ const getPropertyById = async (req, res) => {
 };
 
 const deleteProperty = async (req, res) => {
+  try {
+    const { id } = req.params;
 
-    try{
-    const {id } = req.params;
+    const result = await dataBasePool.query(
+      `DELETE FROM properties WHERE id = $1 RETURNING *`,
+      [id],
+    );
 
-  const result = await dataBasePool.query(
-     `DELETE FROM properties WHERE id = $1 RETURNING *`,
-      [id]
-  );
-
-  res.json({
+    res.json({
       message: "Property deleted successfully",
       data: result.rows,
     });
-
-     } catch (err) {
+  } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Server error" });
   }
 };
 
 
-const postAInvestor = async (req, res) => {
-  const { investor_name, invested_amount, pref_return, property_id } = req.body;
 
-  const postInvestor = `
-  INSERT INTO investor (investor_name, invested_amount, pref_return, property_id) VALUES($1, $2, $3, $4)
-  RETURNING *`;
 
-  const results = await dataBasePool.query(postInvestor, [
-    investor_name,
-    invested_amount,
-    pref_return,
-    property_id,
-  ]);
 
-  res.json({ investor: results.rows[0] });
+export {
+  postAProperty,
+  getAllProperties,
+  getPropertyById,
+  deleteProperty,
 };
-
-
-
-
-
-export { postAProperty, getAllProperties, getPropertyById, deleteProperty, postAInvestor };

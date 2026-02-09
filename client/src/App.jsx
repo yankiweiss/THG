@@ -6,15 +6,18 @@ import Documents from "./Documents";
 import PropertyDetail from "./PropertyDetail";
 import AddDealCS from "./AddDeailCS";
 import Reports from "./Reports";
+import InvestorDetail from "./InvestorDetail";
 
 function App() {
   return (
     <>
       <Navbar />
       <Routes>
+      
         <Route path="/properties" element={<Properties />} />
         <Route path="/addDealLP" element={<AddDealLP />} />
         <Route path="/addDealCS" element={<AddDealCS />} />
+        <Route path="/investorDetail/:investorId" element={<InvestorDetail />} />
 
         <Route path="/documents" element={<Documents />} />
         <Route path="/property/:id" element={<PropertyDetail />} />
