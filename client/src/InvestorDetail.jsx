@@ -44,29 +44,29 @@ function InvestorDetail() {
     return Number(value).toLocaleString("en-US");
   };
 
-  const chartData = {
-    labels: investor?.investor.events?.map((e) => e.date_of_event) || [],
-    datasets: [
-      {
-        label: "Amount",
-        data: investor?.investor.events?.map((e) => e.amount) || [],
-        backgroundColor: "rgba(75, 192, 192, 0.6)",
-        borderColor: "rgba(75, 192, 192, 1)",
-        borderWidth: 1,
-      },
-    ],
-  };
-
-  const chartOptions = {
-    responsive: true,
-    plugins: {
-      legend: { position: "top" },
-      title: { display: true, text: "Investor Event Amounts" },
-    },
-    scales: {
-      y: { beginAtZero: true },
-    },
-  };
+//  const chartData = {
+//    labels: investor?.events?.map((e) => e.date_of_event) || [],
+//    datasets: [
+//      {
+//        label: "Amount",
+//        data: investor?.investor.events?.map((e) => e.amount) || [],
+//        backgroundColor: "rgba(75, 192, 192, 0.6)",
+//        borderColor: "rgba(75, 192, 192, 1)",
+//        borderWidth: 1,
+//      },
+//    ],
+//  };
+//
+//  const chartOptions = {
+//    responsive: true,
+//    plugins: {
+//      legend: { position: "top" },
+//      title: { display: true, text: "Investor Event Amounts" },
+//    },
+//    scales: {
+//      y: { beginAtZero: true },
+//    },
+//  };
 
   return (
     <>
@@ -132,27 +132,27 @@ function InvestorDetail() {
           <div>
             <label className="form-label">Investor Name:</label>
             <input
-              value={investor?.investor.investor_name}
+              value={investor?.investor_name}
               className="form-control fs-3 fw-bold mb-4 border-0 bg-transparent px-0 w-auto"
             ></input>
           </div>
           <div>
             <label className="form-label">Amount Invested:</label>
             <input
-              value={formatNumber(investor?.investor.invested_amount)}
+              value={formatNumber(investor?.invested_amount)}
               className="form-control fs-3 fw-bold mb-4 border-0 bg-transparent px-0 w-auto"
             ></input>
           </div>
           <div>
             <label className="form-label">Pref Return:</label>
             <input
-              value={investor?.investor.pref_return}
+              value={investor?.pref_return}
               className="form-control fs-3 fw-bold mb-4 border-0 bg-transparent px-0 w-auto"
             ></input>
           </div>
         </div>
       </div>
-      <Bar data={chartData} options={chartOptions} />;
+      {/*<Bar data={chartData} options={chartOptions} />;*/}
       <div class="card mx-5">
         <div className="d-flex justify-content-between card-header p-5">
         <div>Capital Events</div>
@@ -160,7 +160,9 @@ function InvestorDetail() {
         </div>
         <div class="card-body">
           <table className="table">
-            {investor?.events?.map((e, index) => (
+            {investor?.events?.length > 0 ? ( 
+            
+            investor?.events?.map((e, index) => (
               <tbody>
                 <tr key={index}>
                   <td>${formatNumber(e.event_amount)}</td>
@@ -168,7 +170,10 @@ function InvestorDetail() {
                   <td>{e.notes}</td>
                 </tr>
               </tbody>
-            ))}
+            ))
+         ) : (
+                <p className="text-muted text-center">No events yes</p>
+            )}
           </table>
           {addEvent &&(
            <form id="h1">

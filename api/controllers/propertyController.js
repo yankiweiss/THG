@@ -1,7 +1,7 @@
 import dataBasePool from "../model/db.js";
 
 const postAProperty = async (req, res) => {
-  const { property_name, purchase_price, syndicator, pictures, closing_date } =
+  const { property_name, purchase_price, investors, pictures, closing_date } =
     req.body;
 
   const client = await dataBasePool.connect();
@@ -9,33 +9,60 @@ const postAProperty = async (req, res) => {
   try {
     await client.query("BEGIN");
 
-    const putInPropertyTable = `
+    const propertyResult  =  await client.query (`
   INSERT INTO properties(property_name, purchase_price, secure_url, closing_date )
-  VALUES($1, $2, $3, $4) RETURNING id`;
-
-    const propertyResult = await client.query(putInPropertyTable, [
+  VALUES($1, $2, $3, $4) RETURNING id`, [
       property_name,
       purchase_price,
       pictures,
       closing_date,
-    ]);
+    ] );
+
+    for (const entry of investors ) {
+        const {
+            investor_name,
+            invested_amount,
+            pref_return,
+            role,
+
+        } = entry;
+    
+        const investorResult = await client.query (
+            `INSERT INTO investors (name)
+            VALUES ($1)
+            ON CONFLICT (name)
+            DO UPDATE SET name = EXCLUDED.name
+            RETURNING id`, [investor_name]
+        )
+ 
 
     const propertyID = propertyResult.rows[0].id;
 
-    const putInInvestorTable = `
- INSERT INTO investor (investor_name, property_id, invested_amount, pref_return)
- VALUES($1, $2, $3, $4)`;
+    const investorID = investorResult.rows[0].id;
 
-    for (let investor of syndicator) {
-      await client.query(putInInvestorTable, [
-        investor.investor_name,
-        propertyID,
-        investor.invested_amount,
-        investor.pref_return,
-      ]);
-    }
+    await client.query(
+        `INSERT INTO investments (
+        investor_id,
+          property_id,
+          role,
+          invested_amount,
+          pref_return)  VALUES ($1, $2, $3, $4, $5)`, [
+          investorId,
+          propertyId,
+          role,
+          invested_amount,
+          pref_return,
+        ]
+    )
+}
 
+  
     await client.query("COMMIT");
+
+    res.status(201).json({
+      message: "Property created successfully",
+      property_id: propertyId,
+    });
   } catch (error) {
     console.error(error);
   } finally {
