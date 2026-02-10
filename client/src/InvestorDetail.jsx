@@ -136,8 +136,7 @@ function InvestorDetail() {
         </div>
 
          
-
-       
+<h1>{investor?.id}</h1>       
                   
       <div className="container-fluid px-3 py-5 bg-light ">
         <div className="mb-4">

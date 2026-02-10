@@ -67,7 +67,7 @@ const getInvestorByID = async (req, res) => {
     // 5️⃣ Return combined data
     res.json({
       ...investor,
-      property,
+      property : [property],
       investments: investmentsWithEvents
     });
 
