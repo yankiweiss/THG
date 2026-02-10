@@ -706,7 +706,7 @@ function AddDealLP() {
                         placeholder="8"
                         type="number"
                         step="0.1"
-                        onChange={(e) => setInvestors({...investors, 'pref_return' : e.target.value})}
+                        onChange={(e) => setInvestors({...investors, 'perf_return' : e.target.value})}
                         required
                       />
                       <span

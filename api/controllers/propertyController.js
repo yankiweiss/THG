@@ -49,7 +49,7 @@ const postAProperty = async (req, res) => {
           property_id,
           role,
           invested_amount,
-          pref_return)  VALUES ($1, $2, $3, $4, $5)`, [
+          perf_return)  VALUES ($1, $2, $3, $4, $5)`, [
           investorID,
           propertyID,
           role,
