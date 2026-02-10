@@ -30,14 +30,14 @@ function InvestorDetail() {
 
   console.log(investor);
 
-  const { id } = useParams();
+  const { propertyId, investorId } = useParams();
 
-  useEffect(() => {
-    fetch(`https://thg-seven.vercel.app/api/investor/${id}`)
-      .then((res) => res.json())
-      .then((data) => setInvestor(data))
-      .catch((err) => console.error(err));
-  }, [id]);
+ useEffect(() => {
+    fetch(`https://thg-seven.vercel.app/api/investor/${propertyId}/${investorId}`)
+      .then(res => res.json())
+      .then(data => setInvestor(data))
+      .catch(err => console.error(err));
+  }, [propertyId, investorId]);
 
   const formatNumber = (value) => {
     if (!value) return "";

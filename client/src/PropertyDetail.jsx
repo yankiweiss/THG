@@ -12,9 +12,9 @@ function PropertyDetail() {
   const [property, setProperty] = useState([]);
   const [activeInvestor, setActiveInvestor] = useState(null);
   
- const goToInvestorDetail = (id) => {
-    navigate(`/investorDetail/${id}`);
-  };
+ const goToInvestorDetail = (propertyId, investorId) => {
+  navigate(`/investorDetail/${propertyId}/${investorId}`);
+};
 
   const { id } = useParams();
 
@@ -208,15 +208,26 @@ function PropertyDetail() {
             </div>
           </div>
         </div>
-        <div className="card shadow-sm border-0 mb-4">
+
+        <div className="container-fluid px-3 py-5 bg-light ">
+        {/* HEADER SECTION */}
+        <div className="mb-4">
+          <div className="d-flex align-items-center justify-content-between">
+            <div>
+              <h2 className="mb-1 fw-bold section-header text-dark">
+                Investor Portfolio
+              </h2>
+              <p className="text-muted mb-0">
+                A summary of all investors and their key details.
+              </p>
+            </div>
+          </div>
+          </div>
+          </div>
+
+          <div className="card shadow-sm border-0 mb-4">
           <div className="card-body p-4">
-            <h2 className="mb-1 fw-bold section-header text-dark">
-              Investor Portfolio
-            </h2>
-            <h6 className="text-muted mb-3">
-              A summary of all investors and their key details.
-            </h6>
-            <div className="row">
+            <div className="row align-items-center">
               {property.investors?.map((i) => (
                 <div key={i.id} className="mb-3">
                   <div className="card investor-card h-100 border ">
@@ -270,7 +281,7 @@ function PropertyDetail() {
                         <button
                           type="button"
                           className="btn btn btn-primary"
-                          onClick={() => goToInvestorDetail(i.id)}
+                          onClick={() => goToInvestorDetail(property.id, i.id)}
                         >
                           View Details
                         </button>
@@ -281,9 +292,11 @@ function PropertyDetail() {
                 //Need to see what other details to include here.
               ))}
             </div>
-          </div>
-        </div>
-      </div>
+            </div>
+            </div>
+            </div>
+          
+      
     </>
   );
 }

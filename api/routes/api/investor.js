@@ -3,7 +3,7 @@ import { getInvestorByID } from '../../controllers/investorController.js';
 
 const investorRouter = express.Router();
 
-investorRouter.get('/:id', getInvestorByID)
+investorRouter.get('/:propertyId/:investorId', getInvestorByID);
 
 
 
