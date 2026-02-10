@@ -114,11 +114,11 @@ const getPropertyById = async (req, res) => {
 
     let eventsResult = { rows: [] };
     if (investorIDs.length > 0) {
-      eventsResult = await client.query(
-        `SELECT * FROM events WHERE investor_id = ANY($1)`,
-        [investorIDs]
-      );
-    }
+  eventsResult = await client.query(
+    `SELECT * FROM events WHERE investor_id = ANY($1::int[])`,
+    [investorIDs]
+  );
+}
 
     res.json({
       ...propertyResult.rows[0],
