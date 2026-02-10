@@ -118,6 +118,27 @@ function InvestorDetail() {
           gap: 0.5rem;
         }
       `}</style>
+
+      <div className="container-fluid px-3 py-5 bg-light ">
+        {/* HEADER SECTION */}
+        <div className="mb-4">
+          <div className="d-flex align-items-center justify-content-between">
+            <div>
+              <h2 className="mb-1 fw-bold section-header text-dark">
+                Property Overview
+              </h2>
+              <p className="text-muted mb-0">
+                Manage property details and investor activity
+              </p>
+            </div>
+          </div>
+        </div>
+        </div>
+
+         
+
+       
+                  
       <div className="container-fluid px-3 py-5 bg-light ">
         <div className="mb-4">
           <div className="d-flex align-items-center justify-content-between">
@@ -152,6 +173,8 @@ function InvestorDetail() {
           </div>
         </div>
       </div>
+
+
       {/*<Bar data={chartData} options={chartOptions} />;*/}
       <div class="card mx-5">
         <div className="d-flex justify-content-between card-header p-5">

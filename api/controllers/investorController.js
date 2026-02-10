@@ -35,7 +35,7 @@ const getInvestorByID = async (req, res) => {
 
     // 2️⃣ Get all investments for this investor for this property
     const investmentsResult = await dataBasePool.query(
-      `SELECT * FROM investments WHERE investor_id = $1 AND property_id = $2 ORDER BY investment_date ASC`,
+      `SELECT * FROM investments WHERE investor_id = $1 AND property_id = $2 `,
       [investorId, propertyId]
     );
 
