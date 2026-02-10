@@ -18,6 +18,8 @@ const postAProperty = async (req, res) => {
       closing_date,
     ] );
 
+    
+
     for (const entry of investors ) {
         const {
             investor_name,
@@ -26,6 +28,7 @@ const postAProperty = async (req, res) => {
             role,
 
         } = entry;
+    
     
         const investorResult = await client.query (
             `INSERT INTO investors (name)
@@ -42,13 +45,13 @@ const postAProperty = async (req, res) => {
 
     await client.query(
         `INSERT INTO investments (
-        investor_id,
+         investor_id,
           property_id,
           role,
           invested_amount,
           pref_return)  VALUES ($1, $2, $3, $4, $5)`, [
-          investorId,
-          propertyId,
+          investorID,
+          propertyID,
           role,
           invested_amount,
           pref_return,

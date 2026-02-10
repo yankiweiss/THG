@@ -70,7 +70,7 @@ function AddDealLP() {
     const payload = {
       ...dataObject,
       pictures: uploadedPicUrl,
-      investors: investors,
+      investors: [investors],
     };
 
     console.log(payload);
