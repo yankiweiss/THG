@@ -83,14 +83,14 @@ const getAllProperties = async (req, res) => {
 };
 
 const getPropertyById = async (req, res) => {
-  const { id } = req.params;
+  const propertyId = parseInt(req.params.id, 10);
 
   const client = await dataBasePool.connect();
 
   try {
     const propertyResult = await client.query (
         `SELECT * FROM properties WHERE id = $1`,
-        [id]
+        [propertyId]
     );
 
 
@@ -107,7 +107,7 @@ const getPropertyById = async (req, res) => {
       JOIN investments inv ON inv.investor_id = i.id
       WHERE inv.property_id = $1
       `,
-      [id]
+      [propertyId]
     );
 
      const investorIDs = investorResult.rows.map(inv => inv.investor_id);
