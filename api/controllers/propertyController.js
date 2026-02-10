@@ -118,7 +118,7 @@ const getPropertyById = async (req, res) => {
         id: row.investor_id,
         name: row.investor_name,
         invested_amount: row.invested_amount,
-        pref_return: row.pref_return,
+        perf_return: row.pref_return,
         role: row.role,
         investment_id: row.investment_id
       })),

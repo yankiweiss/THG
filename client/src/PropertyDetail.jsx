@@ -116,6 +116,7 @@ function PropertyDetail() {
         }
       `}</style>
 
+
       {console.log(property)}
       <div className="container-fluid px-3 py-5 bg-light ">
         {/* HEADER SECTION */}
@@ -195,9 +196,9 @@ function PropertyDetail() {
                     <h1>Investors:</h1>
                     <div className="d-flex ">
 
-                      {property.investors?.map((i) => (
-                        <div className="stat-card border rounded-3 p-3 text-center bg-white h-100 m-3">
-                        <p>{i.investor_name}</p>
+                      {property?.investors?.map((i) => (
+                        <div  className="stat-card border rounded-3 p-3 text-center bg-white h-100 m-3">
+                        <p>{i.name}</p>
                         </div>
                       ))}
                     </div>
@@ -222,7 +223,7 @@ function PropertyDetail() {
                     <div className="card-body p-3">
                       <h6 className="fw-bold mb-3 text-truncate">
                         <span className="text-muted">Investor Name:</span>
-                        <br /> {i.investor_name}
+                        <br /> {i.name}
                       </h6>
                       <div className="d-flex gap-3 align-items-center justify-content-center">
                         <div className="d-flex gap-3 align-items-center justify-content-center mb-2">
@@ -253,7 +254,7 @@ function PropertyDetail() {
                             </span>
                             <div>
                               <span className="badge bg-primary">
-                                {i.pref_return}%
+                                {i.perf_return}%
                               </span>
                             </div>
                           </div>
