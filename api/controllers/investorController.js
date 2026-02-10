@@ -26,24 +26,36 @@ const getInvestorByID = async (req, res) => {
       `SELECT * FROM investors WHERE id = $1`,
       [investorId]
     );
-
     if (investorResult.rows.length === 0) {
       return res.status(404).json({ message: 'Investor not found!' });
     }
-
     const investor = investorResult.rows[0];
 
     // 2️⃣ Get all investments for this investor for this property
     const investmentsResult = await dataBasePool.query(
-      `SELECT * FROM investments WHERE investor_id = $1 AND property_id = $2 `,
+      `SELECT * FROM investments WHERE investor_id = $1 AND property_id = $2`,
       [investorId, propertyId]
     );
 
-    // 3️⃣ Get all events for this investor for this property
-    const eventsResult = await dataBasePool.query(
-      `SELECT * FROM events WHERE investor_id = $1 AND property_id = $2 ORDER BY event_date ASC`,
-      [investorId, propertyId]
-    );
+    const investments = investmentsResult.rows;
+
+    // 3️⃣ Get all events linked to each investment
+    // Map each investment to its events
+    const investmentIds = investments.map(inv => inv.id);
+    let events = [];
+    if (investmentIds.length > 0) {
+      const eventsResult = await dataBasePool.query(
+        `SELECT * FROM events WHERE investor_id = $1 AND investment_id = ANY($2::int[]) ORDER BY event_date ASC`,
+        [investorId, investmentIds]
+      );
+      events = eventsResult.rows;
+    }
+
+    // Attach events to corresponding investment
+    const investmentsWithEvents = investments.map(inv => ({
+      ...inv,
+      events: events.filter(e => e.investment_id === inv.id)
+    }));
 
     // 4️⃣ Get property info
     const propertyResult = await dataBasePool.query(
@@ -56,8 +68,7 @@ const getInvestorByID = async (req, res) => {
     res.json({
       ...investor,
       property,
-      investments: investmentsResult.rows,
-      events: eventsResult.rows
+      investments: investmentsWithEvents
     });
 
   } catch (err) {
