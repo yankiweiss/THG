@@ -37,7 +37,7 @@ const getInvestorByID = async (req, res) => {
         )
 
         res.json({
-            investor : investorResult.rows[0],
+            ...investorResult.rows[0],
             events: eventsResults.rows,
         })
     } catch (err) {
