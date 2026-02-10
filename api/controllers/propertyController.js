@@ -110,15 +110,7 @@ const getPropertyById = async (req, res) => {
       [propertyId]
     );
 
-     const investorIDs = investorResult.rows.map(inv => inv.investor_id);
-
-    let eventsResult = { rows: [] };
-    if (investorIDs.length > 0) {
-  eventsResult = await client.query(
-    `SELECT * FROM events WHERE investor_id = ANY($1::int[])`,
-    [investorIDs]
-  );
-}
+   
 
     res.json({
       ...propertyResult.rows[0],
@@ -130,7 +122,7 @@ const getPropertyById = async (req, res) => {
         role: row.role,
         investment_id: row.investment_id
       })),
-      events: eventsResult.rows
+      
     });
   } catch (error) {
     console.error(error);
