@@ -1,18 +1,25 @@
 import dataBasePool from "../model/db.js";
 
 const postAEvent = async (req, res) => {
-  const { event_date, event_type, event_amount, notes, propertyId,
-      investorId } = req.body;
+  const {
+    event_date,
+    event_type,
+    event_amount,
+    notes,
+    propertyId,
+    investorId,
+  } = req.body;
 
-      const selectInvestmentID =  await dataBasePool.query(`
+  const selectInvestmentID = await dataBasePool.query(
+    `
       SELECT id
 FROM investments
-WHERE investor_id = $1 AND property_id = $2 RETURNING id;`, investorId, propertyId)
+WHERE investor_id = $1 AND property_id = $2 RETURNING id;`,
+    [investorId,
+    propertyId]
+  );
 
-
-     const investmentID  = selectInvestmentID.rows[0].id;
-
-
+  const investmentID = selectInvestmentID.rows[0].id;
 
   const postEvent = `
   INSERT INTO events (event_date, event_type, event_amount, notes, investment_id) VALUES($1, $2, $3, $4, $5)
@@ -26,9 +33,7 @@ WHERE investor_id = $1 AND property_id = $2 RETURNING id;`, investorId, property
     notes,
   ]);
 
- 
-
-  res.json({ event : results.rows[0] });
+  res.json({ event: results.rows[0] });
 };
 
 export default postAEvent;

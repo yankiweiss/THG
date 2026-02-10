@@ -61,7 +61,7 @@ function InvestorDetail() {
 
     console.log(payload);
 
-    await fetch("https://thg-seven.vercel.app/api/event/postAEvent", {
+    await fetch("https://thg-seven.vercel.app/api/event", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
