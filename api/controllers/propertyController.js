@@ -85,33 +85,61 @@ const getAllProperties = async (req, res) => {
 const getPropertyById = async (req, res) => {
   const { id } = req.params;
 
-  const propertyResult = await dataBasePool.query(
-    `SELECT * FROM properties WHERE id = $1`,
-    [id],
-  );
+  const client = await dataBasePool.connect();
 
-  const investorResult = await dataBasePool.query(
-    `SELECT * FROM investor WHERE property_id = $1`,
-    [id],
-  );
-
-  const investorIDs = investorResult.rows.map((inv) => inv.id);
-
-  let eventsResult = { rows: [] };
-
-  if (investorIDs.length > 0) {
-    eventsResult = await dataBasePool.query(
-      `SELECT * FROM events WHERE investor_id = ANY($1)`,
-      [investorIDs],
+  try {
+    const propertyResult = await client.query (
+        `SELECT * FROM properties WHERE id = $1`,
+        [id]
     );
-  }
 
-  res.json({
-    ...propertyResult.rows[0],
-    investors: investorResult.rows,
-    events: eventsResult.rows,
-  });
+
+    const investorResult = await client.query(
+      `
+      SELECT 
+        i.id AS investor_id,
+        i.name AS investor_name,
+        inv.invested_amount,
+        inv.pref_return,
+        inv.role,
+        inv.id AS investment_id
+      FROM investors i
+      JOIN investments inv ON inv.investor_id = i.id
+      WHERE inv.property_id = $1
+      `,
+      [id]
+    );
+
+     const investorIDs = investorResult.rows.map(inv => inv.investor_id);
+
+    let eventsResult = { rows: [] };
+    if (investorIDs.length > 0) {
+      eventsResult = await client.query(
+        `SELECT * FROM events WHERE investor_id = ANY($1)`,
+        [investorIDs]
+      );
+    }
+
+    res.json({
+      ...propertyResult.rows[0],
+      investors: investorResult.rows.map(row => ({
+        id: row.investor_id,
+        name: row.investor_name,
+        invested_amount: row.invested_amount,
+        pref_return: row.pref_return,
+        role: row.role,
+        investment_id: row.investment_id
+      })),
+      events: eventsResult.rows
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error", error });
+  } finally {
+    client.release();
+  }
 };
+ 
 
 const deleteProperty = async (req, res) => {
   try {
