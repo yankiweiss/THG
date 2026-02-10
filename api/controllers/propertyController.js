@@ -100,7 +100,7 @@ const getPropertyById = async (req, res) => {
         i.id AS investor_id,
         i.name AS investor_name,
         inv.invested_amount,
-        inv.pref_return,
+        inv.perf_return,
         inv.role,
         inv.id AS investment_id
       FROM investors i
