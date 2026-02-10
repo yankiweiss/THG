@@ -14,7 +14,7 @@ const postAEvent = async (req, res) => {
     `
       SELECT id
 FROM investments
-WHERE investor_id = $1 AND property_id = $2 RETURNING id;`,
+WHERE investor_id = $1 AND property_id = $2;`,
     [investorId,
     propertyId]
   );
@@ -29,8 +29,8 @@ WHERE investor_id = $1 AND property_id = $2 RETURNING id;`,
     event_date,
     event_type,
     event_amount,
-    investmentID,
     notes,
+    investmentID,
   ]);
 
   res.json({ event: results.rows[0] });
