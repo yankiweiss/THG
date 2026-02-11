@@ -33,7 +33,7 @@ WHERE investor_id = $1 AND property_id = $2;`,
     investmentID,
   ]);
 
-  res.json({ event: results.rows[0] });
+  res.json( results.rows[0] );
 };
 
 export default postAEvent;

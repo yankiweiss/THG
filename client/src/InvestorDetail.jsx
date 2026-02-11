@@ -110,13 +110,27 @@ function InvestorDetail() {
 
     console.log(payload);
 
-    await fetch("https://thg-seven.vercel.app/api/event", {
+    const response = await fetch("https://thg-seven.vercel.app/api/event", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(payload),
     });
+
+    const result = response.json();
+
+   if (response.ok) {
+    setInvestor(prev => ({
+        ...prev, 
+        events: [...prev.events, ...result]
+   }))
+
+     setAddEvent(false);
+    form.reset();
+   }
+
+    
 
     // You can add success notification or redirect here
   };
@@ -819,7 +833,7 @@ function InvestorDetail() {
                   </tbody>
                 ))
               ) : (
-                <p className="text-muted text-center">No events yes</p>
+                <p className="text-muted text-center">No events yet</p>
               )}
             </table>
             {/* event date , event amount, event type , notes ,  */}
@@ -919,7 +933,7 @@ function InvestorDetail() {
                               <input
                                 type="radio"
                                 name="event_type"
-                                value={type.value}
+                                value={type.name}
                                 required
                               />
                               <div className="event-type-card">
