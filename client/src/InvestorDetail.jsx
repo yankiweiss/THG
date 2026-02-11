@@ -121,10 +121,11 @@ function InvestorDetail() {
     const result = response.json();
 
    if (response.ok) {
-    setInvestor(prev => ({
-        ...prev, 
-        events: [...prev.events, ...result]
-   }))
+   setInvestor(prev => ({
+  ...prev,
+  
+  events: [...(prev.events || []), result]
+}));
 
      setAddEvent(false);
     form.reset();

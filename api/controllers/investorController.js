@@ -52,10 +52,7 @@ const getInvestorByID = async (req, res) => {
     }
 
     // Attach events to corresponding investment
-    const investmentsWithEvents = investments.map(inv => ({
-      ...inv,
-      events: events.filter(e => e.investment_id === inv.id)
-    }));
+   
 
     // 4️⃣ Get property info
     const propertyResult = await dataBasePool.query(
@@ -68,7 +65,7 @@ const getInvestorByID = async (req, res) => {
     res.json({
       ...investor,
       property : [property],
-      investments: investmentsWithEvents,
+      investments: investments,
       events
       
     });
