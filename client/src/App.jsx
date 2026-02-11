@@ -12,6 +12,8 @@ function App() {
   return (
     <>
       <Navbar />
+
+     
       <Routes>
       
         <Route path="/properties" element={<Properties />} />

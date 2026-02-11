@@ -45,7 +45,7 @@ const getInvestorByID = async (req, res) => {
     let events = [];
     if (investmentIds.length > 0) {
       const eventsResult = await dataBasePool.query(
-        `SELECT * FROM events WHERE investment_id = ANY($2::int[])`,
+        `SELECT * FROM events WHERE investment_id = ANY($1::int[])`,
         [investmentIds]
       );
       events = eventsResult.rows;
