@@ -45,8 +45,8 @@ const getInvestorByID = async (req, res) => {
     let events = [];
     if (investmentIds.length > 0) {
       const eventsResult = await dataBasePool.query(
-        `SELECT * FROM events WHERE investor_id = $1 AND investment_id = ANY($2::int[]) ORDER BY event_date ASC`,
-        [investorId, investmentIds]
+        `SELECT * FROM events WHERE investment_id = ANY($2::int[])`,
+        [investmentIds]
       );
       events = eventsResult.rows;
     }
@@ -68,8 +68,11 @@ const getInvestorByID = async (req, res) => {
     res.json({
       ...investor,
       property : [property],
-      investments: investmentsWithEvents
+      investments: investmentsWithEvents,
+      events
+      
     });
+    
 
   } catch (err) {
     console.error(err);

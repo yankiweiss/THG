@@ -118,9 +118,9 @@ function PropertyDetail() {
 
 
       {console.log(property)}
-      <div className="container-fluid px-3 py-5 bg-light ">
+      <div className="container-fluid px-4 py-5 bg-light ">
         {/* HEADER SECTION */}
-        <div className="mb-4">
+        <div className="mb-3">
           <div className="d-flex align-items-center justify-content-between">
             <div>
               <h2 className="mb-1 fw-bold section-header text-dark">
@@ -209,9 +209,9 @@ function PropertyDetail() {
           </div>
         </div>
 
-        <div className="container-fluid px-3 py-5 bg-light ">
+        <div className="container-fluid px-4 py-4 bg-light ">
         {/* HEADER SECTION */}
-        <div className="mb-4">
+        <div className="mb-1">
           <div className="d-flex align-items-center justify-content-between">
             <div>
               <h2 className="mb-1 fw-bold section-header text-dark">
@@ -225,7 +225,7 @@ function PropertyDetail() {
           </div>
           </div>
 
-          <div className="card shadow-sm border-0 mb-4">
+          <div className="card shadow-sm border-0 mb-3">
           <div className="card-body p-4">
             <div className="row align-items-center">
               {property.investors?.map((i) => (
