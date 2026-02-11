@@ -27,6 +27,41 @@ ChartJS.register(
 function InvestorDetail() {
   const [investor, setInvestor] = useState();
   const [addEvent, setAddEvent] = useState(false);
+  const { propertyId, investorId } = useParams();
+   const [isSubmitting, setIsSubmitting] = useState(false);
+
+
+//   const getDaysBetween = (closingDate) => {
+//  const today = new Date();
+//  const start = new Date(closingDate);
+//
+//  const diffTime = today - start; // milliseconds
+//  const diffDays = diffTime / (1000 * 60 * 60 * 24);
+//
+//  return diffDays;
+//};
+
+const calculateExpectedPrefReturn = (
+  investedAmount,
+  prefRate, 
+  closingDate
+ ) => {
+  const today = new Date();
+  const start = new Date(closingDate);
+
+  const diffTime = today - start;
+  const daysElapsed = diffTime / (1000 * 60 * 60 * 24);
+
+  const annualRate = prefRate / 100;
+
+  const earnedPref =
+    investedAmount *
+    annualRate *
+    (daysElapsed / 365);
+
+  return earnedPref;
+};
+  
 
   const eventTypes = [
     {
@@ -59,7 +94,7 @@ function InvestorDetail() {
     },
   ];
 
-  const [isSubmitting, setIsSubmitting] = useState(false);
+ 
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -80,7 +115,7 @@ function InvestorDetail() {
 
   console.log(investor);
 
-  const { propertyId, investorId } = useParams();
+  
 
   useEffect(() => {
     fetch(
@@ -118,17 +153,16 @@ function InvestorDetail() {
       body: JSON.stringify(payload),
     });
 
-    const result = response.json();
+    const result =  await response.json();
 
    if (response.ok) {
-   setInvestor(prev => ({
-  ...prev,
-  
-  events: [...(prev.events || []), result]
-}));
+     setInvestor((prev) => ({
+       ...prev,
+       events: [...(prev.events || []), result],
+     }));
 
      setAddEvent(false);
-    form.reset();
+     form.reset();
    }
 
     
@@ -1002,6 +1036,10 @@ function InvestorDetail() {
             )}
           </div>
         </div>
+      </div>
+
+      <div>
+        <h1>{calculateExpectedPrefReturn(investor?.investments?.invested_amount, investor?.investments?.perf_return, investor?.property?.closing_date)}</h1>
       </div>
     </>
   );
