@@ -30,16 +30,50 @@ function InvestorDetail() {
   const { propertyId, investorId } = useParams();
    const [isSubmitting, setIsSubmitting] = useState(false);
 
+   const formatDate = (dateComingIn) => {
+    if (!dateComingIn) return "N/A";
+    const date = new Date(dateComingIn);
+    return date.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
+  };
 
-//   const getDaysBetween = (closingDate) => {
+   const formatCurrency = (value) => {
+    if (!value) return "$0";
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(value);
+  };
+
+//   const getDaysBetween = (startDate) => {
 //  const today = new Date();
-//  const start = new Date(closingDate);
+//  const start = new Date(startDate);
 //
 //  const diffTime = today - start; // milliseconds
 //  const diffDays = diffTime / (1000 * 60 * 60 * 24);
 //
 //  return diffDays;
-//};
+//  
+////};
+
+const calculateActualReturn = () => {
+  
+  const sum = investor?.events?.reduce((result , e) =>{
+if(e.event_type === 'Investment'){
+  return result + Number(e.event_amount)
+}
+return result ;
+  }, 0) || 0;
+
+  return Number(sum.toFixed(2))
+}
+
+
 
 const calculateExpectedPrefReturn = (
   investedAmount,
@@ -59,8 +93,12 @@ const calculateExpectedPrefReturn = (
     annualRate *
     (daysElapsed / 365);
 
-  return earnedPref;
+  return Number(earnedPref.toFixed(2));
 };
+
+
+
+
   
 
   const eventTypes = [
@@ -170,34 +208,791 @@ const calculateExpectedPrefReturn = (
     // You can add success notification or redirect here
   };
 
-  //    const chartData = {
-  //      labels: investor?.events?.map((e) => e.date_of_event) || [],
-  //      datasets: [
-  //        {
-  //          label: "Amount",
-  //          data: investor?.investor.events?.map((e) => e.amount) || [],
-  //          backgroundColor: "rgba(75, 192, 192, 0.6)",
-  //          borderColor: "rgba(75, 192, 192, 1)",
-  //          borderWidth: 1,
-  //        },
-  //      ],
-  //    };
-  //
-  //    const chartOptions = {
-  //      responsive: true,
-  //      plugins: {
-  //        legend: { position: "top" },
-  //        title: { display: true, text: "Investor Event Amounts" },
-  //      },
-  //      scales: {
-  //        y: { beginAtZero: true },
-  //      },
-  //    };
+  const getQuarterLabel = (year, quarter) => {
+  const quarters = {
+    Q1: { start: "Jan 1", end: "Mar 31" },
+    Q2: { start: "Apr 1", end: "Jun 30" },
+    Q3: { start: "Jul 1", end: "Sep 30" },
+    Q4: { start: "Oct 1", end: "Dec 31" },
+  };
+
+  return `${quarter} ${year} (${quarters[quarter].start} - ${quarters[quarter].end})`;
+};
+
+const getQuarterInfo = (dateString) => {
+  const date = new Date(dateString);
+  const month = date.getMonth();
+  const year = date.getFullYear();
+
+  let quarter;
+
+  if (month <= 2) quarter = "Q1";
+  else if (month <= 5) quarter = "Q2";
+  else if (month <= 8) quarter = "Q3";
+  else quarter = "Q4";
+
+  return { quarter, year };
+};
+
+const quarterlyData = investor?.events?.reduce((acc, e) => {
+  if (e.event_type !== "Investment") return acc;
+
+  const { quarter, year } = getQuarterInfo(e.date_of_event);
+  const key = `${quarter}-${year}`;
+  const amount = Number(e.event_amount);
+
+  acc[key] = (acc[key] || 0) + amount;
+
+  return acc;
+}, {}) || {};
+
+console.log(quarterlyData)
+
+  const labels = Object.keys(quarterlyData).map((key) => {
+  const [quarter, year] = key.split("-");
+  return getQuarterLabel(year, quarter);
+});
+
+const data = Object.values(quarterlyData);  
+
+const chartData = {
+  labels,
+  datasets: [
+    {
+      label: "Quarterly Returns",
+      data,
+      backgroundColor: "rgba(75, 192, 192, 0.6)",
+      borderColor: "rgba(75, 192, 192, 1)",
+      borderWidth: 1,
+    },
+  ],
+};
+
+const chartOptions = {
+  responsive: false,
+  maintainAspectRatio: false,
+
+  plugins: {
+    legend: {
+      position: "top",
+      labels: {
+        font: { size: 14 }
+      }
+    },
+    title: {
+      display: true,
+      text: "Quarterly Returns",
+      font: { size: 18 }
+    },
+    tooltip: {
+      callbacks: {
+        label: function (context) {
+          return `$${Number(context.raw).toLocaleString(undefined, {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          })}`;
+        }
+      }
+    }
+  },
+
+  scales: {
+    x: {
+      title: {
+        display: true,
+        text: "Quarter"
+      },
+      ticks: {
+        maxRotation: 45,
+        minRotation: 0
+      }
+    },
+
+    y: {
+      beginAtZero: true,
+      title: {
+        display: true,
+        text: "Amount ($)"
+      },
+      ticks: {
+        callback: function (value) {
+          return "$" + value.toLocaleString();
+        }
+      }
+    }
+  }
+};
+  
+    
 
   return (
     <>
-      <style>{`
-      .event-types-grid {
+     <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@400;500;700&display=swap');
+
+        * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+        }
+
+        body {
+          font-family: 'DM Sans', sans-serif;
+          color: #f5f5f5;
+          min-height: 100vh;
+        }
+
+        .loading-container {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          min-height: 100vh;
+          gap: 1.5rem;
+        }
+
+        .loading-spinner {
+          width: 60px;
+          height: 60px;
+          border: 4px solid rgba(255, 255, 255, 0.1);
+          border-top: 4px solid #00d4ff;
+          border-radius: 50%;
+          animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+          to { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+          color: rgba(255, 255, 255, 0.6);
+          font-size: 1rem;
+        }
+
+        .page-wrapper {
+          max-width: 1400px;
+          margin: 0 auto;
+          padding: 2rem;
+        }
+
+        /* HERO SECTION */
+        .hero-section {
+          position: relative;
+          border-radius: 24px;
+          overflow: hidden;
+          margin-bottom: 3rem;
+          background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+          box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        .hero-content {
+          display: grid;
+          grid-template-columns: 350px 1fr;
+          gap: 3rem;
+          padding: 3rem;
+          position: relative;
+          z-index: 2;
+        }
+
+        .hero-image-container {
+          position: relative;
+        }
+
+        .hero-image {
+          width: 100%;
+          height: 350px;
+          object-fit: cover;
+          border-radius: 16px;
+          box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+          border: 3px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .property-badge {
+          position: absolute;
+          top: -12px;
+          left: -12px;
+          background: linear-gradient(135deg, #00d4ff 0%, #028fbe 100%);
+          color: #0a0a0a;
+          padding: 0.5rem 1.25rem;
+          border-radius: 20px;
+          font-weight: 700;
+          font-size: 0.75rem;
+          text-transform: uppercase;
+          letter-spacing: 1px;
+          box-shadow: 0 8px 20px rgba(0, 212, 255, 0.4);
+        }
+
+        .hero-info {
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          gap: 2rem;
+        }
+
+        .property-title {
+          font-family: 'Playfair Display', serif;
+          font-size: 3.5rem;
+          font-weight: 900;
+          line-height: 1.1;
+          color: #ffffff;
+          margin-bottom: 1rem;
+          text-shadow: 2px 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .investor-name {
+          font-size: 1.5rem;
+          font-weight: 700;
+          color: #00d4ff;
+          margin-bottom: 0.5rem;
+        }
+
+        .closing-date {
+          font-size: 1.125rem;
+          color: rgba(255, 255, 255, 0.7);
+          font-weight: 500;
+        }
+
+        /* STATS GRID */
+        .stats-container {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+          gap: 1.5rem;
+          margin-bottom: 3rem;
+        }
+
+        .stat-card {
+          background: rgba(255, 255, 255, 0.92);
+          backdrop-filter: blur(20px);
+          border: 3px solid rgba(0, 0, 0, 0.1);
+          border-radius: 20px;
+          padding: 2rem;
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          position: relative;
+          overflow: hidden;
+        }
+
+        .stat-card::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          height: 4px;
+          background: linear-gradient(90deg, #00d4ff, #0099cc);
+          transform: scaleX(0);
+          transform-origin: left;
+          transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+          transform: translateY(-8px);
+          box-shadow: 0 20px 40px rgba(0, 212, 255, 0.2);
+          border-color: rgba(0, 212, 255, 0.5);
+        }
+
+        .stat-card:hover::before {
+          transform: scaleX(1);
+        }
+
+        .stat-label {
+          font-size: 0.875rem;
+          color: rgb(0, 0, 0);
+          text-transform: uppercase;
+          letter-spacing: 1px;
+          font-weight: 600;
+          margin-bottom: 0.75rem;
+        }
+
+        .stat-value {
+          font-size: 2.25rem;
+          font-weight: 700;
+          color: #327886;
+          font-family: 'Playfair Display', serif;
+        }
+
+        .stat-icon {
+          position: absolute;
+          top: 1.5rem;
+          right: 1.5rem;
+          font-size: 2rem;
+          opacity: 0.3;
+        }
+
+        /* EVENTS SECTION */
+        .events-section {
+          background: rgba(255, 255, 255, 0.03);
+          backdrop-filter: blur(20px);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          border-radius: 24px;
+          overflow: hidden;
+          box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .events-header {
+          background: linear-gradient(135deg, rgba(0, 212, 255, 0.1) 0%, rgba(0, 153, 204, 0.1) 100%);
+          padding: 2rem 2.5rem;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .events-title {
+          font-family: 'Playfair Display', serif;
+          font-size: 2rem;
+          font-weight: 700;
+          color: #ffffff;
+        }
+
+        .add-event-btn {
+          background: linear-gradient(135deg, #00d4ff 0%, #0099cc 100%);
+          color: #0a0a0a;
+          border: none;
+          padding: 0.875rem 2rem;
+          border-radius: 12px;
+          font-weight: 700;
+          font-size: 1rem;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          box-shadow: 0 4px 15px rgba(0, 212, 255, 0.3);
+        }
+
+        .add-event-btn:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 8px 25px rgba(0, 212, 255, 0.5);
+        }
+
+        .events-table-container {
+          padding: 2rem 2.5rem;
+        }
+
+        .events-table {
+          width: 100%;
+          border-collapse: separate;
+          border-spacing: 0 0.75rem;
+        }
+
+        .events-table thead th {
+          text-align: left;
+          font-size: 0.875rem;
+          font-weight: 700;
+          color: rgba(255, 255, 255, 0.5);
+          text-transform: uppercase;
+          letter-spacing: 1px;
+          padding: 0 1.5rem 1rem;
+        }
+
+        .event-row {
+          background: rgba(255, 255, 255, 0.03);
+          transition: all 0.3s ease;
+          position: relative;
+        }
+
+        .event-row:hover {
+          background: rgba(0, 212, 255, 0.08);
+          transform: scale(1.01);
+        }
+
+        .event-row td {
+          padding: 1.5rem;
+          border-top: 1px solid rgba(255, 255, 255, 0.05);
+          border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .event-row td:first-child {
+          border-left: 1px solid rgba(255, 255, 255, 0.05);
+          border-radius: 12px 0 0 12px;
+        }
+
+        .event-row td:last-child {
+          border-right: 1px solid rgba(255, 255, 255, 0.05);
+          border-radius: 0 12px 12px 0;
+        }
+
+        .event-amount {
+          font-size: 1.25rem;
+          font-weight: 700;
+          color: #00d4ff;
+        }
+
+        .event-type-badge {
+          display: inline-flex;
+          align-items: center;
+          gap: 0.5rem;
+          padding: 0.5rem 1rem;
+          border-radius: 20px;
+          font-weight: 600;
+          font-size: 0.875rem;
+          border: 1px solid currentColor;
+        }
+
+        .event-notes {
+          color: rgba(255, 255, 255, 0.7);
+          font-size: 0.9375rem;
+        }
+
+        .empty-state {
+          text-align: center;
+          padding: 4rem 2rem;
+          color: rgba(255, 255, 255, 0.4);
+        }
+
+        .empty-icon {
+          font-size: 4rem;
+          margin-bottom: 1rem;
+          opacity: 0.3;
+        }
+
+        /* MODAL STYLES */
+        .modal-overlay {
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background: rgba(0, 0, 0, 0.8);
+          backdrop-filter: blur(10px);
+          z-index: 1000;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          padding: 2rem;
+          animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+
+        .modal-content {
+          background: #1a1a2e;
+          border: 1px solid rgba(0, 212, 255, 0.3);
+          border-radius: 24px;
+          max-width: 700px;
+          width: 100%;
+          max-height: 85vh;
+          overflow-y: auto;
+          box-shadow: 0 30px 80px rgba(0, 0, 0, 0.8);
+          animation: slideUp 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes slideUp {
+          from {
+            transform: translateY(30px);
+            opacity: 0;
+          }
+          to {
+            transform: translateY(0);
+            opacity: 1;
+          }
+        }
+
+        .modal-header {
+          background: linear-gradient(135deg, #00d4ff 0%, #0099cc 100%);
+          padding: 2.5rem;
+          position: relative;
+        }
+
+        .modal-title {
+          font-family: 'Playfair Display', serif;
+          font-size: 2rem;
+          font-weight: 700;
+          color: #0a0a0a;
+          margin-bottom: 0.5rem;
+        }
+
+        .modal-subtitle {
+          color: rgba(10, 10, 10, 0.7);
+          font-size: 1rem;
+        }
+
+        .modal-close {
+          position: absolute;
+          top: 1.5rem;
+          right: 1.5rem;
+          background: rgba(10, 10, 10, 0.2);
+          border: none;
+          color: #0a0a0a;
+          width: 40px;
+          height: 40px;
+          border-radius: 50%;
+          font-size: 1.5rem;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .modal-close:hover {
+          background: rgba(10, 10, 10, 0.4);
+          transform: rotate(90deg);
+        }
+
+        .modal-body {
+          padding: 2.5rem;
+        }
+
+        .form-group {
+          margin-bottom: 2rem;
+        }
+
+        .form-label {
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+          font-weight: 700;
+          color: rgba(255, 255, 255, 0.9);
+          margin-bottom: 0.75rem;
+          font-size: 1rem;
+        }
+
+        .required-mark {
+          color: #00d4ff;
+        }
+
+        .form-input {
+          width: 100%;
+          background: rgba(255, 255, 255, 0.05);
+          border: 2px solid rgba(255, 255, 255, 0.1);
+          border-radius: 12px;
+          padding: 1rem 1.25rem;
+          color: #ffffff;
+          font-size: 1rem;
+          transition: all 0.3s ease;
+        }
+
+        .form-input:focus {
+          outline: none;
+          border-color: #00d4ff;
+          box-shadow: 0 0 0 4px rgba(0, 212, 255, 0.1);
+          background: rgba(255, 255, 255, 0.08);
+        }
+
+        .form-input::placeholder {
+          color: rgba(255, 255, 255, 0.4);
+        }
+
+        .input-prefix {
+          position: relative;
+        }
+
+        .input-prefix input {
+          padding-left: 2.5rem;
+        }
+
+        .input-prefix::before {
+          content: '$';
+          position: absolute;
+          left: 1.25rem;
+          top: 50%;
+          transform: translateY(-50%);
+          color: #00d4ff;
+          font-weight: 700;
+          font-size: 1.125rem;
+        }
+
+        .helper-text {
+          font-size: 0.875rem;
+          color: rgba(255, 255, 255, 0.5);
+          margin-top: 0.5rem;
+        }
+
+        textarea.form-input {
+          min-height: 120px;
+          resize: vertical;
+          font-family: inherit;
+        }
+
+        /* EVENT TYPE GRID */
+        .event-types-grid {
+          display: grid;
+          grid-template-columns: repeat(2, 1fr);
+          gap: 1rem;
+        }
+
+        .event-type-label {
+          cursor: pointer;
+        }
+
+        .event-type-label input {
+          display: none;
+        }
+
+        .event-type-card {
+          background: rgba(255, 255, 255, 0.03);
+          border: 2px solid rgba(255, 255, 255, 0.1);
+          border-radius: 16px;
+          padding: 1.5rem;
+          transition: all 0.3s ease;
+          position: relative;
+        }
+
+        .event-type-label:hover .event-type-card {
+          border-color: rgba(0, 212, 255, 0.5);
+          background: rgba(0, 212, 255, 0.05);
+          transform: translateY(-2px);
+        }
+
+        .event-type-label input:checked + .event-type-card {
+          border-color: #00d4ff;
+          background: rgba(0, 212, 255, 0.15);
+          box-shadow: 0 8px 25px rgba(0, 212, 255, 0.2);
+        }
+
+        .event-type-header {
+          display: flex;
+          align-items: center;
+          gap: 1rem;
+        }
+
+        .event-type-icon {
+          font-size: 2rem;
+        }
+
+        .event-type-info h4 {
+          font-weight: 700;
+          color: #ffffff;
+          margin-bottom: 0.25rem;
+        }
+
+        .event-type-info p {
+          font-size: 0.875rem;
+          color: rgba(255, 255, 255, 0.6);
+        }
+
+        .event-type-check {
+          position: absolute;
+          top: 1rem;
+          right: 1rem;
+          width: 24px;
+          height: 24px;
+          border: 2px solid rgba(255, 255, 255, 0.3);
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          transition: all 0.3s ease;
+        }
+
+        .event-type-label input:checked + .event-type-card .event-type-check {
+          background: #00d4ff;
+          border-color: #00d4ff;
+        }
+
+        .event-type-check::after {
+          content: '✓';
+          color: #0a0a0a;
+          font-weight: 700;
+          opacity: 0;
+          transition: opacity 0.3s ease;
+        }
+
+        .event-type-label input:checked + .event-type-card .event-type-check::after {
+          opacity: 1;
+        }
+
+        /* FORM ACTIONS */
+        .form-actions {
+          display: flex;
+          gap: 1rem;
+          margin-top: 2.5rem;
+          padding-top: 2rem;
+          border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .btn-cancel {
+          flex: 1;
+          background: rgba(255, 255, 255, 0.05);
+          border: 2px solid rgba(255, 255, 255, 0.2);
+          color: rgba(255, 255, 255, 0.9);
+          padding: 1rem 2rem;
+          border-radius: 12px;
+          font-weight: 700;
+          font-size: 1rem;
+          cursor: pointer;
+          transition: all 0.3s ease;
+        }
+
+        .btn-cancel:hover {
+          background: rgba(255, 255, 255, 0.1);
+          border-color: rgba(255, 255, 255, 0.4);
+        }
+
+        .btn-submit {
+          flex: 1;
+          background: linear-gradient(135deg, #00d4ff 0%, #0099cc 100%);
+          border: none;
+          color: #0a0a0a;
+          padding: 1rem 2rem;
+          border-radius: 12px;
+          font-weight: 700;
+          font-size: 1rem;
+          cursor: pointer;
+          transition: all 0.3s ease;
+          position: relative;
+          overflow: hidden;
+        }
+
+        .btn-submit:hover:not(:disabled) {
+          transform: translateY(-2px);
+          box-shadow: 0 8px 25px rgba(0, 212, 255, 0.5);
+        }
+
+        .btn-submit:disabled {
+          opacity: 0.6;
+          cursor: not-allowed;
+        }
+
+        .btn-spinner {
+          display: inline-block;
+          width: 18px;
+          height: 18px;
+          border: 3px solid rgba(10, 10, 10, 0.3);
+          border-top-color: #0a0a0a;
+          border-radius: 50%;
+          animation: spin 0.8s linear infinite;
+          margin-right: 0.5rem;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 968px) {
+          .hero-content {
+            grid-template-columns: 1fr;
+            gap: 2rem;
+          }
+
+          .property-title {
+            font-size: 2.5rem;
+          }
+
+          .stats-container {
+            grid-template-columns: repeat(2, 1fr);
+          }
+
+          .event-types-grid {
+            grid-template-columns: 1fr;
+          }
+        }
+
+        @media (max-width: 640px) {
+          .page-wrapper {
+            padding: 1rem;
+          }
+
+          .hero-content {
+            padding: 2rem;
+          }
+
+          .stats-container {
+            grid-template-columns: 1fr;
+          }
+
+          .form-actions {
+            flex-direction: column;
+          }
+             .event-types-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 1rem;
@@ -762,40 +1557,63 @@ const calculateExpectedPrefReturn = (
           align-items: center;
           gap: 0.5rem;
         }
+        }
       `}</style>
-
       {/*<Bar data={chartData} options={chartOptions} />*/}
-
-      <div className="container-fluid px-3 py-5 bg-light ">
-        {/* HEADER SECTION */}
-        <div className="mb-4">
-          <div className="d-flex align-items-center justify-content-between">
-            <div>
-              <h2 className="mb-1 fw-bold section-header text-dark">
-                Property
-              </h2>
+       <div className="page-wrapper">
+         <div className="hero-section">
+          <div className="hero-content">
+            <div className="hero-image-container">
+              <div className="property-badge">PROPERTY</div>
+              <img
+                src={investor?.secure_url || "https://via.placeholder.com/350x350?text=Property"}
+                alt="Property"
+                className="hero-image"
+              />
+            </div>
+            <div className="hero-info">
+              <div>
+                <h1 className="property-title">{investor?.property_name || "Property Name"}</h1>
+                <p className="investor-name">👤 {investor?.name || "Investor Name"}</p>
+                <p className="closing-date">📅 Closing Date: {formatDate(investor?.closing_date)}</p>
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <div className="card shadow-sm border-0 mb-4">
-        <div className="card-body p-4">
-          {investor?.property?.map((p, index) => (
-            <div key={index} className="mb-4">
-              <h1>{p.property_name}</h1>
-              <div className="col-md-3 mb-3 mb-md-0">
-                <img
-                  src={p.secure_url}
-                  alt="Property"
-                  className="rounded shadow-sm w-100"
-                  style={{ objectFit: "cover", height: "220px" }}
-                />
+     
+ <div className="stats-container">
+          {investor?.investments?.map((investment, index) => (
+            <>
+              <div className="stat-card" key={`invested-${index}`}>
+                <div className="stat-icon">💰</div>
+                <div className="stat-label">Amount Invested</div>
+                <div className="stat-value">{formatCurrency(investment.invested_amount)}</div>
               </div>
-            </div>
+              <div className="stat-card" key={`pref-${index}`}>
+                <div className="stat-icon">📊</div>
+                <div className="stat-label">Actual Return</div>
+                <div className="stat-value">{formatCurrency(calculateActualReturn())}</div>
+              </div>
+              <div className="stat-card" key={`expected-${index}`}>
+                <div className="stat-icon">📈</div>
+                <div className="stat-label">Expected Return</div>
+                <div className="stat-value">
+                  {formatCurrency(
+                    calculateExpectedPrefReturn(
+                      investment.invested_amount,
+                      investment.perf_return,
+                      investor?.closing_date
+                    )
+                  )}
+                </div>
+              </div>
+            </>
           ))}
         </div>
-      </div>
+     
+
+    
 
       <div className="container-fluid px-3 py-5 bg-light ">
         <div className="mb-4">
@@ -839,7 +1657,7 @@ const calculateExpectedPrefReturn = (
           </div>
         </div>
 
-        {/*<Bar data={chartData} options={chartOptions} />;*/}
+        <Bar style={{height: '150px'}} data={chartData} options={chartOptions} />;
         <div class="card mx-5">
           <div className="d-flex justify-content-between card-header p-5">
             <div>Capital Events</div>
@@ -1033,14 +1851,16 @@ const calculateExpectedPrefReturn = (
                   </form>
                 </div>
               </div>
+              
             )}
           </div>
         </div>
       </div>
-
-      <div>
-        <h1>{calculateExpectedPrefReturn(investor?.investments?.invested_amount, investor?.investments?.perf_return, investor?.property?.closing_date)}</h1>
       </div>
+      
+
+
+     
     </>
   );
 }
