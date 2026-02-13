@@ -37,7 +37,7 @@ const getInvestorByID = async (req, res) => {
       [investorId, propertyId]
     );
 
-    const investments = investmentsResult.rows;
+    const investments = investmentsResult.rows[0];
 
     // 3️⃣ Get all events linked to each investment
     // Map each investment to its events
@@ -65,7 +65,7 @@ const getInvestorByID = async (req, res) => {
     res.json({
       ...investor,
       ...property,
-      investments : investments,
+      ...investments,
       events
       
     });

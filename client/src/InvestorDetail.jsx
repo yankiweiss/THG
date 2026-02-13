@@ -280,6 +280,8 @@ investor?.events?.forEach(e => {
 
 console.log(quarterlyData)
 
+
+
 const data = Object.values(quarterlyData); 
 
 const chartData = {
