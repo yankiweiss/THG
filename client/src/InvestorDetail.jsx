@@ -269,35 +269,7 @@ investor?.events?.forEach(e => {
   quarterlyData[key] += amount; // accumulate
 });
 
-const calculateExpectedPrefReturn = (
-  investedAmount,
-  prefRate, 
-  closingDate
- ) => {
-  const today = new Date();
-  const start = new Date(closingDate);
 
-  const diffTime = today - start;
-  const daysElapsed = diffTime / (1000 * 60 * 60 * 24);
-
-  const annualRate = prefRate / 100;
-
-  const earnedPref =
-    investedAmount *
-    annualRate *
-    (daysElapsed / 365);
-
-  return Number(earnedPref.toFixed(2));
-};
-
-const expectedReturnChart = () => {
-  const investedAmount = investor?.investments[0]?.invested_amount;
-  const perfRate =  investor?.investments[0]?.perf_return;
-
-  const 
-  
-}
-expectedReturnChart()
 
 
 
