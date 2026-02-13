@@ -65,7 +65,7 @@ const getInvestorByID = async (req, res) => {
     res.json({
       ...investor,
       ...property,
-      investments: investments,
+      ...investments,
       events
       
     });
