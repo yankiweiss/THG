@@ -41,15 +41,15 @@ const getInvestorByID = async (req, res) => {
 
     // 3️⃣ Get all events linked to each investment
     // Map each investment to its events
-    const investmentIds = investments.id;
+    
     let events = [];
-    if (investmentIds.length > 0) {
+   
       const eventsResult = await dataBasePool.query(
-        `SELECT * FROM events WHERE investment_id = ANY($1::int[])`,
-        [investmentIds]
+        `SELECT * FROM events WHERE investment_id = $1`,
+        [investments.id]
       );
       events = eventsResult.rows;
-    }
+    
 
     // Attach events to corresponding investment
    
@@ -63,9 +63,9 @@ const getInvestorByID = async (req, res) => {
 
     // 5️⃣ Return combined data
     res.json({
-      ...investor,
-      ...property,
-      ...investments,
+      investor,
+      property,
+      investments,
       events
       
     });
