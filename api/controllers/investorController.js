@@ -41,7 +41,7 @@ const getInvestorByID = async (req, res) => {
 
     // 3️⃣ Get all events linked to each investment
     // Map each investment to its events
-    const investmentIds = investments.map(inv => inv.id);
+    const investmentIds = investments.id;
     let events = [];
     if (investmentIds.length > 0) {
       const eventsResult = await dataBasePool.query(
