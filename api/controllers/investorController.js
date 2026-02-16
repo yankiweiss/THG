@@ -20,7 +20,7 @@ const addingInvestorToProp = async (req, res) => {
     )
     
   } catch (error) {
-    console.error(err);
+    console.error(error);
     res.status(500).json({ error: "Server error" });
   }
 
