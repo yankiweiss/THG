@@ -15,7 +15,7 @@ const addingInvestorToProp = async (req, res) => {
 
     await dataBasePool.query(
       `INSERT INTO investments 
-      (investor_id, property_id, invested_amount, pref_return) VALUES ($1, $2, $3, $4)`,
+      (investor_id, property_id, invested_amount, perf_return) VALUES ($1, $2, $3, $4)`,
        [investorID, property_id, invested_amount, pref_return]
     )
     
