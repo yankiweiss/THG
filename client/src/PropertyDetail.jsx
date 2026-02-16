@@ -692,6 +692,8 @@ function PropertyDetail() {
         {/* DETAILED INVESTOR PORTFOLIO */}
         <div className="section-card">
           <div className="section-header">
+            <div className="d-flex justify-content-between align-items-center">
+              <div>
             <h2 className="section-title">
               <span style={{ fontSize: "1.5rem" }}>📋</span>
               Investor Portfolio Details
@@ -699,8 +701,17 @@ function PropertyDetail() {
             <p className="section-subtitle">
               Comprehensive breakdown of investor contributions and returns
             </p>
+            </div>
+
+
+              <div>
+            <button type="button"  className="btn btn-outline-success">Add Investor</button>
           </div>
 
+          </div>
+          </div>
+
+        
           {property.investors && property.investors.length > 0 ? (
             <div className="investor-grid">
               {property.investors.map((investor) => (

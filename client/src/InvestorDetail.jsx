@@ -25,21 +25,24 @@ ChartJS.register(
 );
 
 function InvestorDetail() {
-  const [investor, setInvestor] = useState();
+  const [data, setData] = useState();
   const [addEvent, setAddEvent] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [selectedYear, setSelectedYear] = useState("");
+  const [eventTypeSelected, setEventTypeSelected] = useState("");
+  console.log(eventTypeSelected);
+
   const { propertyId, investorId } = useParams();
-   const [isSubmitting, setIsSubmitting] = useState(false);
-   const [selectedYear, setSelectedYear] = useState('')
 
-   console.log(selectedYear)
-  
+  const property = data?.property;
+  const investor = data?.investor;
+  const investments = data?.investments || {};
+  const events = data?.events || [];
 
-   const years = investor?.events?.map((e) => new Date(e.event_date).getFullYear()) || [];
-   const distinctYears = [...new Set(years)];
+  const years = events?.map((e) => new Date(e.event_date).getFullYear()) || [];
+  const distinctYears = [...new Set(years)];
 
- 
-
-   const formatDate = (dateComingIn) => {
+  const formatDate = (dateComingIn) => {
     if (!dateComingIn) return "N/A";
     const date = new Date(dateComingIn);
     return date.toLocaleDateString("en-US", {
@@ -49,7 +52,7 @@ function InvestorDetail() {
     });
   };
 
-   const formatCurrency = (value) => {
+  const formatCurrency = (value) => {
     if (!value) return "$0";
     return new Intl.NumberFormat("en-US", {
       style: "currency",
@@ -59,56 +62,46 @@ function InvestorDetail() {
     }).format(value);
   };
 
-//   const getDaysBetween = (startDate) => {
-//  const today = new Date();
-//  const start = new Date(startDate);
-//
-//  const diffTime = today - start; // milliseconds
-//  const diffDays = diffTime / (1000 * 60 * 60 * 24);
-//
-//  return diffDays;
-//  
-////};
+  //   const getDaysBetween = (startDate) => {
+  //  const today = new Date();
+  //  const start = new Date(startDate);
+  //
+  //  const diffTime = today - start; // milliseconds
+  //  const diffDays = diffTime / (1000 * 60 * 60 * 24);
+  //
+  //  return diffDays;
+  //
+  ////};
 
-const calculateActualReturn = () => {
-  
-  const sum = investor?.events?.reduce((result , e) =>{
-if(e.event_type === 'Investment'){
-  return result + Number(e.event_amount)
-}
-return result ;
-  }, 0) || 0;
+  const calculateActualReturn = () => {
+    const sum =
+      events?.reduce((result, e) => {
+        if (e.event_type === "Investment") {
+          return result + Number(e.event_amount);
+        }
+        return result;
+      }, 0) || 0;
 
-  return Number(sum.toFixed(2))
-}
+    return Number(sum.toFixed(2));
+  };
 
+  const calculateExpectedPrefReturn = (
+    investedAmount,
+    prefRate,
+    closingDate,
+  ) => {
+    const today = new Date();
+    const start = new Date(closingDate);
 
+    const diffTime = today - start;
+    const daysElapsed = diffTime / (1000 * 60 * 60 * 24);
 
-const calculateExpectedPrefReturn = (
-  investedAmount,
-  prefRate, 
-  closingDate
- ) => {
-  const today = new Date();
-  const start = new Date(closingDate);
+    const annualRate = prefRate / 100;
 
-  const diffTime = today - start;
-  const daysElapsed = diffTime / (1000 * 60 * 60 * 24);
+    const earnedPref = investedAmount * annualRate * (daysElapsed / 365);
 
-  const annualRate = prefRate / 100;
-
-  const earnedPref =
-    investedAmount *
-    annualRate *
-    (daysElapsed / 365);
-
-  return Number(earnedPref.toFixed(2));
-};
-
-
-
-
-  
+    return Number(earnedPref.toFixed(2));
+  };
 
   const eventTypes = [
     {
@@ -119,13 +112,6 @@ const calculateExpectedPrefReturn = (
       color: "#10b981",
     },
     {
-      value: "return_of_capital",
-      icon: "📤",
-      name: "Return of Capital",
-      description: "Principal returned to investor",
-      color: "#3b82f6",
-    },
-    {
       value: "capital_call",
       icon: "📞",
       name: "Capital Call",
@@ -133,15 +119,21 @@ const calculateExpectedPrefReturn = (
       color: "#f59e0b",
     },
     {
-      value: "distribution",
+      value: "return_of_capital",
+      icon: "📤",
+      name: "Return of Capital",
+      description: "Principal returned to investor",
+      color: "#3b82f6",
+    },
+
+    {
+      value: "Return",
       icon: "💵",
-      name: "Distribution",
+      name: "Return",
       description: "Profit distribution payment",
       color: "#8b5cf6",
     },
   ];
-
- 
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -162,14 +154,12 @@ const calculateExpectedPrefReturn = (
 
   console.log(investor);
 
-  
-
   useEffect(() => {
     fetch(
       `https://thg-seven.vercel.app/api/investor/${propertyId}/${investorId}`,
     )
       .then((res) => res.json())
-      .then((data) => setInvestor(data))
+      .then((data) => setData(data))
       .catch((err) => console.error(err));
   }, [propertyId, investorId]);
 
@@ -200,171 +190,199 @@ const calculateExpectedPrefReturn = (
       body: JSON.stringify(payload),
     });
 
-    const result =  await response.json();
+    const result = await response.json();
 
-   if (response.ok) {
-     setInvestor((prev) => ({
-       ...prev,
-       events: [...(prev.events || []), result],
-     }));
+    if (response.ok) {
+      setData((prev) => ({
+        ...prev,
+        events: [...(prev.events || []), result],
+      }));
 
-     setAddEvent(false);
-     form.reset();
-   }
-
-    
+      setAddEvent(false);
+      form.reset();
+    }
 
     // You can add success notification or redirect here
   };
 
-  const getQuarterLabel = (year, quarter) => {
-  const quarters = {
-    Q1: { start: "Jan 1", end: "Mar 31" },
-    Q2: { start: "Apr 1", end: "Jun 30" },
-    Q3: { start: "Jul 1", end: "Sep 30" },
-    Q4: { start: "Oct 1", end: "Dec 31" },
+  const getQuarterInfo = (dateString) => {
+    const date = new Date(dateString);
+    const month = date.getMonth();
+    const year = date.getFullYear();
+    let quarter;
+
+    if (month <= 2) quarter = "Q1";
+    else if (month <= 5) quarter = "Q2";
+    else if (month <= 8) quarter = "Q3";
+    else quarter = "Q4";
+
+    return { quarter, year };
   };
 
-  return `${quarter} ${year} (${quarters[quarter].start} - ${quarters[quarter].end})`;
-};
+  // Function to get label for x-axis
+  const getQuarterLabel = (year, quarter) => {
+    const quarters = {
+      Q1: { start: "Jan 1", end: "Mar 31" },
+      Q2: { start: "Apr 1", end: "Jun 30" },
+      Q3: { start: "Jul 1", end: "Sep 30" },
+      Q4: { start: "Oct 1", end: "Dec 31" },
+    };
+    return `${quarter} ${year} (${quarters[quarter].start} - ${quarters[quarter].end})`;
+  };
 
-// below method sees which quarter its going into
+  const quarters = ["Q1", "Q2", "Q3", "Q4"];
+  const quarterlyActual = {};
+  const quarterlyExpected = {};
 
-const getQuarterInfo = (dateString) => {
-  const date = new Date(dateString);
-  const month = date.getMonth();
-  const year = date.getFullYear();
-
-  let quarter;
-
-  if (month <= 2) quarter = "Q1";
-  else if (month <= 5) quarter = "Q2";
-  else if (month <= 8) quarter = "Q3";
-  else quarter = "Q4";
-
-  return { quarter, year };
-};
-
-const quarters = ["Q1", "Q2", "Q3", "Q4"];
-
-let quarterlyData = {};
-
-// Loop over each year and each quarter
-
-  quarters.forEach(q => {
-    const key = `${q}-${selectedYear}`;
-    quarterlyData[key] = 0;
+  quarters.forEach((q) => {
+    quarterlyActual[q] = 0;
+    quarterlyExpected[q] = 0;
   });
 
+  // Filter events for selected year
+  const filteredEvents =
+    events?.filter(
+      (e) =>
+        e.event_type === "Investment" &&
+        new Date(e.event_date).getFullYear() === Number(selectedYear),
+    ) || [];
 
-investor?.events?.forEach(e => {
-  if (e.event_type !== "Investment") return;
+  // Accumulate Actual and Expected returns
+  filteredEvents.forEach((e) => {
+    const { quarter } = getQuarterInfo(e.event_date);
+    const amount = Number(e.event_amount) || 0;
 
-  const { quarter, year } = getQuarterInfo(e.date_of_event);
-  
-  const key = `${quarter}-${year}`;
+    // Actual = just the event amount
+    quarterlyActual[quarter] += amount;
 
-  const amount = Number(e.event_amount);
+    // Expected = using investment pref rate
+    const investment = investments?.[0]; // adjust if multiple investments per investor
+    if (investment && e.event_date && investment.perf_return) {
+      const closingDate = investor?.closing_date || investment.closing_date;
+      const annualRate = investment.perf_return / 100;
+      const daysElapsed =
+        (new Date() - new Date(closingDate)) / (1000 * 60 * 60 * 24);
+      const expectedReturn = amount * annualRate * (daysElapsed / 365);
 
-  quarterlyData[key] += amount; // accumulate
-});
-
-
-
-
-
- const labels = Object.keys(quarterlyData).map(key => {
-  const [quarter, year] = key.split("-");
-  return getQuarterLabel(year, quarter);
-});
-
-console.log(quarterlyData)
-
-
-
-const data = Object.values(quarterlyData); 
-
-const chartData = {
-  labels,
-  datasets: [
-    {
-      label: "Actual Return",
-      data,
-      backgroundColor: "rgba(75, 192, 192, 0.6)",
-      borderColor: "rgba(75, 192, 192, 1)",
-      borderWidth: 1,
-    },{
-      
-    label: "Expected Return",
-      data,
-      backgroundColor: "rgba(192, 75, 139, 0.6)",
-      borderColor: "rgb(32, 82, 82)",
-      borderWidth: 1,
+      quarterlyExpected[quarter] += expectedReturn;
     }
-  ],
-};
+  });
 
-const chartOptions = {
-  responsive: true,
-  maintainAspectRatio: true,
+  // Prepare data arrays for chart
+  const actualReturnData = quarters.map((q) => quarterlyActual[q]);
 
-  plugins: {
-    legend: {
-      position: "top",
-      labels: {
-        font: { size: 14 }
-      }
-    },
-    title: {
-      display: true,
-      text: "Quarterly Returns",
-      font: { size: 18 }
-    },
-    tooltip: {
-      callbacks: {
-        label: function (context) {
-          return `$${Number(context.raw).toLocaleString(undefined, {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-          })}`;
-        }
-      }
-    }
-  },
+  //  const expectedReturnData = () => {
+  //    const amountInvested = property?.invested_amount;
+  //
+  //    const perfRate = property?.perf_return;
+  //    const closingDate = property?.closing_date;
+  //
+  //    const today = new Date();
+  //    const start = new Date(closingDate);
+  //
+  //    const diffTime = today - start;
+  //    const daysElapsed = diffTime / (1000 * 60 * 60 * 24);
+  //
+  //    const annualRate = perfRate / 100;
+  //
+  //
+  //    const quarterlyPerf = amountInvested * (perfRate * 100) /4
+  //
+  //    return Number(quarterlyPerf.toFixed(2));
+  //  };
+  //
+  //  console.log(expectedReturnData())
 
-  scales: {
-    x: {
-      position: 'bottom',
+  // Prepare labels
+  const labels = quarters.map((q) => getQuarterLabel(selectedYear, q));
+
+  const chartData = {
+    labels,
+    datasets: [
+      {
+        label: "Actual Return",
+        data: actualReturnData,
+        backgroundColor: "rgba(75, 192, 192, 0.6)",
+        borderColor: "rgba(75, 192, 192, 1)",
+        borderWidth: 1,
+      },
+      {
+        label: "Expected Return",
+        data: actualReturnData,
+        backgroundColor: "rgba(192, 75, 139, 0.6)",
+        borderColor: "rgb(32, 82, 82)",
+        borderWidth: 1,
+      },
+      {
+        type: "line",
+        label: "Return Overview",
+        data: [10000, 25000, 33000, 53000],
+        borderColor: "rgba(255, 99, 132, 1)",
+        borderWidth: 2,
+        fill: false,
+        tension: 0.3,
+      },
+    ],
+  };
+
+  const chartOptions = {
+    responsive: true,
+    maintainAspectRatio: true,
+
+    plugins: {
+      legend: {
+        position: "top",
+        labels: {
+          font: { size: 14 },
+        },
+      },
       title: {
         display: true,
+        text: "Quarterly Returns",
+        font: { size: 18 },
       },
-      ticks: {
-        maxRotation: 45,
-        minRotation: 25
-      }
+      tooltip: {
+        callbacks: {
+          label: function (context) {
+            return `$${Number(context.raw).toLocaleString(undefined, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            })}`;
+          },
+        },
+      },
     },
 
-    y: {
-      beginAtZero: true,
-      title: {
-        display: true,
-        text: "Amount ($)"
+    scales: {
+      x: {
+        position: "bottom",
+        title: {
+          display: true,
+        },
+        ticks: {
+          maxRotation: 45,
+          minRotation: 25,
+        },
       },
-      ticks: {
-        callback: function (value) {
-          return "$" + value.toLocaleString();
-        }
-      }
-    }
-  }
-};
-  
-    
+
+      y: {
+        beginAtZero: true,
+        title: {
+          display: true,
+          text: "Amount ($)",
+        },
+        ticks: {
+          callback: function (value) {
+            return "$" + value.toLocaleString();
+          },
+        },
+      },
+    },
+  };
 
   return (
     <>
-      
-     <style>{`
+      <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@400;500;700&display=swap');
 
         * {
@@ -547,18 +565,18 @@ const chartOptions = {
           to { opacity: 1; }
         }
 
-        .modal-container-enhanced {
-          background: white;
-          border-radius: 20px;
-          box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
-          max-width: 800px;
-          width: 100%;
-          max-height: 90vh;
-          overflow: hidden;
-          display: flex;
-          flex-direction: column;
-          animation: slideUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
+       .modal-container-enhanced {
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+  max-width: 800px;
+  width: 100%;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  overflow-y: scroll; 
+   overflow-x: hidden; 
+}
 
         @keyframes slideUp {
           from {
@@ -578,8 +596,7 @@ const chartOptions = {
           justify-content: space-between;
           align-items: flex-start;
           position: relative;
-          overflow: hidden;
-        }
+      }
 
         .modal-header-enhanced::before {
           content: '';
@@ -1029,7 +1046,7 @@ const chartOptions = {
               <div className="property-badge">PROPERTY</div>
               <img
                 src={
-                  investor?.secure_url ||
+                  property?.secure_url ||
                   "https://via.placeholder.com/350x350?text=Property"
                 }
                 alt="Property"
@@ -1039,113 +1056,113 @@ const chartOptions = {
             <div className="hero-info">
               <div>
                 <h1 className="property-title">
-                  {investor?.property_name || "Property Name"}
+                  {property?.property_name || "Property Name"}
                 </h1>
                 <p className="investor-name">
                   👤 {investor?.name || "Investor Name"}
                 </p>
                 <p className="closing-date">
-                  📅 Closing Date: {formatDate(investor?.closing_date)}
+                  📅 Closing Date: {formatDate(property?.closing_date)}
                 </p>
               </div>
             </div>
           </div>
         </div>
 
-
-
         <div className="stats-container">
-          {investor?.investments?.map((investment, index) => (
-            <>
-              <div className="stat-card" key={`invested-${index}`}>
-                <div className="stat-icon">💰</div>
-                <div className="stat-label">Amount Invested</div>
-                <div className="stat-value">
-                  {formatCurrency(investment.invested_amount)}
-                </div>
+          <>
+            <div className="stat-card">
+              <div className="stat-icon">💰</div>
+              <div className="stat-label">Amount Invested</div>
+              <div className="stat-value">
+                {formatCurrency(investments?.invested_amount)}
               </div>
-              <div className="stat-card" key={`pref-${index}`}>
-                <div className="stat-icon">📊</div>
-                <div className="stat-label">Actual Return</div>
-                <div className="stat-value">
-                  {formatCurrency(calculateActualReturn())}
-                </div>
-              </div>
-              <div className="stat-card" key={`expected-${index}`}>
-                <div className="stat-icon">📈</div>
-                <div className="stat-label">Expected Return</div>
-                <div className="stat-value">
-                  {formatCurrency(
-                    calculateExpectedPrefReturn(
-                      investment.invested_amount,
-                      investment.perf_return,
-                      investor?.closing_date,
-                    ),
-                  )}
-                </div>
-              </div>
-            </>
-          ))}
-        </div>
-
-        <div className="container-fluid px-3 py-5 bg-light ">
-       
-
-          <div className="shadow-sm border rounded m-4">
-            <div className="d-flex justify-content-center mt-5">
-              <div className="m-2">
-              <label className="form-label text-dark">Select Year:</label>
             </div>
-            <div>
-              <select
-                class="form-select form-select-sm "
-                aria-label="Default select example"
-               onChange={(e) => setSelectedYear(e.target.value)}
-              >
-                <option selected>Select Year</option>
-                {distinctYears?.map((y) => (
-                  <option value={y}>{y}</option>
-                ))}
+            <div className="stat-card">
+              <div className="stat-icon">📊</div>
+              <div className="stat-label">Actual Return</div>
+              <div className="stat-value">
+                {formatCurrency(calculateActualReturn())}
+              </div>
+            </div>
+            <div className="stat-card">
+              <div className="stat-icon">📈</div>
+              <div className="stat-label">Expected Return</div>
+              <div className="stat-value">
+                {formatCurrency(
+                  calculateExpectedPrefReturn(
+                    investments?.invested_amount,
+                    investments?.perf_return,
+                    property?.closing_date,
+                  ),
+                )}
+              </div>
+            </div>
+          </>
+        </div>
+      </div>
 
-               
+      <div className=" m-5">
+        <div className="card shadow-sm ">
+          <div className="card-body">
+            <div className="d-flex align-items-center mb-4">
+              <label className="form-label me-2 mb-0 fw-semibold">
+                Select Year:
+              </label>
+              <select
+                className="form-select form-select-sm w-auto"
+                onChange={(e) => setSelectedYear(e.target.value)}
+                value={selectedYear}
+              >
+                <option value="">Select Year</option>
+                {distinctYears?.map((y) => (
+                  <option key={y} value={y}>
+                    {y}
+                  </option>
+                ))}
               </select>
             </div>
-            </div>
+
             <div>
-            <Bar
-              
-              data={chartData}
-              options={chartOptions}
-            />
+              <Bar data={chartData} options={chartOptions} />
             </div>
-            ;
           </div>
-          <div class="card mx-5">
-            <div className="d-flex justify-content-between card-header p-5">
-              <div>Capital Events</div>
-              <div>
-                <a href="#h1">
-                  <button
-                    type="button"
-                    className="border-0 btn btn-outline-dark"
-                    onClick={() => setAddEvent(true)}
-                  >
-                    Add event
-                  </button>
-                </a>
-              </div>
+        </div>
+
+        <div class="card m-5">
+          <div className="d-flex justify-content-between card-header p-5">
+            <div>Capital Events</div>
+            <div>
+              <a href="#h1">
+                <button
+                  type="button"
+                  className="border-0 btn btn-outline-dark"
+                  onClick={() => setAddEvent(true)}
+                >
+                  Add event
+                </button>
+              </a>
             </div>
+          </div>
+          <div>
             <div class="card-body">
-              <table className="table">
-                {investor?.events?.length > 0 ? (
-                  investor?.events?.map((e, index) => (
+              <table className="table table-hover">
+                <thead>
+                  <tr>
+                    <th>Event Date</th>
+                    <th>Event Amount</th>
+                    <th>Event Type</th>
+                    <th>Notes</th>
+                  </tr>
+                </thead>
+                {events?.length > 0 ? (
+                  events?.map((e, index) => (
                     <tbody>
                       <tr key={index}>
                         <td>{formatDate(e.event_date)}</td>
                         <td>${formatNumber(e.event_amount)}</td>
                         <td>{e.event_type}</td>
                         <td>{e.notes}</td>
-                        
                       </tr>
                     </tbody>
                   ))
@@ -1154,171 +1171,253 @@ const chartOptions = {
                 )}
               </table>
               {/* event date , event amount, event type , notes ,  */}
-             {addEvent && (
-  <div
-    className="modal-overlay-enhanced"
-    onClick={(e) => {
-      if (e.target === e.currentTarget) {
-        handleCancel();
-      }
-    }}
-  >
-    <div className="modal-container-enhanced">
-      {/* HEADER */}
-      <div className="modal-header-enhanced">
-        <div className="modal-header-content">
-          <div className="modal-icon-circle">📊</div>
-          <div>
-            <h2 className="modal-title-enhanced">Add New Event</h2>
-            <p className="modal-subtitle-enhanced">Record a capital transaction for this investor</p>
-          </div>
-        </div>
-        <button
-          type="button"
-          className="modal-close-enhanced"
-          onClick={handleCancel}
-          aria-label="Close"
-        >
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M18 6L6 18M6 6l12 12" />
-          </svg>
-        </button>
-      </div>
-
-      {/* FORM */}
-      <form onSubmit={handleSubmit}>
-        <div className="modal-body-enhanced">
-          {/* DATE AND AMOUNT ROW */}
-          <div className="form-row-enhanced">
-            <div className="form-field-enhanced">
-              <label className="form-label-enhanced">
-                <span className="label-icon-enhanced">📅</span>
-                <span>Event Date</span>
-                <span className="required-asterisk">*</span>
-              </label>
-              <input
-                type="date"
-                className="form-input-enhanced"
-                name="event_date"
-                required
-              />
-              <span className="helper-text-enhanced">When did this occur?</span>
-            </div>
-
-            <div className="form-field-enhanced">
-              <label className="form-label-enhanced">
-                <span className="label-icon-enhanced">💵</span>
-                <span>Event Amount</span>
-                <span className="required-asterisk">*</span>
-              </label>
-              <div className="input-wrapper-enhanced">
-                <span className="input-prefix-enhanced">$</span>
-                <input
-                  type="number"
-                  className="form-input-enhanced input-with-prefix-enhanced"
-                  name="event_amount"
-                  placeholder="100,000"
-                  step="0.01"
-                  required
-                />
-              </div>
-              <span className="helper-text-enhanced">Transaction amount in USD</span>
-            </div>
-          </div>
-
-          {/* EVENT TYPE SELECTOR */}
-          <div className="form-field-enhanced form-field-full">
-            <label className="form-label-enhanced">
-              <span className="label-icon-enhanced">🏷️</span>
-              <span>Event Type</span>
-              <span className="required-asterisk">*</span>
-            </label>
-            <div className="event-type-grid-enhanced">
-              {eventTypes.map((type) => (
-                <label key={type.value} className="event-type-item-enhanced">
-                  <input
-                    type="radio"
-                    name="event_type"
-                    value={type.name}
-                    className="event-radio-enhanced"
-                    required
-                  />
-                  <div className="event-card-enhanced">
-                    <div className="event-card-content">
-                      <span className="event-icon-enhanced">{type.icon}</span>
-                      <div className="event-text-enhanced">
-                        <div className="event-name-enhanced">{type.name}</div>
-                        <div className="event-desc-enhanced">{type.description}</div>
+              {addEvent && (
+                <div
+                  className="modal-overlay-enhanced"
+                  onClick={(e) => {
+                    if (e.target === e.currentTarget) {
+                      handleCancel();
+                    }
+                  }}
+                >
+                  <div className="modal-container-enhanced">
+                    {/* HEADER */}
+                    <div className="modal-header-enhanced">
+                      <div className="modal-header-content">
+                        <div className="modal-icon-circle">📊</div>
+                        <div>
+                          <h2 className="modal-title-enhanced">
+                            Add New Event
+                          </h2>
+                          <p className="modal-subtitle-enhanced">
+                            Record a capital transaction for this investor
+                          </p>
+                        </div>
                       </div>
+                      <button
+                        type="button"
+                        className="modal-close-enhanced"
+                        onClick={handleCancel}
+                        aria-label="Close"
+                      >
+                        <svg
+                          width="24"
+                          height="24"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                        >
+                          <path d="M18 6L6 18M6 6l12 12" />
+                        </svg>
+                      </button>
                     </div>
-                    <div className="event-checkbox-enhanced">
-                      <svg className="checkmark-enhanced" width="16" height="16" viewBox="0 0 16 16" fill="none">
-                        <path d="M13.3334 4L6.00002 11.3333L2.66669 8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                      </svg>
-                    </div>
+
+                    {/* FORM */}
+                    <form onSubmit={handleSubmit}>
+                      <div className="modal-body-enhanced">
+                        {/* DATE AND AMOUNT ROW */}
+                        <div className="form-row-enhanced">
+                          <div className="form-field-enhanced">
+                            <label className="form-label-enhanced">
+                              <span className="label-icon-enhanced">💵</span>
+                              <span>Event Amount</span>
+                              <span className="required-asterisk">*</span>
+                            </label>
+                            <div className="input-wrapper-enhanced">
+                              <span className="input-prefix-enhanced">$</span>
+                              <input
+                                type="number"
+                                className="form-input-enhanced input-with-prefix-enhanced"
+                                name="event_amount"
+                                placeholder="100,000"
+                                step="0.01"
+                                required
+                              />
+                            </div>
+                            <span className="helper-text-enhanced">
+                              Transaction amount in USD
+                            </span>
+                          </div>
+                        </div>
+
+                        <div className="form-field-enhanced form-field-full">
+                          <label className="form-label-enhanced">
+                            <span className="label-icon-enhanced">🏷️</span>
+                            <span>Event Type</span>
+                            <span className="required-asterisk">*</span>
+                          </label>
+                          <div className="event-type-grid-enhanced">
+                            {eventTypes.map((type) => (
+                              <label
+                                key={type.value}
+                                className="event-type-item-enhanced"
+                              >
+                                <input
+                                  type="radio"
+                                  name="event_type"
+                                  value={type.name}
+                                  className="event-radio-enhanced"
+                                  required
+                                  onChange={(e) =>
+                                    setEventTypeSelected(e.target.value)
+                                  }
+                                />
+                                <div className="event-card-enhanced">
+                                  <div className="event-card-content">
+                                    <span className="event-icon-enhanced">
+                                      {type.icon}
+                                    </span>
+                                    <div className="event-text-enhanced">
+                                      <div className="event-name-enhanced">
+                                        {type.name}
+                                      </div>
+                                      <div className="event-desc-enhanced">
+                                        {type.description}
+                                      </div>
+                                    </div>
+                                  </div>
+                                  <div className="event-checkbox-enhanced">
+                                    <svg
+                                      className="checkmark-enhanced"
+                                      width="16"
+                                      height="16"
+                                      viewBox="0 0 16 16"
+                                      fill="none"
+                                    >
+                                      <path
+                                        d="M13.3334 4L6.00002 11.3333L2.66669 8"
+                                        stroke="currentColor"
+                                        strokeWidth="2"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                      />
+                                    </svg>
+                                  </div>
+                                </div>
+                              </label>
+                            ))}
+                          </div>
+                        </div>
+                        {(eventTypeSelected === "Investment" ||
+                          eventTypeSelected === "Capital Call" ||
+                          eventTypeSelected === "Return of Capital") && (
+                          <div className="form-field-enhanced col-md-6 mt-4">
+                            <label className="form-label-enhanced">
+                              <span className="label-icon-enhanced">📅</span>
+                              <span>Event Date</span>
+                              <span className="required-asterisk">*</span>
+                            </label>
+                            <input
+                              type="date"
+                              className="form-input-enhanced"
+                              name="event_date"
+                              required
+                            />
+                            <span className="helper-text-enhanced">
+                              When did this occur?
+                            </span>
+                          </div>
+                        )}
+
+                        {eventTypeSelected === "Return" && (
+                          <div className="row">
+                            <div className="form-field-enhanced col-md-6 mt-4">
+                              <label className="form-label-enhanced">
+                                <span className="label-icon-enhanced">📅</span>
+                                <span>From:</span>
+                                <span className="required-asterisk">*</span>
+                              </label>
+                              <input
+                                type="date"
+                                className="form-input-enhanced"
+                                name="from_date"
+                                required
+                              />
+                            </div>
+
+                            <div className="form-field-enhanced col-md-6 mt-4">
+                              <label className="form-label-enhanced">
+                                <span className="label-icon-enhanced">📅</span>
+                                <span>To:</span>
+                                <span className="required-asterisk">*</span>
+                              </label>
+                              <input
+                                type="date"
+                                className="form-input-enhanced"
+                                name="to_date"
+                                required
+                              />
+                            </div>
+                          </div>
+                        )}
+
+                        {/* EVENT TYPE SELECTOR */}
+
+                        {/* NOTES */}
+                        <div className="form-field-enhanced form-field-full mt-2">
+                          <label className="form-label-enhanced">
+                            <span className="label-icon-enhanced">📝</span>
+                            <span>Notes</span>
+                            <span className="optional-badge">Optional</span>
+                          </label>
+                          <textarea
+                            className="form-textarea-enhanced"
+                            name="notes"
+                            placeholder="Add any additional details about this event..."
+                            rows="4"
+                          ></textarea>
+                          <span className="helper-text-enhanced">
+                            Any relevant context or details
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* FOOTER ACTIONS */}
+                      <div className="modal-footer-enhanced">
+                        <button
+                          type="button"
+                          className="btn-secondary-enhanced"
+                          onClick={handleCancel}
+                          disabled={isSubmitting}
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          type="submit"
+                          className="btn-primary-enhanced"
+                          disabled={isSubmitting}
+                        >
+                          {isSubmitting ? (
+                            <>
+                              <span className="spinner-enhanced"></span>
+                              <span>Saving...</span>
+                            </>
+                          ) : (
+                            <>
+                              <span>Save Event</span>
+                              <svg
+                                width="16"
+                                height="16"
+                                viewBox="0 0 16 16"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                              >
+                                <path d="M12 8H4M8 4v8" strokeLinecap="round" />
+                              </svg>
+                            </>
+                          )}
+                        </button>
+                      </div>
+                    </form>
                   </div>
-                </label>
-              ))}
-            </div>
-          </div>
-
-          {/* NOTES */}
-          <div className="form-field-enhanced form-field-full">
-            <label className="form-label-enhanced">
-              <span className="label-icon-enhanced">📝</span>
-              <span>Notes</span>
-              <span className="optional-badge">Optional</span>
-            </label>
-            <textarea
-              className="form-textarea-enhanced"
-              name="notes"
-              placeholder="Add any additional details about this event..."
-              rows="4"
-            ></textarea>
-            <span className="helper-text-enhanced">Any relevant context or details</span>
-          </div>
-        </div>
-
-        {/* FOOTER ACTIONS */}
-        <div className="modal-footer-enhanced">
-          <button
-            type="button"
-            className="btn-secondary-enhanced"
-            onClick={handleCancel}
-            disabled={isSubmitting}
-          >
-            Cancel
-          </button>
-          <button
-            type="submit"
-            className="btn-primary-enhanced"
-            disabled={isSubmitting}
-          >
-            {isSubmitting ? (
-              <>
-                <span className="spinner-enhanced"></span>
-                <span>Saving...</span>
-              </>
-            ) : (
-              <>
-                <span>Save Event</span>
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M12 8H4M8 4v8" strokeLinecap="round"/>
-                </svg>
-              </>
-            )}
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
-)}
+                </div>
+              )}
             </div>
           </div>
         </div>
       </div>
-      
-      
     </>
   );
 }
