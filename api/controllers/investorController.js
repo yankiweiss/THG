@@ -5,7 +5,7 @@ const addingInvestorToProp = async (req, res) => {
 
   try {
     const investorResults = await dataBasePool.query(
-      `INSERT INTO investor (name)
+      `INSERT INTO investors (name)
        VALUES ($1)
        RETURNING id`,
       [investor_name]
