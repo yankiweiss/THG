@@ -1,7 +1,7 @@
 import dataBasePool from "../model/db.js";
 
 const addingInvestorToProp = async (req, res) => {
-  const { investor_name, invested_amount, pref_return, property_id } = req.body;
+  const { investor_name, invested_amount, perf_return, property_id } = req.body;
 
   try {
     const investorResults = await dataBasePool.query(
@@ -16,7 +16,7 @@ const addingInvestorToProp = async (req, res) => {
     await dataBasePool.query(
       `INSERT INTO investments 
       (investor_id, property_id, invested_amount, perf_return) VALUES ($1, $2, $3, $4)`,
-       [investorID, property_id, invested_amount, pref_return]
+       [investorID, property_id, invested_amount, perf_return]
     )
     
   } catch (error) {

@@ -845,7 +845,7 @@ function PropertyDetail() {
 
                   <div className="col-md-4">
                     <label className="form-label">Preferred Amount</label>
-                    <input className="form-control" name="pref_return"/>
+                    <input className="form-control" name="perf_return"/>
                   </div>
 
                   <div className="col-12">
