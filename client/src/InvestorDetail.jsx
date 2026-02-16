@@ -30,7 +30,9 @@ function InvestorDetail() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedYear, setSelectedYear] = useState("");
   const [eventTypeSelected, setEventTypeSelected] = useState("");
+  
   console.log(eventTypeSelected);
+  console.log(data)
 
   const { propertyId, investorId } = useParams();
 
@@ -243,7 +245,7 @@ function InvestorDetail() {
   const filteredEvents =
     events?.filter(
       (e) =>
-        e.event_type === "Investment" &&
+        e.event_type === "Return" &&
         new Date(e.event_date).getFullYear() === Number(selectedYear),
     ) || [];
 
@@ -256,44 +258,13 @@ function InvestorDetail() {
     quarterlyActual[quarter] += amount;
 
     // Expected = using investment pref rate
-    const investment = investments?.[0]; // adjust if multiple investments per investor
-    if (investment && e.event_date && investment.perf_return) {
-      const closingDate = investor?.closing_date || investment.closing_date;
-      const annualRate = investment.perf_return / 100;
-      const daysElapsed =
-        (new Date() - new Date(closingDate)) / (1000 * 60 * 60 * 24);
-      const expectedReturn = amount * annualRate * (daysElapsed / 365);
-
-      quarterlyExpected[quarter] += expectedReturn;
-    }
+ 
   });
 
   // Prepare data arrays for chart
   const actualReturnData = quarters.map((q) => quarterlyActual[q]);
 
-  //  const expectedReturnData = () => {
-  //    const amountInvested = property?.invested_amount;
-  //
-  //    const perfRate = property?.perf_return;
-  //    const closingDate = property?.closing_date;
-  //
-  //    const today = new Date();
-  //    const start = new Date(closingDate);
-  //
-  //    const diffTime = today - start;
-  //    const daysElapsed = diffTime / (1000 * 60 * 60 * 24);
-  //
-  //    const annualRate = perfRate / 100;
-  //
-  //
-  //    const quarterlyPerf = amountInvested * (perfRate * 100) /4
-  //
-  //    return Number(quarterlyPerf.toFixed(2));
-  //  };
-  //
-  //  console.log(expectedReturnData())
-
-  // Prepare labels
+ 
   const labels = quarters.map((q) => getQuarterLabel(selectedYear, q));
 
   const chartData = {
@@ -308,7 +279,6 @@ function InvestorDetail() {
       },
       {
         label: "Expected Return",
-        data: actualReturnData,
         backgroundColor: "rgba(192, 75, 139, 0.6)",
         borderColor: "rgb(32, 82, 82)",
         borderWidth: 1,
@@ -1072,10 +1042,10 @@ function InvestorDetail() {
         <div className="stats-container">
           <>
             <div className="stat-card">
-              <div className="stat-icon">💰</div>
-              <div className="stat-label">Amount Invested</div>
+            <div className="stat-icon">💹</div>
+              <div className="stat-label">Perf Return</div>
               <div className="stat-value">
-                {formatCurrency(investments?.invested_amount)}
+                % {investments?.perf_return}
               </div>
             </div>
             <div className="stat-card">
@@ -1102,9 +1072,9 @@ function InvestorDetail() {
         </div>
       </div>
 
-      <div className=" m-5">
-        <div className="card shadow-sm ">
-          <div className="card-body">
+      <div className="m-5">
+        <div className="card shadow-sm m-5">
+          <div className="card-body m-5">
             <div className="d-flex align-items-center mb-4">
               <label className="form-label me-2 mb-0 fw-semibold">
                 Select Year:
@@ -1129,6 +1099,7 @@ function InvestorDetail() {
           </div>
         </div>
 
+<div className="m-5">
         <div class="card m-5">
           <div className="d-flex justify-content-between card-header p-5">
             <div>Capital Events</div>
@@ -1149,26 +1120,31 @@ function InvestorDetail() {
               <table className="table table-hover">
                 <thead>
                   <tr>
-                    <th>Event Date</th>
-                    <th>Event Amount</th>
-                    <th>Event Type</th>
-                    <th>Notes</th>
+                    <th className="text-center">Event Date:</th>
+                    <th>Event Amount:</th>
+                    <th>Event Type:</th>
+                    <th>Notes:</th>
                   </tr>
                 </thead>
-                {events?.length > 0 ? (
-                  events?.map((e, index) => (
-                    <tbody>
+                <tbody>
+                  {events?.length > 0 ? (
+                    events?.map((e, index) => (
                       <tr key={index}>
-                        <td>{formatDate(e.event_date)}</td>
+                        <td className="text-center">
+                          {e.event_type === "Return"
+                            ? `${formatDate(e.from_date)} - ${formatDate(e.to_date)}`
+                            : formatDate(e.event_date)}
+                        </td>
+
                         <td>${formatNumber(e.event_amount)}</td>
                         <td>{e.event_type}</td>
                         <td>{e.notes}</td>
                       </tr>
-                    </tbody>
-                  ))
-                ) : (
-                  <p className="text-muted text-center">No events yet</p>
-                )}
+                    ))
+                  ) : (
+                    <p className="text-muted text-center">No events yet</p>
+                  )}
+                </tbody>
               </table>
               {/* event date , event amount, event type , notes ,  */}
               {addEvent && (
@@ -1416,6 +1392,7 @@ function InvestorDetail() {
               )}
             </div>
           </div>
+        </div>
         </div>
       </div>
     </>

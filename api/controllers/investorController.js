@@ -1,20 +1,29 @@
 import dataBasePool from "../model/db.js";
 
-const postAInvestor = async (req, res) => {
+const addingInvestorToProp = async (req, res) => {
   const { investor_name, invested_amount, pref_return, property_id } = req.body;
 
-  const postInvestor = `
-  INSERT INTO investor (investor_name, invested_amount, pref_return, property_id) VALUES($1, $2, $3, $4)
-  RETURNING *`;
+  try {
+    const investorResults = await dataBasePool.query(
+      `INSERT INTO investor (name)
+       VALUES ($1)
+       RETURNING id`,
+      [investor_name]
+    )
 
-  const results = await dataBasePool.query(postInvestor, [
-    investor_name,
-    invested_amount,
-    pref_return,
-    property_id,
-  ]);
+    const investorID = investorResults.rows[0].id;
 
-  res.json({ investor: results.rows[0] });
+    await dataBasePool.query(
+      `INSERT INTO investments 
+      (investor_id, property_id, invested_amount, pref_return) VALUES ($1, $2, $3, $4)`,
+       [investorID, property_id, invested_amount, pref_return]
+    )
+    
+  } catch (error) {
+    console.error(err);
+    res.status(500).json({ error: "Server error" });
+  }
+
 };
 
 const getInvestorByID = async (req, res) => {
@@ -82,5 +91,5 @@ const getInvestorByID = async (req, res) => {
 
 
 export {
-    postAInvestor, getInvestorByID
+    addingInvestorToProp, getInvestorByID
 }

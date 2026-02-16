@@ -5,19 +5,18 @@ import { useParams } from "react-router-dom";
 import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 
-
-
-
 function PropertyDetail() {
   const [property, setProperty] = useState([]);
   const [activeInvestor, setActiveInvestor] = useState(null);
 
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  
- const goToInvestorDetail = (propertyId, investorId) => {
-  navigate(`/investorDetail/${propertyId}/${investorId}`);
-};
+  const [addInvestor, setAddInvestor] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+
+  const goToInvestorDetail = (propertyId, investorId) => {
+    navigate(`/investorDetail/${propertyId}/${investorId}`);
+  };
 
   const { id } = useParams();
 
@@ -47,18 +46,16 @@ function PropertyDetail() {
       setActiveInvestor(property.investors[0].id);
   }, [years, property.investors]);
 
-  
-
   const formatNumber = (value) => {
     if (!value) return "0";
     return Number(value).toLocaleString("en-US");
   };
 
-   const calculateTotalInvestment = () => {
+  const calculateTotalInvestment = () => {
     if (!property.investors) return 0;
     return property.investors.reduce(
       (sum, inv) => sum + (inv.invested_amount || 0),
-      0
+      0,
     );
   };
 
@@ -67,7 +64,7 @@ function PropertyDetail() {
   //    return Math.floor(month / 3); // 0–3
   //  }
 
-   const formatCurrency = (value) => {
+  const formatCurrency = (value) => {
     if (!value) return "$0";
     return new Intl.NumberFormat("en-US", {
       style: "currency",
@@ -91,15 +88,44 @@ function PropertyDetail() {
     if (!property.investors || property.investors.length === 0) return 0;
     const total = property.investors.reduce(
       (sum, inv) => sum + (parseFloat(inv.perf_return) || 0),
-      0
+      0,
     );
     return (total / property.investors.length).toFixed(2);
   };
   const navigate = useNavigate();
 
+  
+
+  const addNewInvestor = async (e) => {
+    e.preventDefault();
+    const form = e.target;
+
+    const formData = new FormData(form);
+    const dataObject = Object.fromEntries(formData.entries());
+
+    const payload = {
+      ...dataObject,
+      property_id : id
+    };
+
+    console.log(payload);
+
+    await fetch("https://thg-seven.vercel.app/api/investor/addInvestor", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
+
+  
+  };
+
+  
+
   return (
     <>
-       <style>{`
+      <style>{`
         :root {
           --primary-gradient: linear-gradient(135deg, #667eea 0%, #a594b4 100%);
           --success-gradient: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
@@ -519,10 +545,32 @@ function PropertyDetail() {
 
           .section-header {
             padding: 1.5rem;
-          }
-        }
-      `}</style>
+      }
+      }
+            .modal-overlay{
+            position: fixed;
+ 
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(119, 119, 119, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+            }
 
+.custom-modal {
+ background: white;
+  padding: 20px;
+  border-radius: 8px;
+  width: 1000px;
+  max-width: 90%;
+
+}
+        
+      `}</style>
 
       {console.log(property)}
       <div className="container-fluid px-3 px-md-4 py-4">
@@ -694,24 +742,26 @@ function PropertyDetail() {
           <div className="section-header">
             <div className="d-flex justify-content-between align-items-center">
               <div>
-            <h2 className="section-title">
-              <span style={{ fontSize: "1.5rem" }}>📋</span>
-              Investor Portfolio Details
-            </h2>
-            <p className="section-subtitle">
-              Comprehensive breakdown of investor contributions and returns
-            </p>
-            </div>
-
+                <h2 className="section-title">
+                  <span style={{ fontSize: "1.5rem" }}>📋</span>
+                  Investor Portfolio Details
+                </h2>
+                <p className="section-subtitle">
+                  Comprehensive breakdown of investor contributions and returns
+                </p>
+              </div>
 
               <div>
-            <button type="button"  className="btn btn-outline-success">Add Investor</button>
+                <button
+                  className="btn btn-primary"
+                  onClick={() => setIsOpen(true)}
+                >
+                  Add Investor{" "}
+                </button>
+              </div>
+            </div>
           </div>
 
-          </div>
-          </div>
-
-        
           {property.investors && property.investors.length > 0 ? (
             <div className="investor-grid">
               {property.investors.map((investor) => (
@@ -750,17 +800,64 @@ function PropertyDetail() {
                 </div>
               ))}
             </div>
-          ) : (
+          ) : !addInvestor ? (
             <div className="empty-state">
               <div className="empty-state-icon">📊</div>
               <h3>No Investors Yet</h3>
               <p>Add investors to track their portfolio details</p>
             </div>
-          )}
+          ) : null}
         </div>
       </div>
-          
-      
+
+    {isOpen && (
+     
+          <div className="modal-overlay">
+            <div className="custom-modal">
+              <form onSubmit={addNewInvestor}>
+                <div className="d-flex justify-content-between align-items-center">
+                <div >
+                  <h3 >Add Investor</h3>
+                </div>
+                <div className="text-end m-3">
+                  {/* ❗ Important: type="button" */}
+                  <button
+                    type="button"
+                    className="btn btn-danger"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    Close
+                  </button>
+                </div>
+                </div>
+                <hr></hr>
+
+                <div className="row g-3">
+                  <div className="col-md-4">
+                    <label className="form-label">Investor Name</label>
+                    <input className="form-control" name="investor_name" />
+                  </div>
+
+                  <div className="col-md-4">
+                    <label className="form-label">Amount Invested</label>
+                    <input className="form-control" name="invested_amount"/>
+                  </div>
+
+                  <div className="col-md-4">
+                    <label className="form-label">Preferred Amount</label>
+                    <input className="form-control" name="pref_return"/>
+                  </div>
+
+                  <div className="col-12">
+                    <button type="submit" className="btn btn-success">
+                      Save
+                    </button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
     </>
   );
 }
