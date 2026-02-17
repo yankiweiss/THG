@@ -420,6 +420,22 @@ function InvestorDetail() {
     },
   };
 
+  const investmentToDate = () => {
+
+    const totalInvested = events?.filter((e)  => e.event_type === 'Investment' || e.event_type === 'Capital Call').map((e) => e.event_amount);
+
+    const total = totalInvested.reduce((result , totalInvestmentAmount) => {
+      return result + totalInvestmentAmount
+    }, 0)
+
+    const initalInvesment = Number(investments?.invested_amount);
+
+  
+    return Number(total + initalInvesment).toFixed(2)
+
+  }
+
+  
   return (
     <>
       <style>{`
@@ -1113,9 +1129,16 @@ function InvestorDetail() {
           <>
             <div className="stat-card">
               <div className="stat-icon">📈</div>
-              <div className="stat-label">INVESTED AMOUNT</div>
+              <div className="stat-label">INITIAL INVESTMENT</div>
               <div className="stat-value">
                 {formatCurrency(investments?.invested_amount)}
+              </div>
+            </div>
+              <div className="stat-card">
+              <div className="stat-icon">📈</div>
+              <div className="stat-label">INVESTMENT TO DATE</div>
+              <div className="stat-value">
+                {formatCurrency(investmentToDate())}
               </div>
             </div>
             <div className="stat-card">
