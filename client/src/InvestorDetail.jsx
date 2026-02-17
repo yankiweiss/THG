@@ -1,5 +1,6 @@
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
+import "chartjs-adapter-date-fns";
 
 import {
   Chart as ChartJS,
@@ -9,9 +10,11 @@ import {
   LineElement,
   PointElement, // <-- add this
   Tooltip,
+  TimeScale,
   Legend,
 } from "chart.js";
 
+import { Chart } from "chart.js";
 import { Bar } from "react-chartjs-2";
 
 ChartJS.register(
@@ -21,6 +24,7 @@ ChartJS.register(
   LineElement, // <-- add this
   PointElement, // <-- add this
   Tooltip,
+  TimeScale,
   Legend,
 );
 
@@ -30,10 +34,6 @@ function InvestorDetail() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedYear, setSelectedYear] = useState("");
   const [eventTypeSelected, setEventTypeSelected] = useState("");
-  
-  console.log(eventTypeSelected);
-  console.log(data)
-
   const { propertyId, investorId } = useParams();
 
   const property = data?.property;
@@ -41,8 +41,24 @@ function InvestorDetail() {
   const investments = data?.investments || {};
   const events = data?.events || [];
 
-  const years = events?.map((e) => new Date(e.event_date).getFullYear()) || [];
-  const distinctYears = [...new Set(years)];
+  const allYears =
+    events?.flatMap((e) => {
+      if (e.event_date) {
+        return [new Date(e.event_date).getFullYear()];
+      } else if (e.from_date && e.to_date) {
+        const startYear = new Date(e.from_date).getFullYear();
+        const endYear = new Date(e.to_date).getFullYear();
+        const years = [];
+
+        for (let y = startYear; y <= endYear; y++) {
+          years.push(y);
+        }
+
+        return years;
+      }
+    }) || [];
+
+  const uniqueYears = Array.from(new Set(allYears)).sort((a, b) => a - b);
 
   const formatDate = (dateComingIn) => {
     if (!dateComingIn) return "N/A";
@@ -78,7 +94,7 @@ function InvestorDetail() {
   const calculateActualReturn = () => {
     const sum =
       events?.reduce((result, e) => {
-        if (e.event_type === "Investment") {
+        if (e.event_type === "Return") {
           return result + Number(e.event_amount);
         }
         return result;
@@ -207,144 +223,160 @@ function InvestorDetail() {
     // You can add success notification or redirect here
   };
 
-  const getQuarterInfo = (dateString) => {
-    const date = new Date(dateString);
+  const getQuarter = (date) => {
     const month = date.getMonth();
     const year = date.getFullYear();
-    let quarter;
 
-    if (month <= 2) quarter = "Q1";
-    else if (month <= 5) quarter = "Q2";
-    else if (month <= 8) quarter = "Q3";
-    else quarter = "Q4";
-
-    return { quarter, year };
-  };
-
-  // Function to get label for x-axis
-  const getQuarterLabel = (year, quarter) => {
-    const quarters = {
-      Q1: { start: "Jan 1", end: "Mar 31" },
-      Q2: { start: "Apr 1", end: "Jun 30" },
-      Q3: { start: "Jul 1", end: "Sep 30" },
-      Q4: { start: "Oct 1", end: "Dec 31" },
+    if (month <= 2)
+      return {
+        year,
+        quarter: "Q1",
+        start: new Date(year, 0, 1),
+        end: new Date(year, 2, 31),
+      };
+    if (month <= 5)
+      return {
+        year,
+        quarter: "Q2",
+        start: new Date(year, 3, 1),
+        end: new Date(year, 5, 30),
+      };
+    if (month <= 8)
+      return {
+        year,
+        quarter: "Q3",
+        start: new Date(year, 6, 1),
+        end: new Date(year, 8, 30),
+      };
+    return {
+      year,
+      quarter: "Q4",
+      start: new Date(year, 9, 1),
+      end: new Date(year, 11, 31),
     };
-    return `${quarter} ${year} (${quarters[quarter].start} - ${quarters[quarter].end})`;
   };
 
-  const quarters = ["Q1", "Q2", "Q3", "Q4"];
-  const quarterlyActual = {};
-  const quarterlyExpected = {};
+  const splitEventByQuarter = (startDate, endDate, amount, selectedYear) => {
+    const result = [];
+   
 
-  quarters.forEach((q) => {
-    quarterlyActual[q] = 0;
-    quarterlyExpected[q] = 0;
+    const yearStart = new Date(selectedYear, 0, 1);
+  const yearEnd = new Date(selectedYear, 11, 31);
+
+  if (endDate < yearStart || startDate > yearEnd) {
+    return [];
+  }
+
+    startDate = startDate < yearStart ? yearStart : startDate;
+  endDate = endDate > yearEnd ? yearEnd : endDate;
+
+   let current = new Date(startDate);
+
+    while (current <= endDate) {
+      const { start: quarterStart, end: quarterEnd } = getQuarter(current);
+      const periodEnd = endDate < quarterEnd ? endDate : quarterEnd;
+      const daysInPeriod = (periodEnd - current + 1) / (1000 * 60 * 60 * 24);
+      const totalDays = (endDate - startDate + 1) / (1000 * 60 * 60 * 24);
+      const portion = (daysInPeriod / totalDays) * amount;
+
+       
+      result.push({ x: quarterStart, y: portion });
+    
+      current = new Date(periodEnd);
+      current.setDate(current.getDate() + 1);
+    }
+    return result;
+  };
+
+  const returnEvents = events?.filter((e) => e.event_type === "Return");
+
+  let chartPoints = [];
+
+  returnEvents.forEach((event) => {
+    const points = splitEventByQuarter(
+      new Date(event.from_date),
+      new Date(event.to_date),
+      event.event_amount,
+      selectedYear
+      
+    );
+
+    chartPoints = chartPoints.concat(points);
   });
 
-  // Filter events for selected year
-  const filteredEvents =
-    events?.filter(
-      (e) =>
-        e.event_type === "Return" &&
-        new Date(e.event_date).getFullYear() === Number(selectedYear),
-    ) || [];
+ const expectedQuarterReturn = (selectedYear) => {
+  const amountInvested = investments?.invested_amount || 0;
+  const prefReturn = investments?.perf_return || 0;
 
-  // Accumulate Actual and Expected returns
-  filteredEvents.forEach((e) => {
-    const { quarter } = getQuarterInfo(e.event_date);
-    const amount = Number(e.event_amount) || 0;
+  const perfReturnPercent = prefReturn / 100;
+  const quarterReturn = (amountInvested * perfReturnPercent) / 4;
 
-    // Actual = just the event amount
-    quarterlyActual[quarter] += amount;
-
-    // Expected = using investment pref rate
- 
-  });
-
-  // Prepare data arrays for chart
-  const actualReturnData = quarters.map((q) => quarterlyActual[q]);
-
- 
-  const labels = quarters.map((q) => getQuarterLabel(selectedYear, q));
-
+  return [
+    { x: new Date(selectedYear, 0, 1), y: quarterReturn },  // Q1
+    { x: new Date(selectedYear, 3, 1), y: quarterReturn },  // Q2
+    { x: new Date(selectedYear, 6, 1), y: quarterReturn },  // Q3
+    { x: new Date(selectedYear, 9, 1), y: quarterReturn },  // Q4
+  ];
+};
   const chartData = {
-    labels,
     datasets: [
       {
-        label: "Actual Return",
-        data: actualReturnData,
-        backgroundColor: "rgba(75, 192, 192, 0.6)",
-        borderColor: "rgba(75, 192, 192, 1)",
-        borderWidth: 1,
+        label: "ACTUAL QUARTER RETURN",
+        data: chartPoints,
+        backgroundColor: "rgba(75,192,192,0.6)",
       },
       {
-        label: "Expected Return",
-        backgroundColor: "rgba(192, 75, 139, 0.6)",
-        borderColor: "rgb(32, 82, 82)",
-        borderWidth: 1,
+        label: "EXPECTED QUARTER RETURN",
+        data: expectedQuarterReturn(selectedYear),
+        backgroundColor: "rgba(192, 132, 75, 0.6)",
       },
-      {
-        type: "line",
-        label: "Return Overview",
-        data: [10000, 25000, 33000, 53000],
-        borderColor: "rgba(255, 99, 132, 1)",
-        borderWidth: 2,
-        fill: false,
-        tension: 0.3,
+       {
+        label: "MISSING AMOUNT PER QUARTER",
+        data: chartPoints,
+        backgroundColor: "rgba(192, 75, 75, 0.6)",
       },
     ],
   };
 
   const chartOptions = {
     responsive: true,
-    maintainAspectRatio: true,
-
+    maintainAspectRatio: false,
     plugins: {
-      legend: {
-        position: "top",
-        labels: {
-          font: { size: 14 },
-        },
-      },
-      title: {
-        display: true,
-        text: "Quarterly Returns",
-        font: { size: 18 },
-      },
       tooltip: {
-        callbacks: {
-          label: function (context) {
-            return `$${Number(context.raw).toLocaleString(undefined, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-            })}`;
-          },
-        },
-      },
+       callbacks: {
+    title: function (context) {
+      const date = new Date(context[0].raw.x);
+
+      return date.toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+      });
+    },
+    label: function (context) {
+      const formattedAmount = new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: "USD",
+      }).format(context.raw.y);
+
+      return `Amount: ${formattedAmount}`;
+    },
+  },
+},
     },
 
     scales: {
       x: {
-        position: "bottom",
-        title: {
-          display: true,
-        },
-        ticks: {
-          maxRotation: 45,
-          minRotation: 25,
+        type: "time",
+        time: {
+          unit: "quarter",
         },
       },
-
       y: {
         beginAtZero: true,
         title: {
           display: true,
           text: "Amount ($)",
-        },
-        ticks: {
-          callback: function (value) {
-            return "$" + value.toLocaleString();
-          },
         },
       },
     },
@@ -1042,11 +1074,9 @@ function InvestorDetail() {
         <div className="stats-container">
           <>
             <div className="stat-card">
-            <div className="stat-icon">💹</div>
+              <div className="stat-icon">💹</div>
               <div className="stat-label">Perf Return</div>
-              <div className="stat-value">
-                % {investments?.perf_return}
-              </div>
+              <div className="stat-value">% {investments?.perf_return}</div>
             </div>
             <div className="stat-card">
               <div className="stat-icon">📊</div>
@@ -1070,6 +1100,18 @@ function InvestorDetail() {
             </div>
           </>
         </div>
+
+        <div className="stats-container">
+          <>
+            <div className="stat-card">
+              <div className="stat-icon">💹</div>
+              <div className="stat-label">Amount Invested</div>
+              <div className="stat-value">
+                {formatCurrency(investments?.invested_amount)}
+              </div>
+            </div>
+          </>
+        </div>
       </div>
 
       <div className="m-5">
@@ -1085,7 +1127,7 @@ function InvestorDetail() {
                 value={selectedYear}
               >
                 <option value="">Select Year</option>
-                {distinctYears?.map((y) => (
+                {uniqueYears?.map((y) => (
                   <option key={y} value={y}>
                     {y}
                   </option>
@@ -1093,306 +1135,315 @@ function InvestorDetail() {
               </select>
             </div>
 
-            <div>
+            <div style={{ height: "450px" }}>
               <Bar data={chartData} options={chartOptions} />
             </div>
           </div>
         </div>
 
-<div className="m-5">
-        <div class="card m-5">
-          <div className="d-flex justify-content-between card-header p-5">
-            <div>Capital Events</div>
-            <div>
-              <a href="#h1">
-                <button
-                  type="button"
-                  className="border-0 btn btn-outline-dark"
-                  onClick={() => setAddEvent(true)}
-                >
-                  Add event
-                </button>
-              </a>
+        <div className="m-5">
+          <div class="card m-5">
+            <div className="d-flex justify-content-between card-header p-5">
+              <div>Capital Events</div>
+              <div>
+                <a href="#h1">
+                  <button
+                    type="button"
+                    className="border-0 btn btn-outline-dark"
+                    onClick={() => setAddEvent(true)}
+                  >
+                    Add event
+                  </button>
+                </a>
+              </div>
             </div>
-          </div>
-          <div>
-            <div class="card-body">
-              <table className="table table-hover">
-                <thead>
-                  <tr>
-                    <th className="text-center">Event Date:</th>
-                    <th>Event Amount:</th>
-                    <th>Event Type:</th>
-                    <th>Notes:</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {events?.length > 0 ? (
-                    events?.map((e, index) => (
-                      <tr key={index}>
-                        <td className="text-center">
-                          {e.event_type === "Return"
-                            ? `${formatDate(e.from_date)} - ${formatDate(e.to_date)}`
-                            : formatDate(e.event_date)}
-                        </td>
+            <div>
+              <div class="card-body">
+                <table className="table table-hover">
+                  <thead>
+                    <tr>
+                      <th className="text-center">Event Date:</th>
+                      <th>Event Amount:</th>
+                      <th>Event Type:</th>
+                      <th>Notes:</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {events?.length > 0 ? (
+                      events?.map((e, index) => (
+                        <tr key={index}>
+                          <td className="text-center">
+                            {e.event_type === "Return"
+                              ? `${formatDate(e.from_date)} - ${formatDate(e.to_date)}`
+                              : formatDate(e.event_date)}
+                          </td>
 
-                        <td>${formatNumber(e.event_amount)}</td>
-                        <td>{e.event_type}</td>
-                        <td>{e.notes}</td>
-                      </tr>
-                    ))
-                  ) : (
-                    <p className="text-muted text-center">No events yet</p>
-                  )}
-                </tbody>
-              </table>
-              {/* event date , event amount, event type , notes ,  */}
-              {addEvent && (
-                <div
-                  className="modal-overlay-enhanced"
-                  onClick={(e) => {
-                    if (e.target === e.currentTarget) {
-                      handleCancel();
-                    }
-                  }}
-                >
-                  <div className="modal-container-enhanced">
-                    {/* HEADER */}
-                    <div className="modal-header-enhanced">
-                      <div className="modal-header-content">
-                        <div className="modal-icon-circle">📊</div>
-                        <div>
-                          <h2 className="modal-title-enhanced">
-                            Add New Event
-                          </h2>
-                          <p className="modal-subtitle-enhanced">
-                            Record a capital transaction for this investor
-                          </p>
-                        </div>
+                          <td>${formatNumber(e.event_amount)}</td>
+                          <td>{e.event_type}</td>
+                          <td>{e.notes}</td>
+                        </tr>
+                      ))
+                    ) : (
+                      <div className="text-center mt-5">
+                        <p className="text-muted ">No events yet</p>
                       </div>
-                      <button
-                        type="button"
-                        className="modal-close-enhanced"
-                        onClick={handleCancel}
-                        aria-label="Close"
-                      >
-                        <svg
-                          width="24"
-                          height="24"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                        >
-                          <path d="M18 6L6 18M6 6l12 12" />
-                        </svg>
-                      </button>
-                    </div>
-
-                    {/* FORM */}
-                    <form onSubmit={handleSubmit}>
-                      <div className="modal-body-enhanced">
-                        {/* DATE AND AMOUNT ROW */}
-                        <div className="form-row-enhanced">
-                          <div className="form-field-enhanced">
-                            <label className="form-label-enhanced">
-                              <span className="label-icon-enhanced">💵</span>
-                              <span>Event Amount</span>
-                              <span className="required-asterisk">*</span>
-                            </label>
-                            <div className="input-wrapper-enhanced">
-                              <span className="input-prefix-enhanced">$</span>
-                              <input
-                                type="number"
-                                className="form-input-enhanced input-with-prefix-enhanced"
-                                name="event_amount"
-                                placeholder="100,000"
-                                step="0.01"
-                                required
-                              />
-                            </div>
-                            <span className="helper-text-enhanced">
-                              Transaction amount in USD
-                            </span>
+                    )}
+                  </tbody>
+                </table>
+                {/* event date , event amount, event type , notes ,  */}
+                {addEvent && (
+                  <div
+                    className="modal-overlay-enhanced"
+                    onClick={(e) => {
+                      if (e.target === e.currentTarget) {
+                        handleCancel();
+                      }
+                    }}
+                  >
+                    <div className="modal-container-enhanced">
+                      {/* HEADER */}
+                      <div className="modal-header-enhanced">
+                        <div className="modal-header-content">
+                          <div className="modal-icon-circle">📊</div>
+                          <div>
+                            <h2 className="modal-title-enhanced">
+                              Add New Event
+                            </h2>
+                            <p className="modal-subtitle-enhanced">
+                              Record a capital transaction for this investor
+                            </p>
                           </div>
                         </div>
-
-                        <div className="form-field-enhanced form-field-full">
-                          <label className="form-label-enhanced">
-                            <span className="label-icon-enhanced">🏷️</span>
-                            <span>Event Type</span>
-                            <span className="required-asterisk">*</span>
-                          </label>
-                          <div className="event-type-grid-enhanced">
-                            {eventTypes.map((type) => (
-                              <label
-                                key={type.value}
-                                className="event-type-item-enhanced"
-                              >
-                                <input
-                                  type="radio"
-                                  name="event_type"
-                                  value={type.name}
-                                  className="event-radio-enhanced"
-                                  required
-                                  onChange={(e) =>
-                                    setEventTypeSelected(e.target.value)
-                                  }
-                                />
-                                <div className="event-card-enhanced">
-                                  <div className="event-card-content">
-                                    <span className="event-icon-enhanced">
-                                      {type.icon}
-                                    </span>
-                                    <div className="event-text-enhanced">
-                                      <div className="event-name-enhanced">
-                                        {type.name}
-                                      </div>
-                                      <div className="event-desc-enhanced">
-                                        {type.description}
-                                      </div>
-                                    </div>
-                                  </div>
-                                  <div className="event-checkbox-enhanced">
-                                    <svg
-                                      className="checkmark-enhanced"
-                                      width="16"
-                                      height="16"
-                                      viewBox="0 0 16 16"
-                                      fill="none"
-                                    >
-                                      <path
-                                        d="M13.3334 4L6.00002 11.3333L2.66669 8"
-                                        stroke="currentColor"
-                                        strokeWidth="2"
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                      />
-                                    </svg>
-                                  </div>
-                                </div>
-                              </label>
-                            ))}
-                          </div>
-                        </div>
-                        {(eventTypeSelected === "Investment" ||
-                          eventTypeSelected === "Capital Call" ||
-                          eventTypeSelected === "Return of Capital") && (
-                          <div className="form-field-enhanced col-md-6 mt-4">
-                            <label className="form-label-enhanced">
-                              <span className="label-icon-enhanced">📅</span>
-                              <span>Event Date</span>
-                              <span className="required-asterisk">*</span>
-                            </label>
-                            <input
-                              type="date"
-                              className="form-input-enhanced"
-                              name="event_date"
-                              required
-                            />
-                            <span className="helper-text-enhanced">
-                              When did this occur?
-                            </span>
-                          </div>
-                        )}
-
-                        {eventTypeSelected === "Return" && (
-                          <div className="row">
-                            <div className="form-field-enhanced col-md-6 mt-4">
-                              <label className="form-label-enhanced">
-                                <span className="label-icon-enhanced">📅</span>
-                                <span>From:</span>
-                                <span className="required-asterisk">*</span>
-                              </label>
-                              <input
-                                type="date"
-                                className="form-input-enhanced"
-                                name="from_date"
-                                required
-                              />
-                            </div>
-
-                            <div className="form-field-enhanced col-md-6 mt-4">
-                              <label className="form-label-enhanced">
-                                <span className="label-icon-enhanced">📅</span>
-                                <span>To:</span>
-                                <span className="required-asterisk">*</span>
-                              </label>
-                              <input
-                                type="date"
-                                className="form-input-enhanced"
-                                name="to_date"
-                                required
-                              />
-                            </div>
-                          </div>
-                        )}
-
-                        {/* EVENT TYPE SELECTOR */}
-
-                        {/* NOTES */}
-                        <div className="form-field-enhanced form-field-full mt-2">
-                          <label className="form-label-enhanced">
-                            <span className="label-icon-enhanced">📝</span>
-                            <span>Notes</span>
-                            <span className="optional-badge">Optional</span>
-                          </label>
-                          <textarea
-                            className="form-textarea-enhanced"
-                            name="notes"
-                            placeholder="Add any additional details about this event..."
-                            rows="4"
-                          ></textarea>
-                          <span className="helper-text-enhanced">
-                            Any relevant context or details
-                          </span>
-                        </div>
-                      </div>
-
-                      {/* FOOTER ACTIONS */}
-                      <div className="modal-footer-enhanced">
                         <button
                           type="button"
-                          className="btn-secondary-enhanced"
+                          className="modal-close-enhanced"
                           onClick={handleCancel}
-                          disabled={isSubmitting}
+                          aria-label="Close"
                         >
-                          Cancel
-                        </button>
-                        <button
-                          type="submit"
-                          className="btn-primary-enhanced"
-                          disabled={isSubmitting}
-                        >
-                          {isSubmitting ? (
-                            <>
-                              <span className="spinner-enhanced"></span>
-                              <span>Saving...</span>
-                            </>
-                          ) : (
-                            <>
-                              <span>Save Event</span>
-                              <svg
-                                width="16"
-                                height="16"
-                                viewBox="0 0 16 16"
-                                fill="none"
-                                stroke="currentColor"
-                                strokeWidth="2"
-                              >
-                                <path d="M12 8H4M8 4v8" strokeLinecap="round" />
-                              </svg>
-                            </>
-                          )}
+                          <svg
+                            width="24"
+                            height="24"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                          >
+                            <path d="M18 6L6 18M6 6l12 12" />
+                          </svg>
                         </button>
                       </div>
-                    </form>
+
+                      {/* FORM */}
+                      <form onSubmit={handleSubmit}>
+                        <div className="modal-body-enhanced">
+                          {/* DATE AND AMOUNT ROW */}
+                          <div className="form-row-enhanced">
+                            <div className="form-field-enhanced">
+                              <label className="form-label-enhanced">
+                                <span className="label-icon-enhanced">💵</span>
+                                <span>Event Amount</span>
+                                <span className="required-asterisk">*</span>
+                              </label>
+                              <div className="input-wrapper-enhanced">
+                                <span className="input-prefix-enhanced">$</span>
+                                <input
+                                  type="number"
+                                  className="form-input-enhanced input-with-prefix-enhanced"
+                                  name="event_amount"
+                                  placeholder="100,000"
+                                  step="0.01"
+                                  required
+                                />
+                              </div>
+                              <span className="helper-text-enhanced">
+                                Transaction amount in USD
+                              </span>
+                            </div>
+                          </div>
+
+                          <div className="form-field-enhanced form-field-full">
+                            <label className="form-label-enhanced">
+                              <span className="label-icon-enhanced">🏷️</span>
+                              <span>Event Type</span>
+                              <span className="required-asterisk">*</span>
+                            </label>
+                            <div className="event-type-grid-enhanced">
+                              {eventTypes.map((type) => (
+                                <label
+                                  key={type.value}
+                                  className="event-type-item-enhanced"
+                                >
+                                  <input
+                                    type="radio"
+                                    name="event_type"
+                                    value={type.name}
+                                    className="event-radio-enhanced"
+                                    required
+                                    onChange={(e) =>
+                                      setEventTypeSelected(e.target.value)
+                                    }
+                                  />
+                                  <div className="event-card-enhanced">
+                                    <div className="event-card-content">
+                                      <span className="event-icon-enhanced">
+                                        {type.icon}
+                                      </span>
+                                      <div className="event-text-enhanced">
+                                        <div className="event-name-enhanced">
+                                          {type.name}
+                                        </div>
+                                        <div className="event-desc-enhanced">
+                                          {type.description}
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div className="event-checkbox-enhanced">
+                                      <svg
+                                        className="checkmark-enhanced"
+                                        width="16"
+                                        height="16"
+                                        viewBox="0 0 16 16"
+                                        fill="none"
+                                      >
+                                        <path
+                                          d="M13.3334 4L6.00002 11.3333L2.66669 8"
+                                          stroke="currentColor"
+                                          strokeWidth="2"
+                                          strokeLinecap="round"
+                                          strokeLinejoin="round"
+                                        />
+                                      </svg>
+                                    </div>
+                                  </div>
+                                </label>
+                              ))}
+                            </div>
+                          </div>
+                          {(eventTypeSelected === "Investment" ||
+                            eventTypeSelected === "Capital Call" ||
+                            eventTypeSelected === "Return of Capital") && (
+                            <div className="form-field-enhanced col-md-6 mt-4">
+                              <label className="form-label-enhanced">
+                                <span className="label-icon-enhanced">📅</span>
+                                <span>Event Date</span>
+                                <span className="required-asterisk">*</span>
+                              </label>
+                              <input
+                                type="date"
+                                className="form-input-enhanced"
+                                name="event_date"
+                                required
+                              />
+                              <span className="helper-text-enhanced">
+                                When did this occur?
+                              </span>
+                            </div>
+                          )}
+
+                          {eventTypeSelected === "Return" && (
+                            <div className="row">
+                              <div className="form-field-enhanced col-md-6 mt-4">
+                                <label className="form-label-enhanced">
+                                  <span className="label-icon-enhanced">
+                                    📅
+                                  </span>
+                                  <span>From:</span>
+                                  <span className="required-asterisk">*</span>
+                                </label>
+                                <input
+                                  type="date"
+                                  className="form-input-enhanced"
+                                  name="from_date"
+                                  required
+                                />
+                              </div>
+
+                              <div className="form-field-enhanced col-md-6 mt-4">
+                                <label className="form-label-enhanced">
+                                  <span className="label-icon-enhanced">
+                                    📅
+                                  </span>
+                                  <span>To:</span>
+                                  <span className="required-asterisk">*</span>
+                                </label>
+                                <input
+                                  type="date"
+                                  className="form-input-enhanced"
+                                  name="to_date"
+                                  required
+                                />
+                              </div>
+                            </div>
+                          )}
+
+                          {/* EVENT TYPE SELECTOR */}
+
+                          {/* NOTES */}
+                          <div className="form-field-enhanced form-field-full mt-2">
+                            <label className="form-label-enhanced">
+                              <span className="label-icon-enhanced">📝</span>
+                              <span>Notes</span>
+                              <span className="optional-badge">Optional</span>
+                            </label>
+                            <textarea
+                              className="form-textarea-enhanced"
+                              name="notes"
+                              placeholder="Add any additional details about this event..."
+                              rows="4"
+                            ></textarea>
+                            <span className="helper-text-enhanced">
+                              Any relevant context or details
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* FOOTER ACTIONS */}
+                        <div className="modal-footer-enhanced">
+                          <button
+                            type="button"
+                            className="btn-secondary-enhanced"
+                            onClick={handleCancel}
+                            disabled={isSubmitting}
+                          >
+                            Cancel
+                          </button>
+                          <button
+                            type="submit"
+                            className="btn-primary-enhanced"
+                            disabled={isSubmitting}
+                          >
+                            {isSubmitting ? (
+                              <>
+                                <span className="spinner-enhanced"></span>
+                                <span>Saving...</span>
+                              </>
+                            ) : (
+                              <>
+                                <span>Save Event</span>
+                                <svg
+                                  width="16"
+                                  height="16"
+                                  viewBox="0 0 16 16"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  strokeWidth="2"
+                                >
+                                  <path
+                                    d="M12 8H4M8 4v8"
+                                    strokeLinecap="round"
+                                  />
+                                </svg>
+                              </>
+                            )}
+                          </button>
+                        </div>
+                      </form>
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
+              </div>
             </div>
           </div>
-        </div>
         </div>
       </div>
     </>

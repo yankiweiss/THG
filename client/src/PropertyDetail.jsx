@@ -118,6 +118,10 @@ function PropertyDetail() {
       body: JSON.stringify(payload),
     });
 
+    
+
+    setAddInvestor(false)
+
   
   };
 

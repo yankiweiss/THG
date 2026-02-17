@@ -15,6 +15,7 @@ function App() {
 
      
       <Routes>
+        <Route path="/" element={<Properties />} />
       
         <Route path="/properties" element={<Properties />} />
         <Route path="/addDealLP" element={<AddDealLP />} />
