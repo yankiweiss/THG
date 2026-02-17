@@ -223,70 +223,64 @@ function InvestorDetail() {
     // You can add success notification or redirect here
   };
 
-  const getQuarter = (date) => {
+  const getQuarterRange = (date) => {
     const month = date.getMonth();
     const year = date.getFullYear();
 
     if (month <= 2)
-      return {
-        year,
-        quarter: "Q1",
-        start: new Date(year, 0, 1),
-        end: new Date(year, 2, 31),
-      };
+      return { start: new Date(year, 0, 1), end: new Date(year, 2, 31) };
     if (month <= 5)
-      return {
-        year,
-        quarter: "Q2",
-        start: new Date(year, 3, 1),
-        end: new Date(year, 5, 30),
-      };
+      return { start: new Date(year, 3, 1), end: new Date(year, 5, 30) };
     if (month <= 8)
-      return {
-        year,
-        quarter: "Q3",
-        start: new Date(year, 6, 1),
-        end: new Date(year, 8, 30),
-      };
-    return {
-      year,
-      quarter: "Q4",
-      start: new Date(year, 9, 1),
-      end: new Date(year, 11, 31),
-    };
+      return { start: new Date(year, 6, 1), end: new Date(year, 8, 30) };
+    return { start: new Date(year, 9, 1), end: new Date(year, 11, 31) };
   };
 
   const splitEventByQuarter = (startDate, endDate, amount, selectedYear) => {
     const result = [];
-   
 
-    const yearStart = new Date(selectedYear, 0, 1);
+    const originalStart = new Date(startDate);
+const originalEnd = new Date(endDate);
+
+const yearStart = new Date(selectedYear, 0, 1);
   const yearEnd = new Date(selectedYear, 11, 31);
 
-  if (endDate < yearStart || startDate > yearEnd) {
-    return [];
-  }
+    
 
-    startDate = startDate < yearStart ? yearStart : startDate;
-  endDate = endDate > yearEnd ? yearEnd : endDate;
+   const overlapStart = originalStart > yearStart ? originalStart : yearStart;
+const overlapEnd = originalEnd < yearEnd ? originalEnd : yearEnd;
 
-   let current = new Date(startDate);
+if (overlapStart > overlapEnd) return [];
 
-    while (current <= endDate) {
-      const { start: quarterStart, end: quarterEnd } = getQuarter(current);
+const totalDays =
+    (originalEnd - originalStart + 1) / (1000 * 60 * 60 * 24);
+
+    let current = new Date(overlapStart);
+
+    while (current <= overlapEnd) {
+      let { start: quarterStart, end: quarterEnd } = getQuarterRange(current);
+
+      // Clamp quarter to event range
+      const periodStart = current > quarterStart ? current : quarterStart;
       const periodEnd = endDate < quarterEnd ? endDate : quarterEnd;
-      const daysInPeriod = (periodEnd - current + 1) / (1000 * 60 * 60 * 24);
-      const totalDays = (endDate - startDate + 1) / (1000 * 60 * 60 * 24);
+
+      const daysInPeriod =
+      (periodEnd - periodStart + 1) / (1000 * 60 * 60 * 24);
+      
       const portion = (daysInPeriod / totalDays) * amount;
 
-       
-      result.push({ x: quarterStart, y: portion });
-    
+      // Push with the actual start of period (for accurate charting)
+      result.push({ x: periodStart, y: portion });
+
+      // Move to the next quarter
       current = new Date(periodEnd);
       current.setDate(current.getDate() + 1);
     }
+
     return result;
   };
+
+  
 
   const returnEvents = events?.filter((e) => e.event_type === "Return");
 
@@ -297,53 +291,69 @@ function InvestorDetail() {
       new Date(event.from_date),
       new Date(event.to_date),
       event.event_amount,
-      selectedYear
-      
+      selectedYear,
     );
 
     chartPoints = chartPoints.concat(points);
   });
 
- const expectedQuarterReturn = (selectedYear) => {
-  const amountInvested = investments?.invested_amount || 0;
-  const prefReturn = investments?.perf_return || 0;
+  const expectedQuarterReturn = (selectedYear) => {
+    const amountInvested = investments?.invested_amount || 0;
+    const prefReturn = investments?.perf_return || 0;
 
-  const perfReturnPercent = prefReturn / 100;
-  const quarterReturn = (amountInvested * perfReturnPercent) / 4;
+    const perfReturnPercent = prefReturn / 100;
+    const quarterReturn = (amountInvested * perfReturnPercent) / 4;
 
-  return [
-    { x: new Date(selectedYear, 0, 1), y: quarterReturn },  // Q1
-    { x: new Date(selectedYear, 3, 1), y: quarterReturn },  // Q2
-    { x: new Date(selectedYear, 6, 1), y: quarterReturn },  // Q3
-    { x: new Date(selectedYear, 9, 1), y: quarterReturn },  // Q4
-  ];
-};
-
-const aggregateByQuarter = (points, selectedYear) => {
-  const quarters = [0, 3, 6, 9]; // Jan, Apr, Jul, Oct
-  const result = [];
-
-  quarters.forEach((month) => {
-    const quarterStart = new Date(selectedYear, month, 1);
-    // sum all actual amounts that belong to this quarter
-    const sum = points
-      .filter((p) => p.x.getTime() === quarterStart.getTime())
-      .reduce((acc, p) => acc + p.y, 0);
-    result.push({ x: quarterStart, y: sum });
-  });
-
-  return result;
-};
-
-const actualPerQuarter = aggregateByQuarter(chartPoints, selectedYear);
-const expectedPerQuarter = expectedQuarterReturn(selectedYear);
-
-const missingPerQuarter = expectedPerQuarter.map((exp, i) => {
-  return {
-    x: exp.x,
-    y: exp.y - (actualPerQuarter[i]?.y || 0),
+    return [
+      { x: new Date(selectedYear, 0, 1), y: quarterReturn }, // Q1
+      { x: new Date(selectedYear, 3, 1), y: quarterReturn }, // Q2
+      { x: new Date(selectedYear, 6, 1), y: quarterReturn }, // Q3
+      { x: new Date(selectedYear, 9, 1), y: quarterReturn }, // Q4
+    ];
   };
-});
+
+  const aggregateByQuarter = (points, selectedYear) => {
+    const quarters = [0, 3, 6, 9]; // Jan, Apr, Jul, Oct
+    const result = [];
+
+    quarters.forEach((month) => {
+      const quarterStart = new Date(selectedYear, month, 1);
+      // sum all actual amounts that belong to this quarter
+      const sum = points
+        .filter((p) => p.x.getTime() === quarterStart.getTime())
+        .reduce((acc, p) => acc + p.y, 0);
+      result.push({ x: quarterStart, y: sum });
+    });
+
+    const yearEndTotal = points.reduce((acc, p) => acc + p.y, 0);
+    result.push({ x: new Date(selectedYear, 11, 31), y: yearEndTotal });
+
+    return result;
+  };
+
+  const yearEndDataset = [
+    {
+      label: "TO DATE CALCULATIONS",
+      data: [
+        {
+          x: new Date(selectedYear, 11, 31),
+          y: chartPoints.reduce((acc, p) => acc + p.y, 0),
+        },
+      ],
+      backgroundColor: "rgba(0, 0, 0, 0.6)", // dark for year-end
+    },
+  ];
+
+  const actualPerQuarter = aggregateByQuarter(chartPoints, selectedYear);
+  const expectedPerQuarter = expectedQuarterReturn(selectedYear);
+
+  const missingPerQuarter = expectedPerQuarter.map((exp, i) => {
+    const actualY = actualPerQuarter[i]?.y || 0;
+    return {
+      x: exp.x,
+      y: Math.max(exp.y - actualY, 0), // never negative
+    };
+  });
   const chartData = {
     datasets: [
       {
@@ -356,11 +366,12 @@ const missingPerQuarter = expectedPerQuarter.map((exp, i) => {
         data: expectedQuarterReturn(selectedYear),
         backgroundColor: "rgba(192, 132, 75, 0.6)",
       },
-       {
+      {
         label: "MISSING AMOUNT PER QUARTER",
-         data: missingPerQuarter,
+        data: missingPerQuarter,
         backgroundColor: "rgba(192, 75, 75, 0.6)",
       },
+      ...yearEndDataset,
     ],
   };
 
@@ -369,26 +380,26 @@ const missingPerQuarter = expectedPerQuarter.map((exp, i) => {
     maintainAspectRatio: false,
     plugins: {
       tooltip: {
-       callbacks: {
-    title: function (context) {
-      const date = new Date(context[0].raw.x);
+        callbacks: {
+          title: function (context) {
+            const date = new Date(context[0].raw.x);
 
-      return date.toLocaleDateString("en-US", {
-        year: "numeric",
-        month: "short",
-        day: "numeric",
-      });
-    },
-    label: function (context) {
-      const formattedAmount = new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency: "USD",
-      }).format(context.raw.y);
+            return date.toLocaleDateString("en-US", {
+              year: "numeric",
+              month: "short",
+              day: "numeric",
+            });
+          },
+          label: function (context) {
+            const formattedAmount = new Intl.NumberFormat("en-US", {
+              style: "currency",
+              currency: "USD",
+            }).format(context.raw.y);
 
-      return `Amount: ${formattedAmount}`;
-    },
-  },
-},
+            return `Amount: ${formattedAmount}`;
+          },
+        },
+      },
     },
 
     scales: {
@@ -1099,7 +1110,7 @@ const missingPerQuarter = expectedPerQuarter.map((exp, i) => {
 
         <div className="stats-container">
           <>
-              <div className="stat-card">
+            <div className="stat-card">
               <div className="stat-icon">📈</div>
               <div className="stat-label">INVESTED AMOUNT</div>
               <div className="stat-value">
@@ -1130,11 +1141,10 @@ const missingPerQuarter = expectedPerQuarter.map((exp, i) => {
                   ),
                 )}
               </div>
-           </div>
+            </div>
           </>
         </div>
-
-        </div>
+      </div>
 
       <div className="m-5">
         <div className="card shadow-sm m-5">

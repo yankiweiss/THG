@@ -567,7 +567,7 @@ function PropertyDetail() {
             </div>
             <div className="col-md-7">
               <div className="hero-content">
-                <div className="d-flex justify-content-between align-items-start mb-4">
+                <div className="d-flex justify-content-between align-items-start m-5">
                   {isEditing ? (
                     <input
                       value={data.property_name}
