@@ -80,16 +80,7 @@ function InvestorDetail() {
     }).format(value);
   };
 
-  //   const getDaysBetween = (startDate) => {
-  //  const today = new Date();
-  //  const start = new Date(startDate);
-  //
-  //  const diffTime = today - start; // milliseconds
-  //  const diffDays = diffTime / (1000 * 60 * 60 * 24);
-  //
-  //  return diffDays;
-  //
-  ////};
+
 
   const calculateActualReturn = () => {
     const sum =
@@ -103,23 +94,33 @@ function InvestorDetail() {
     return Number(sum.toFixed(2));
   };
 
-  const calculateExpectedPrefReturn = (
-    investedAmount,
-    prefRate,
-    closingDate,
-  ) => {
-    const today = new Date();
-    const start = new Date(closingDate);
+  const calculateExpectedPrefReturn = () => {
 
-    const diffTime = today - start;
-    const daysElapsed = diffTime / (1000 * 60 * 60 * 24);
+    const perfReturn = investments?.perf_return || 0;
+    let totalExpected = 0;
 
-    const annualRate = prefRate / 100;
+    const today = new Date()
 
-    const earnedPref = investedAmount * annualRate * (daysElapsed / 365);
+    if(property?.closing_date && investments?.invested_amount){
+      const closingDate = new Date(property?.closing_date);
+      const daysElapsed = (today - closingDate) / (1000 * 60 * 60 * 24);
+      totalExpected += investments?.invested_amount * (perfReturn / 100) * (daysElapsed / 365)
+    }
 
-    return Number(earnedPref.toFixed(2));
+    events?.forEach((event) => {
+      if(event.event_type === 'Investment' || event.event_type === 'Capital Call'){
+        const eventDate = new Date(event.event_date);
+        const daysElapsed = (today - eventDate) / (1000 * 60 * 60 * 24);
+        const eventAmount = event.event_amount || 0;
+        totalExpected += eventAmount * (perfReturn / 100) * (daysElapsed / 365)
+      }
+    })
+
+    return Number(totalExpected.toFixed(2))
+    
   };
+
+  console.log(calculateExpectedPrefReturn())
 
   const eventTypes = [
     {
@@ -240,20 +241,20 @@ function InvestorDetail() {
     const result = [];
 
     const originalStart = new Date(startDate);
-const originalEnd = new Date(endDate);
+    const originalEnd = new Date(endDate);
 
-const yearStart = new Date(selectedYear, 0, 1);
-  const yearEnd = new Date(selectedYear, 11, 31);
+    const yearStart = new Date(selectedYear, 0, 1);
+    const yearEnd = new Date(selectedYear, 11, 31);
 
-    
 
-   const overlapStart = originalStart > yearStart ? originalStart : yearStart;
-const overlapEnd = originalEnd < yearEnd ? originalEnd : yearEnd;
 
-if (overlapStart > overlapEnd) return [];
+    const overlapStart = originalStart > yearStart ? originalStart : yearStart;
+    const overlapEnd = originalEnd < yearEnd ? originalEnd : yearEnd;
 
-const totalDays =
-    (originalEnd - originalStart + 1) / (1000 * 60 * 60 * 24);
+    if (overlapStart > overlapEnd) return [];
+
+    const totalDays =
+      (originalEnd - originalStart + 1) / (1000 * 60 * 60 * 24);
 
     let current = new Date(overlapStart);
 
@@ -265,8 +266,8 @@ const totalDays =
       const periodEnd = endDate < quarterEnd ? endDate : quarterEnd;
 
       const daysInPeriod =
-      (periodEnd - periodStart + 1) / (1000 * 60 * 60 * 24);
-      
+        (periodEnd - periodStart + 1) / (1000 * 60 * 60 * 24);
+
       const portion = (daysInPeriod / totalDays) * amount;
 
       // Push with the actual start of period (for accurate charting)
@@ -280,7 +281,7 @@ const totalDays =
     return result;
   };
 
-  
+
 
   const returnEvents = events?.filter((e) => e.event_type === "Return");
 
@@ -1354,23 +1355,23 @@ const totalDays =
                           {(eventTypeSelected === "Investment" ||
                             eventTypeSelected === "Capital Call" ||
                             eventTypeSelected === "Return of Capital") && (
-                            <div className="form-field-enhanced col-md-6 mt-4">
-                              <label className="form-label-enhanced">
-                                <span className="label-icon-enhanced">📅</span>
-                                <span>Event Date</span>
-                                <span className="required-asterisk">*</span>
-                              </label>
-                              <input
-                                type="date"
-                                className="form-input-enhanced"
-                                name="event_date"
-                                required
-                              />
-                              <span className="helper-text-enhanced">
-                                When did this occur?
-                              </span>
-                            </div>
-                          )}
+                              <div className="form-field-enhanced col-md-6 mt-4">
+                                <label className="form-label-enhanced">
+                                  <span className="label-icon-enhanced">📅</span>
+                                  <span>Event Date</span>
+                                  <span className="required-asterisk">*</span>
+                                </label>
+                                <input
+                                  type="date"
+                                  className="form-input-enhanced"
+                                  name="event_date"
+                                  required
+                                />
+                                <span className="helper-text-enhanced">
+                                  When did this occur?
+                                </span>
+                              </div>
+                            )}
 
                           {eventTypeSelected === "Return" && (
                             <div className="row">
