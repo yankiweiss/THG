@@ -318,6 +318,32 @@ function InvestorDetail() {
     { x: new Date(selectedYear, 9, 1), y: quarterReturn },  // Q4
   ];
 };
+
+const aggregateByQuarter = (points, selectedYear) => {
+  const quarters = [0, 3, 6, 9]; // Jan, Apr, Jul, Oct
+  const result = [];
+
+  quarters.forEach((month) => {
+    const quarterStart = new Date(selectedYear, month, 1);
+    // sum all actual amounts that belong to this quarter
+    const sum = points
+      .filter((p) => p.x.getTime() === quarterStart.getTime())
+      .reduce((acc, p) => acc + p.y, 0);
+    result.push({ x: quarterStart, y: sum });
+  });
+
+  return result;
+};
+
+const actualPerQuarter = aggregateByQuarter(chartPoints, selectedYear);
+const expectedPerQuarter = expectedQuarterReturn(selectedYear);
+
+const missingPerQuarter = expectedPerQuarter.map((exp, i) => {
+  return {
+    x: exp.x,
+    y: exp.y - (actualPerQuarter[i]?.y || 0),
+  };
+});
   const chartData = {
     datasets: [
       {
@@ -332,7 +358,7 @@ function InvestorDetail() {
       },
        {
         label: "MISSING AMOUNT PER QUARTER",
-        data: chartPoints,
+         data: missingPerQuarter,
         backgroundColor: "rgba(192, 75, 75, 0.6)",
       },
     ],
@@ -1073,6 +1099,13 @@ function InvestorDetail() {
 
         <div className="stats-container">
           <>
+              <div className="stat-card">
+              <div className="stat-icon">📈</div>
+              <div className="stat-label">INVESTED AMOUNT</div>
+              <div className="stat-value">
+                {formatCurrency(investments?.invested_amount)}
+              </div>
+            </div>
             <div className="stat-card">
               <div className="stat-icon">💹</div>
               <div className="stat-label">Perf Return</div>
@@ -1097,22 +1130,11 @@ function InvestorDetail() {
                   ),
                 )}
               </div>
-            </div>
+           </div>
           </>
         </div>
 
-        <div className="stats-container">
-          <>
-            <div className="stat-card">
-              <div className="stat-icon">💹</div>
-              <div className="stat-label">Amount Invested</div>
-              <div className="stat-value">
-                {formatCurrency(investments?.invested_amount)}
-              </div>
-            </div>
-          </>
         </div>
-      </div>
 
       <div className="m-5">
         <div className="card shadow-sm m-5">

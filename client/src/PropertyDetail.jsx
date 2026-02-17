@@ -2,15 +2,16 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { useMemo } from "react";
+
 import { useNavigate } from "react-router-dom";
 
 function PropertyDetail() {
-  const [property, setProperty] = useState([]);
-  const [activeInvestor, setActiveInvestor] = useState(null);
+  const [data, setData] = useState([]);
+  console.log(data)
+  
 
   const [isEditing, setIsEditing] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+ 
   const [addInvestor, setAddInvestor] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
 
@@ -23,41 +24,19 @@ function PropertyDetail() {
   useEffect(() => {
     fetch(`https://thg-seven.vercel.app/api/properties/${id}`)
       .then((res) => res.json())
-      .then((data) => setProperty(data))
+      .then((data) => setData(data))
       .catch((err) => console.error(err));
   }, [id]);
 
-  const years = useMemo(() => {
-    if (!property.events?.length) return [];
+  
 
-    return [
-      ...new Set(
-        property.events.map((e) => new Date(e.event_date).getFullYear()),
-      ),
-    ].sort((a, b) => a - b);
-  }, [property.events]);
-
-  const [activeYear, setActiveYear] = useState(null);
+  
 
   // ✅ Safe: runs AFTER render
-  useEffect(() => {
-    if (years.length && !activeYear) setActiveYear(years[0]);
-    if (property.investors?.length && !activeInvestor)
-      setActiveInvestor(property.investors[0].id);
-  }, [years, property.investors]);
+  
+ 
 
-  const formatNumber = (value) => {
-    if (!value) return "0";
-    return Number(value).toLocaleString("en-US");
-  };
-
-  const calculateTotalInvestment = () => {
-    if (!property.investors) return 0;
-    return property.investors.reduce(
-      (sum, inv) => sum + (inv.invested_amount || 0),
-      0,
-    );
-  };
+ 
 
   //  function getQuarter(dateString) {
   //    const month = new Date(dateString).getMonth(); // 0–11
@@ -84,14 +63,7 @@ function PropertyDetail() {
     });
   };
 
-  const calculateAverageReturn = () => {
-    if (!property.investors || property.investors.length === 0) return 0;
-    const total = property.investors.reduce(
-      (sum, inv) => sum + (parseFloat(inv.perf_return) || 0),
-      0,
-    );
-    return (total / property.investors.length).toFixed(2);
-  };
+ 
   const navigate = useNavigate();
 
   
@@ -118,7 +90,7 @@ function PropertyDetail() {
       body: JSON.stringify(payload),
     });
 
-    
+
 
     setAddInvestor(false)
 
@@ -131,7 +103,7 @@ function PropertyDetail() {
     <>
       <style>{`
         :root {
-          --primary-gradient: linear-gradient(135deg, #667eea 0%, #a594b4 100%);
+          --primary-gradient: linear-gradient(135deg, #667eea 0%, #81669c54 100%);
           --success-gradient: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
           --info-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
           --border-radius: 16px;
@@ -576,7 +548,7 @@ function PropertyDetail() {
         
       `}</style>
 
-      {console.log(property)}
+      {console.log(data)}
       <div className="container-fluid px-3 px-md-4 py-4">
         {/* HERO SECTION */}
         <div className="property-hero">
@@ -585,7 +557,7 @@ function PropertyDetail() {
               <div className="property-image-wrapper">
                 <img
                   src={
-                    property.secure_url ||
+                    data.secure_url ||
                     "https://via.placeholder.com/800x600?text=Property+Image"
                   }
                   alt="Property"
@@ -598,11 +570,11 @@ function PropertyDetail() {
                 <div className="d-flex justify-content-between align-items-start mb-4">
                   {isEditing ? (
                     <input
-                      value={property.property_name}
+                      value={data.property_name}
                       className="property-name-input"
                       onChange={(e) =>
-                        setProperty({
-                          ...property,
+                        setData({
+                          ...data,
                           property_name: e.target.value,
                         })
                       }
@@ -611,7 +583,7 @@ function PropertyDetail() {
                     />
                   ) : (
                     <h1 className="property-name-display">
-                      {property.property_name}
+                      {data.property_name}
                     </h1>
                   )}
                   <button
@@ -635,25 +607,11 @@ function PropertyDetail() {
                     </div>
                     <div className="stat-label">Purchase Price</div>
                     <div className="stat-value">
-                      {formatCurrency(property.purchase_price)}
+                      {formatCurrency(data.purchase_price)}
                     </div>
                   </div>
 
-                  <div className="stat-card-modern">
-                    <div
-                      className="stat-icon"
-                      style={{
-                        background: "rgba(16, 185, 129, 0.1)",
-                        color: "#10b981",
-                      }}
-                    >
-                      📊
-                    </div>
-                    <div className="stat-label">Total Investment</div>
-                    <div className="stat-value">
-                      {formatCurrency(calculateTotalInvestment())}
-                    </div>
-                  </div>
+          
 
                   <div className="stat-card-modern">
                     <div
@@ -667,7 +625,7 @@ function PropertyDetail() {
                     </div>
                     <div className="stat-label">Closing Date</div>
                     <div className="stat-value" style={{ fontSize: "1.5rem" }}>
-                      {formatDate(property.closing_date)}
+                      {formatDate(data.closing_date)}
                     </div>
                   </div>
 
@@ -683,33 +641,20 @@ function PropertyDetail() {
                     </div>
                     <div className="stat-label">Total Investors</div>
                     <div className="stat-value">
-                      {property.investors?.length || 0}
+                      {data.investors?.length || 0}
                     </div>
                   </div>
-
-                  <div className="stat-card-modern">
-                    <div
-                      className="stat-icon"
-                      style={{
-                        background: "rgba(236, 72, 153, 0.1)",
-                        color: "#ec4899",
-                      }}
-                    >
-                      📈
-                    </div>
-                    <div className="stat-label">Avg Return</div>
-                    <div className="stat-value" style={{ fontSize: "1.5rem" }}>
-                      {calculateAverageReturn()}%
-                    </div>
+</div>
+                
                   </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
+        
 
         {/* QUICK INVESTORS OVERVIEW */}
-        {property.investors && property.investors.length > 0 && (
+        {data.investors && data.investors.length > 0 && (
           <div className="section-card">
             <div className="section-header">
               <h2 className="section-title">
@@ -717,15 +662,15 @@ function PropertyDetail() {
                 Quick Investor Overview
               </h2>
               <p className="section-subtitle">
-                {property.investors.length} investor
-                {property.investors.length !== 1 ? "s" : ""} in this property
+                {data.investors.length} investor
+                {data.investors.length !== 1 ? "s" : ""} in this property
               </p>
               <div className="quick-investors">
-                {property.investors.map((investor) => (
+                {data.investors.map((investor) => (
                   <div
                     key={investor.id}
                     className="quick-investor-chip"
-                    onClick={() => goToInvestorDetail(property.id, investor.id)}
+                    onClick={() => goToInvestorDetail(data.id, investor.id)}
                   >
                     <div className="chip-initial">
                       {investor.name?.charAt(0).toUpperCase() || "?"}
@@ -766,9 +711,9 @@ function PropertyDetail() {
             </div>
           </div>
 
-          {property.investors && property.investors.length > 0 ? (
+          {data.investors && data.investors.length > 0 ? (
             <div className="investor-grid">
-              {property.investors.map((investor) => (
+              {data.investors.map((investor) => (
                 <div key={investor.id} className="investor-card-modern">
                   <div className="investor-name">
                     <div className="investor-initial">
@@ -797,7 +742,7 @@ function PropertyDetail() {
 
                   <button
                     className="view-details-btn"
-                    onClick={() => goToInvestorDetail(property.id, investor.id)}
+                    onClick={() => goToInvestorDetail(data.id, investor.id)}
                   >
                     View Full Details →
                   </button>
@@ -812,7 +757,8 @@ function PropertyDetail() {
             </div>
           ) : null}
         </div>
-      </div>
+      
+    
 
     {isOpen && (
      
