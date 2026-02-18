@@ -1154,10 +1154,11 @@ function InvestorDetail() {
             <div className="hero-info">
               <div>
                 <h1 className="property-title">
-                  {property?.property_name || "Property Name"}
+                  👤 {investor?.name || "Investor Name"}
+             
                 </h1>
                 <p className="investor-name">
-                  👤 {investor?.name || "Investor Name"}
+                   🏠 {property?.property_name || "Property Name"}
                 </p>
                 <p className="closing-date">
                   📅 Closing Date: {formatDate(property?.closing_date)}
