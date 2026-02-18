@@ -61,7 +61,7 @@ const postAProperty = async (req, res) => {
 
     res.status(201).json({
       message: "Property created successfully",
-      property_id: propertyID,
+  
     });
   } catch (error) {
     console.error(error);
