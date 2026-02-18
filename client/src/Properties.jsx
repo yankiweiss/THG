@@ -67,6 +67,45 @@ function Properties() {
 
     
       <style>{`
+      :root{ --primary-gradient: linear-gradient(135deg, #0240dbe5 0%, #a2b9dd 100%);
+          --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+           .view-details-btn::before {
+          content: '';
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          width: 0;
+          height: 0;
+          border-radius: 50%;
+          background: rgba(255, 255, 255, 0.2);
+          transform: translate(-50%, -50%);
+          transition: width 0.6s, height 0.6s;
+        }
+
+        .view-details-btn:hover::before {
+          width: 300px;
+          height: 300px;
+        }
+
+        .view-details-btn:hover {
+          transform: translateY(-2px);
+          box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+      .view-details-btn {
+          width: 100%;
+          background: var(--primary-gradient);
+          border: none;
+          color: white;
+          padding: 0.75rem;
+          border-radius: 8px;
+          font-weight: 600;
+          transition: var(--transition);
+          cursor: pointer;
+          position: relative;
+          overflow: hidden;
+        }
         .property-card {
           transition: all 0.3s ease;
           border: 1px solid #e0e0e0;
@@ -296,13 +335,13 @@ function Properties() {
                         {/* Action Buttons */}
                         <div className="mt-auto d-flex gap-2">
                           <button
-                            className="btn btn-primary flex-grow-1"
+                            className="view-details-btn"
                             onClick={(e) => {
                               e.stopPropagation();
                               goToPropertyDetail(row.id);
                             }}
                           >
-                            View Details
+                            View Full Details →
                           </button>
                           <button
                             className="btn btn-outline-danger delete-btn"
@@ -360,15 +399,15 @@ function Properties() {
                             )}
                           </div>
                           <div className="col-md-4 text-md-end mt-3 mt-md-0">
-                            <div className="d-flex gap-2 justify-content-md-end">
+                            <div className="d-flex gap-2 justify-content-md-end view-details-btn">
                               <button
-                                className="btn btn-primary"
+                                className="view-details-btn"
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   goToPropertyDetail(row.id);
                                 }}
                               >
-                                View Details
+                               View Full Details →
                               </button>
                               <button
                                 className="btn btn-outline-danger"

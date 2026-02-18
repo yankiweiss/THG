@@ -103,7 +103,7 @@ function PropertyDetail() {
     <>
       <style>{`
         :root {
-         background: linear-gradient(135deg, #0240dbe5 0%, #a2b9dd 100%);
+       
           --primary-gradient: linear-gradient(135deg, #0240dbe5 0%, #a2b9dd 100%);
           --success-gradient: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
           --info-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
