@@ -11,7 +11,7 @@ function PropertyDetail() {
   console.log(data)
   
  const handleCancel = () => {
-    isOpen(false);
+    setIsOpen(false);
   };
 
  
@@ -1194,7 +1194,13 @@ function PropertyDetail() {
       </div>
 
       {isOpen && (
-        <div className="modal-overlay-enhanced">
+        <div className="modal-overlay-enhanced"
+           onClick={(e) => {
+                      if (e.target === e.currentTarget) {
+                        handleCancel();
+                      }
+                    }}
+                    >
           <div className="modal-container-enhanced">
             {/* HEADER */}
             <div className="modal-header-enhanced">
@@ -1211,11 +1217,7 @@ function PropertyDetail() {
                 type="button"
                 className="modal-close-enhanced"
                 aria-label="Close"
-                onClick={(e) => {
-                      if (e.target === e.currentTarget) {
-                        handleCancel();
-                      }
-                    }}
+               onClick={handleCancel}
               >
                 <svg
                   width="24"
@@ -1231,7 +1233,7 @@ function PropertyDetail() {
             </div>
 
             {/* FORM */}
-            <form>
+            <form onSubmit={addNewInvestor}>
               <div className="modal-body-enhanced">
                 {/* DATE AND AMOUNT ROW */}
                 <div className="form-row-enhanced">
