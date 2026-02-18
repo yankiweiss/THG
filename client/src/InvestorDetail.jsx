@@ -133,14 +133,14 @@ function InvestorDetail() {
 
     const today = new Date()
 
-    if(property?.closing_date && investments?.invested_amount){
+    if (property?.closing_date && investments?.invested_amount) {
       const closingDate = new Date(property?.closing_date);
       const daysElapsed = (today - closingDate) / (1000 * 60 * 60 * 24);
       totalExpected += investments?.invested_amount * (perfReturn / 100) * (daysElapsed / 365)
     }
 
     events?.forEach((event) => {
-      if(event.event_type === 'Investment' || event.event_type === 'Capital Call'){
+      if (event.event_type === 'Investment' || event.event_type === 'Capital Call') {
         const eventDate = new Date(event.event_date);
         const daysElapsed = (today - eventDate) / (1000 * 60 * 60 * 24);
         const eventAmount = event.event_amount || 0;
@@ -149,10 +149,10 @@ function InvestorDetail() {
     })
 
     return Number(totalExpected.toFixed(2))
-    
+
   };
 
-  
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -314,7 +314,7 @@ function InvestorDetail() {
     ];
   };
 
- 
+
 
   const aggregateByQuarter = (points, selectedYear) => {
     const quarters = [0, 3, 6, 9]; // Jan, Apr, Jul, Oct
@@ -424,21 +424,30 @@ function InvestorDetail() {
   };
 
   const investmentToDate = () => {
+    const investmentEvents = events
+      ?.filter(
+        (e) => e.event_type === "Investment" || e.event_type === "Capital Call",
+      )
+      .map((e) => e.event_amount);
 
-    const totalInvested = events?.filter((e)  => e.event_type === 'Investment' || e.event_type === 'Capital Call').map((e) => e.event_amount);
+    const total = investmentEvents.reduce((result, investmentEvents) => {
+      return result + investmentEvents;
+    }, 0);
 
-    const total = totalInvested.reduce((result , totalInvestmentAmount) => {
-      return result + totalInvestmentAmount
+    const returnEvents = events?.filter((e) => e.event_type === 'Return of Capital').map((e) => e.event_amount);
+
+    const totalFromReturnEvents = returnEvents.reduce((result, returnEvents) => {
+      return result + returnEvents;
     }, 0)
 
-    const initalInvesment = Number(investments?.invested_amount);
 
-  
-    return Number(total + initalInvesment).toFixed(2)
 
-  }
+    const initialInvestment = Number(investments?.invested_amount);
 
-  
+    return Number(total + initialInvestment - totalFromReturnEvents).toFixed(2);
+  };
+
+
   return (
     <>
       <style>{`
@@ -1155,10 +1164,10 @@ function InvestorDetail() {
               <div>
                 <h1 className="property-title">
                   👤 {investor?.name || "Investor Name"}
-             
+
                 </h1>
                 <p className="investor-name">
-                   🏠 {property?.property_name || "Property Name"}
+                  🏠 {property?.property_name || "Property Name"}
                 </p>
                 <p className="closing-date">
                   📅 Closing Date: {formatDate(property?.closing_date)}
@@ -1173,60 +1182,60 @@ function InvestorDetail() {
         <div className="section-header">
           <h2 className="section-title">
             <span style={{ fontSize: "1.5rem" }}>📈</span>
-           Investment Summary
-           </h2>
+            Investment Summary
+          </h2>
 
-           <p className="section-subtitle">
-              Overview of capital invested and return performance to date.
-              </p>
-          
-          </div>
+          <p className="section-subtitle">
+            Overview of capital invested and return performance to date.
+          </p>
 
-          <div className="stats-container m-5">
-            <>
-              <div className="stat-card">
-                <div className="stat-icon">📈</div>
-                <div className="stat-label">INITIAL INVESTMENT</div>
-                <div className="stat-value">
-                  {formatCurrency(investments?.invested_amount)}
-                </div>
-              </div>
-              <div className="stat-card">
-                <div className="stat-icon">📈</div>
-                <div className="stat-label">INVESTMENT TO DATE</div>
-                <div className="stat-value">
-                  {formatCurrency(investmentToDate())}
-                </div>
-              </div>
-              <div className="stat-card">
-                <div className="stat-icon">💹</div>
-                <div className="stat-label">Perf Return</div>
-                <div className="stat-value">% {investments?.perf_return}</div>
-              </div>
-              <div className="stat-card">
-                <div className="stat-icon">📊</div>
-                <div className="stat-label">Actual Return</div>
-                <div className="stat-value">
-                  {formatCurrency(calculateActualReturn())}
-                </div>
-              </div>
-              <div className="stat-card">
-                <div className="stat-icon">📈</div>
-                <div className="stat-label">Expected Return</div>
-                <div className="stat-value">
-                  {formatCurrency(
-                    calculateExpectedPrefReturn(
-                      investments?.invested_amount,
-                      investments?.perf_return,
-                      property?.closing_date,
-                    ),
-                  )}
-                </div>
-              </div>
-            </>
-          </div>
         </div>
-      
+
+        <div className="stats-container m-5">
+          <>
+            <div className="stat-card">
+              <div className="stat-icon">📈</div>
+              <div className="stat-label">INITIAL INVESTMENT</div>
+              <div className="stat-value">
+                {formatCurrency(investments?.invested_amount)}
+              </div>
+            </div>
+            <div className="stat-card">
+              <div className="stat-icon">📈</div>
+              <div className="stat-label">INVESTMENT TO DATE</div>
+              <div className="stat-value">
+                {formatCurrency(investmentToDate())}
+              </div>
+            </div>
+            <div className="stat-card">
+              <div className="stat-icon">💹</div>
+              <div className="stat-label">Perf Return</div>
+              <div className="stat-value">% {investments?.perf_return}</div>
+            </div>
+            <div className="stat-card">
+              <div className="stat-icon">📊</div>
+              <div className="stat-label">Actual Return</div>
+              <div className="stat-value">
+                {formatCurrency(calculateActualReturn())}
+              </div>
+            </div>
+            <div className="stat-card">
+              <div className="stat-icon">📈</div>
+              <div className="stat-label">Expected Return</div>
+              <div className="stat-value">
+                {formatCurrency(
+                  calculateExpectedPrefReturn(
+                    investments?.invested_amount,
+                    investments?.perf_return,
+                    property?.closing_date,
+                  ),
+                )}
+              </div>
+            </div>
+          </>
+        </div>
+      </div>
+
 
       <div className="m-5">
         <div className="card shadow-sm m-5">
@@ -1436,23 +1445,23 @@ function InvestorDetail() {
                           {(eventTypeSelected === "Investment" ||
                             eventTypeSelected === "Capital Call" ||
                             eventTypeSelected === "Return of Capital") && (
-                            <div className="form-field-enhanced col-md-6 mt-4">
-                              <label className="form-label-enhanced">
-                                <span className="label-icon-enhanced">📅</span>
-                                <span>Event Date</span>
-                                <span className="required-asterisk">*</span>
-                              </label>
-                              <input
-                                type="date"
-                                className="form-input-enhanced"
-                                name="event_date"
-                                required
-                              />
-                              <span className="helper-text-enhanced">
-                                When did this occur?
-                              </span>
-                            </div>
-                          )}
+                              <div className="form-field-enhanced col-md-6 mt-4">
+                                <label className="form-label-enhanced">
+                                  <span className="label-icon-enhanced">📅</span>
+                                  <span>Event Date</span>
+                                  <span className="required-asterisk">*</span>
+                                </label>
+                                <input
+                                  type="date"
+                                  className="form-input-enhanced"
+                                  name="event_date"
+                                  required
+                                />
+                                <span className="helper-text-enhanced">
+                                  When did this occur?
+                                </span>
+                              </div>
+                            )}
 
                           {eventTypeSelected === "Return" && (
                             <div className="row">

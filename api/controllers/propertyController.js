@@ -69,6 +69,7 @@ const postAProperty = async (req, res) => {
     client.release();
   }
 };
+  
 
 const getAllProperties = async (req, res) => {
   const getAllPropertiesDB = `
