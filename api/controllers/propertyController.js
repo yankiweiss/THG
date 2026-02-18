@@ -33,8 +33,6 @@ const postAProperty = async (req, res) => {
         const investorResult = await client.query (
             `INSERT INTO investors (name)
             VALUES ($1)
-            ON CONFLICT (name)
-            DO UPDATE SET name = EXCLUDED.name
             RETURNING id`, [investor_name]
         )
  
