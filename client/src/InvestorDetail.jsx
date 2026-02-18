@@ -1171,7 +1171,7 @@ function InvestorDetail() {
       <div className="section-card mx-3">
         <div className="section-header">
           <h2 className="section-title">
-            <span style={{ fontSize: "1.5rem" }}>👥</span>
+            <span style={{ fontSize: "1.5rem" }}>🏠</span>
            Performance Overview
            </h2>
 
