@@ -30,6 +30,7 @@ ChartJS.register(
 
 function InvestorDetail() {
   const [data, setData] = useState();
+  console.log(data)
   const [addEvent, setAddEvent] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedYear, setSelectedYear] = useState("");
@@ -126,31 +127,63 @@ function InvestorDetail() {
     return Number(sum.toFixed(2));
   };
 
-  const calculateExpectedPrefReturn = () => {
+  
 
-    const perfReturn = investments?.perf_return || 0;
-    let totalExpected = 0;
+const calculateExpectedPrefReturn = () => {
+  const perfReturn = investments?.perf_return || 0;
+  const rate = perfReturn / 100;
+  const today = new Date();
 
-    const today = new Date()
+  if (!property?.closing_date || !investments?.invested_amount) return 0;
 
-    if (property?.closing_date && investments?.invested_amount) {
-      const closingDate = new Date(property?.closing_date);
-      const daysElapsed = (today - closingDate) / (1000 * 60 * 60 * 24);
-      totalExpected += investments?.invested_amount * (perfReturn / 100) * (daysElapsed / 365)
+  let totalExpected = 0;
+
+  // 1️⃣ Build chronological event list
+  const timeline = [
+    {
+      date: new Date(property?.closing_date),
+      amount: investments?.invested_amount || 0,
+      type: "Initial Investment",
+    },
+    ...(events || []).map((e) => ({
+      date: new Date(e.event_date),
+      amount: Number(e.event_amount) || 0,
+      type: e.event_type,
+    })),
+  ];
+
+  // 2️⃣ Sort by date ascending
+  timeline.sort((a, b) => a.date - b.date);
+
+  let currentPrincipal = 0;
+
+  for (let i = 0; i < timeline.length; i++) {
+    const event = timeline[i];
+
+    // 3️⃣ Update principal first (before calculating return)
+    if (
+      event.type === "Initial Investment" ||
+      event.type === "Investment" ||
+      event.type === "Capital Call"
+    ) {
+      currentPrincipal += Number(event.amount);
     }
 
-    events?.forEach((event) => {
-      if (event.event_type === 'Investment' || event.event_type === 'Capital Call') {
-        const eventDate = new Date(event.event_date);
-        const daysElapsed = (today - eventDate) / (1000 * 60 * 60 * 24);
-        const eventAmount = event.event_amount || 0;
-        totalExpected += eventAmount * (perfReturn / 100) * (daysElapsed / 365)
-      }
-    })
+    if (event.type === "Return of Capital") {
+      currentPrincipal -= Number(event.amount);
+      if (currentPrincipal < 0) currentPrincipal = 0;
+    }
 
-    return Number(totalExpected.toFixed(2))
+    // 4️⃣ Calculate return from this event date to next event (or today)
+   const daysElapsed = (today - event.date) / (1000 * 60 * 60 * 24);
 
-  };
+    if (daysElapsed > 0 && currentPrincipal > 0) {
+      totalExpected += currentPrincipal * rate * (daysElapsed / 365);
+    }
+  }
+
+  return Number(totalExpected.toFixed(2));
+};
 
 
   const handleSubmit = async (e) => {
