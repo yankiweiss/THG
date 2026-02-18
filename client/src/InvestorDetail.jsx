@@ -539,7 +539,7 @@ function InvestorDetail() {
         /* STATS GRID */
         .stats-container {
           display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+          grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
           gap: 1.5rem;
           margin-bottom: 3rem;
         }
@@ -549,7 +549,7 @@ function InvestorDetail() {
           backdrop-filter: blur(20px);
           border: 3px solid rgba(0, 0, 0, 0.1);
           border-radius: 20px;
-          padding: 2rem;
+          padding: 1.5rem;
           transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
           position: relative;
           overflow: hidden;
@@ -570,8 +570,8 @@ function InvestorDetail() {
 
         .stat-card:hover {
           transform: translateY(-8px);
-          box-shadow: 0 20px 40px rgba(0, 212, 255, 0.2);
-          border-color: rgba(0, 212, 255, 0.5);
+          box-shadow: 0 20px 40px rgba(0, 28, 34, 0.2);
+          border-color: rgba(0, 1, 2, 0.16);
         }
 
         .stat-card:hover::before {
@@ -1124,8 +1124,9 @@ function InvestorDetail() {
             </div>
           </div>
         </div>
+        </div>
 
-        <div className="stats-container">
+        <div className="stats-container mx-5">
           <>
             <div className="stat-card">
               <div className="stat-icon">📈</div>
@@ -1168,7 +1169,7 @@ function InvestorDetail() {
             </div>
           </>
         </div>
-      </div>
+      
 
       <div className="m-5">
         <div className="card shadow-sm m-5">
