@@ -1172,11 +1172,11 @@ function InvestorDetail() {
         <div className="section-header">
           <h2 className="section-title">
             <span style={{ fontSize: "1.5rem" }}>🏠</span>
-           Performance Overview
+           Investment Summary
            </h2>
 
            <p className="section-subtitle">
-               Current investment exposure and return metrics.
+              Overview of capital invested and return performance to date.
               </p>
           
           </div>
