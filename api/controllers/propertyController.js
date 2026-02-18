@@ -56,13 +56,12 @@ const postAProperty = async (req, res) => {
         ]
     )
 }
-
   
     await client.query("COMMIT");
 
     res.status(201).json({
       message: "Property created successfully",
-      property_id: propertyId,
+      property_id: propertyID,
     });
   } catch (error) {
     console.error(error);

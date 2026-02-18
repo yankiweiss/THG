@@ -28,8 +28,9 @@ function AddDealLP() {
   const handleForm = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
-    console.log(investors)
-
+  
+try {
+  
     const form = e.target;
     const picFile = form.querySelector('[name="pictures"]').files[0];
 
@@ -82,10 +83,17 @@ function AddDealLP() {
       },
       body: JSON.stringify(payload),
     });
-
-    setIsSubmitting(false);
+  
+} catch (err) {
+   console.error(err);
+    alert("Something went wrong. Check console.");
+}finally {
+   setIsSubmitting(false);
+}
+   
     // You can add success notification or redirect here
-  };
+  }
+
 
   return (
     <>
