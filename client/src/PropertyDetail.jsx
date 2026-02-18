@@ -10,7 +10,7 @@ function PropertyDetail() {
   console.log(data)
   
 
-  const [isEditing, setIsEditing] = useState(false);
+
  
   const [addInvestor, setAddInvestor] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
@@ -103,7 +103,8 @@ function PropertyDetail() {
     <>
       <style>{`
         :root {
-          --primary-gradient: linear-gradient(135deg, #667eea 0%, #81669c54 100%);
+         background: linear-gradient(135deg, #0240dbe5 0%, #a2b9dd 100%);
+          --primary-gradient: linear-gradient(135deg, #0240dbe5 0%, #a2b9dd 100%);
           --success-gradient: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
           --info-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
           --border-radius: 16px;
@@ -112,6 +113,90 @@ function PropertyDetail() {
           --shadow-lg: 0 12px 24px rgba(0,0,0,0.15);
           --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
+
+        
+        .page-wrapper {
+          margin: 0 auto;
+          padding: 2rem;
+        }
+
+        /* HERO SECTION */
+        .hero-section {
+          position: relative;
+          border-radius: 24px;
+          overflow: hidden;
+          margin-bottom: 3rem;
+          background: linear-gradient(135deg, #0240dbe5 0%, #a2b9dd 100%);
+          box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        .hero-content {
+          display: grid;
+          grid-template-columns: 500px 1fr;
+          gap: 3rem;
+          padding: 3rem;
+          position: relative;
+          z-index: 2;
+        }
+
+        .hero-image {
+          width: 100%;
+          height: 350px;
+          object-fit: cover;
+          border-radius: 16px;
+          box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+          border: 3px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .property-badge {
+          position: absolute;
+          top: -12px;
+          left: -12px;
+          background: linear-gradient(135deg, #00d4ff 0%, #028fbe 100%);
+          color: #0a0a0a;
+          padding: 0.5rem 1.25rem;
+          border-radius: 20px;
+          font-weight: 700;
+          font-size: 0.75rem;
+          text-transform: uppercase;
+          letter-spacing: 1px;
+          box-shadow: 0 8px 20px rgba(0, 212, 255, 0.4);
+        }
+
+        .hero-image-container {
+          position: relative;
+        }
+
+        .hero-info {
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          gap: 2rem;
+        }
+
+        .property-title {
+          font-family: 'Playfair Display', serif;
+          font-size: 3.5rem;
+          font-weight: 900;
+          line-height: 1.1;
+          color: #ffffff;
+          margin-bottom: 1rem;
+          text-shadow: 2px 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .investor-name {
+          font-size: 1.5rem;
+          font-weight: 700;
+          color: #00d4ff;
+          margin-bottom: 0.5rem;
+        }
+
+        .closing-date {
+          font-size: 1.125rem;
+          color: rgba(255, 255, 255, 0.7);
+          font-weight: 500;
+        }
+
 
         body {
           background: #f8f9fa;
@@ -548,53 +633,30 @@ function PropertyDetail() {
         
       `}</style>
 
-      {console.log(data)}
-      <div className="container-fluid px-3 px-md-4 py-4">
-        {/* HERO SECTION */}
-        <div className="property-hero">
-          <div className="row g-0">
-            <div className="col-md-5">
-              <div className="property-image-wrapper">
-                <img
-                  src={
-                    data.secure_url ||
-                    "https://via.placeholder.com/800x600?text=Property+Image"
-                  }
-                  alt="Property"
-                  className="property-image"
-                />
-              </div>
+       <div className="page-wrapper">
+        <div className="hero-section">
+          <div className="hero-content">
+            <div className="hero-image-container">
+              <div className="property-badge">PROPERTY</div>
+              <img
+                src={
+                  data.secure_url ||
+                  "https://via.placeholder.com/350x350?text=Property"
+                }
+                alt="Property"
+                className="hero-image"
+              />
             </div>
-            <div className="col-md-7">
-              <div className="hero-content">
-                <div className="d-flex justify-content-between align-items-start m-5">
-                  {isEditing ? (
-                    <input
-                      value={data.property_name}
-                      className="property-name-input"
-                      onChange={(e) =>
-                        setData({
-                          ...data,
-                          property_name: e.target.value,
-                        })
-                      }
-                      placeholder="Property Name"
-                      autoFocus
-                    />
-                  ) : (
-                    <h1 className="property-name-display">
-                      {data.property_name}
-                    </h1>
-                  )}
-                  <button
-                    className="edit-btn ms-3"
-                    onClick={() => setIsEditing(!isEditing)}
-                  >
-                    {isEditing ? "Save" : "Edit"}
-                  </button>
-                </div>
+            <div className="hero-info">
+              <div>
+                <h1 className="property-title">
+                  {data.property_name || "Property Name"}
+                </h1>
+              
+                
+              </div>
 
-                <div className="stats-grid">
+                 <div className="stats-grid">
                   <div className="stat-card-modern">
                     <div
                       className="stat-icon"
@@ -645,12 +707,14 @@ function PropertyDetail() {
                     </div>
                   </div>
 </div>
-                
-                  </div>
-                </div>
-              </div>
             </div>
           </div>
+        </div>
+      </div>
+
+ 
+  
+       
         
 
         {/* QUICK INVESTORS OVERVIEW */}

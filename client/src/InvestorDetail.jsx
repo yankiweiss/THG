@@ -41,6 +41,38 @@ function InvestorDetail() {
   const investments = data?.investments || {};
   const events = data?.events || [];
 
+  const eventTypes = [
+    {
+      value: "investment",
+      icon: "💰",
+      name: "Investment",
+      description: "Initial capital contribution",
+      color: "#10b981",
+    },
+    {
+      value: "capital_call",
+      icon: "📞",
+      name: "Capital Call",
+      description: "Request for additional funding",
+      color: "#f59e0b",
+    },
+    {
+      value: "return_of_capital",
+      icon: "📤",
+      name: "Return of Capital",
+      description: "Principal returned to investor",
+      color: "#3b82f6",
+    },
+
+    {
+      value: "Return",
+      icon: "💵",
+      name: "Return",
+      description: "Profit distribution payment",
+      color: "#8b5cf6",
+    },
+  ];
+
   const allYears =
     events?.flatMap((e) => {
       if (e.event_date) {
@@ -120,40 +152,7 @@ function InvestorDetail() {
     
   };
 
-  console.log(calculateExpectedPrefReturn())
-
-  const eventTypes = [
-    {
-      value: "investment",
-      icon: "💰",
-      name: "Investment",
-      description: "Initial capital contribution",
-      color: "#10b981",
-    },
-    {
-      value: "capital_call",
-      icon: "📞",
-      name: "Capital Call",
-      description: "Request for additional funding",
-      color: "#f59e0b",
-    },
-    {
-      value: "return_of_capital",
-      icon: "📤",
-      name: "Return of Capital",
-      description: "Principal returned to investor",
-      color: "#3b82f6",
-    },
-
-    {
-      value: "Return",
-      icon: "💵",
-      name: "Return",
-      description: "Profit distribution payment",
-      color: "#8b5cf6",
-    },
-  ];
-
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -298,6 +297,8 @@ function InvestorDetail() {
     chartPoints = chartPoints.concat(points);
   });
 
+  // Expected Return per Quarter for Char.js,
+
   const expectedQuarterReturn = (selectedYear) => {
     const amountInvested = investments?.invested_amount || 0;
     const prefReturn = investments?.perf_return || 0;
@@ -312,6 +313,8 @@ function InvestorDetail() {
       { x: new Date(selectedYear, 9, 1), y: quarterReturn }, // Q4
     ];
   };
+
+ 
 
   const aggregateByQuarter = (points, selectedYear) => {
     const quarters = [0, 3, 6, 9]; // Jan, Apr, Jul, Oct
@@ -439,6 +442,15 @@ function InvestorDetail() {
   return (
     <>
       <style>{`
+        .section-subtitle {
+          color: #6b7280;
+          font-size: 0.9375rem;
+          margin: 0;
+        }
+
+      :root{
+       --border-radius: 16px;
+      }
         @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@400;500;700&display=swap');
 
         * {
@@ -447,14 +459,44 @@ function InvestorDetail() {
           box-sizing: border-box;
         }
 
+          .section-card {
+          background: white;
+          border-radius: var(--border-radius);
+          box-shadow: var(--shadow-sm);
+          border: 1px solid #e5e7eb;
+          overflow: hidden;
+          margin-bottom: 2rem;
+        }
+
+        .section-header {
+          padding: 2rem 2.5rem 1.5rem;
+          border-bottom: 2px solid #f3f4f6;
+        }
+
+        .section-title {
+          font-size: 1.5rem;
+          font-weight: 700;
+          color: #1f2937;
+          margin: 0 0 0.5rem 0;
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+        }
+
+        .section-subtitle {
+          color: #6b7280;
+          font-size: 0.9375rem;
+          margin: 0;
+        }
+
+
         body {
           font-family: 'DM Sans', sans-serif;
-          color: #f5f5f5;
+          color: #f8f9fa;
           min-height: 100vh;
         }
 
         .page-wrapper {
-          max-width: 1400px;
           margin: 0 auto;
           padding: 2rem;
         }
@@ -465,13 +507,13 @@ function InvestorDetail() {
           border-radius: 24px;
           overflow: hidden;
           margin-bottom: 3rem;
-          background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+          background: linear-gradient(135deg, #0240dbe5 0%, #a2b9dd 100%);
           box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
         }
 
         .hero-content {
           display: grid;
-          grid-template-columns: 350px 1fr;
+          grid-template-columns: 500px 1fr;
           gap: 3rem;
           padding: 3rem;
           position: relative;
@@ -1124,50 +1166,64 @@ function InvestorDetail() {
             </div>
           </div>
         </div>
-        </div>
+      </div>
 
-        <div className="stats-container mx-5">
-          <>
-            <div className="stat-card">
-              <div className="stat-icon">📈</div>
-              <div className="stat-label">INITIAL INVESTMENT</div>
-              <div className="stat-value">
-                {formatCurrency(investments?.invested_amount)}
-              </div>
-            </div>
+      <div className="section-card mx-3">
+        <div className="section-header">
+          <h2 className="section-title">
+            <span style={{ fontSize: "1.5rem" }}>👥</span>
+           Performance Overview
+           </h2>
+
+           <p className="section-subtitle">
+               Current investment exposure and return metrics.
+              </p>
+          
+          </div>
+
+          <div className="stats-container m-5">
+            <>
               <div className="stat-card">
-              <div className="stat-icon">📈</div>
-              <div className="stat-label">INVESTMENT TO DATE</div>
-              <div className="stat-value">
-                {formatCurrency(investmentToDate())}
+                <div className="stat-icon">📈</div>
+                <div className="stat-label">INITIAL INVESTMENT</div>
+                <div className="stat-value">
+                  {formatCurrency(investments?.invested_amount)}
+                </div>
               </div>
-            </div>
-            <div className="stat-card">
-              <div className="stat-icon">💹</div>
-              <div className="stat-label">Perf Return</div>
-              <div className="stat-value">% {investments?.perf_return}</div>
-            </div>
-            <div className="stat-card">
-              <div className="stat-icon">📊</div>
-              <div className="stat-label">Actual Return</div>
-              <div className="stat-value">
-                {formatCurrency(calculateActualReturn())}
+              <div className="stat-card">
+                <div className="stat-icon">📈</div>
+                <div className="stat-label">INVESTMENT TO DATE</div>
+                <div className="stat-value">
+                  {formatCurrency(investmentToDate())}
+                </div>
               </div>
-            </div>
-            <div className="stat-card">
-              <div className="stat-icon">📈</div>
-              <div className="stat-label">Expected Return</div>
-              <div className="stat-value">
-                {formatCurrency(
-                  calculateExpectedPrefReturn(
-                    investments?.invested_amount,
-                    investments?.perf_return,
-                    property?.closing_date,
-                  ),
-                )}
+              <div className="stat-card">
+                <div className="stat-icon">💹</div>
+                <div className="stat-label">Perf Return</div>
+                <div className="stat-value">% {investments?.perf_return}</div>
               </div>
-            </div>
-          </>
+              <div className="stat-card">
+                <div className="stat-icon">📊</div>
+                <div className="stat-label">Actual Return</div>
+                <div className="stat-value">
+                  {formatCurrency(calculateActualReturn())}
+                </div>
+              </div>
+              <div className="stat-card">
+                <div className="stat-icon">📈</div>
+                <div className="stat-label">Expected Return</div>
+                <div className="stat-value">
+                  {formatCurrency(
+                    calculateExpectedPrefReturn(
+                      investments?.invested_amount,
+                      investments?.perf_return,
+                      property?.closing_date,
+                    ),
+                  )}
+                </div>
+              </div>
+            </>
+          </div>
         </div>
       
 
@@ -1379,23 +1435,23 @@ function InvestorDetail() {
                           {(eventTypeSelected === "Investment" ||
                             eventTypeSelected === "Capital Call" ||
                             eventTypeSelected === "Return of Capital") && (
-                              <div className="form-field-enhanced col-md-6 mt-4">
-                                <label className="form-label-enhanced">
-                                  <span className="label-icon-enhanced">📅</span>
-                                  <span>Event Date</span>
-                                  <span className="required-asterisk">*</span>
-                                </label>
-                                <input
-                                  type="date"
-                                  className="form-input-enhanced"
-                                  name="event_date"
-                                  required
-                                />
-                                <span className="helper-text-enhanced">
-                                  When did this occur?
-                                </span>
-                              </div>
-                            )}
+                            <div className="form-field-enhanced col-md-6 mt-4">
+                              <label className="form-label-enhanced">
+                                <span className="label-icon-enhanced">📅</span>
+                                <span>Event Date</span>
+                                <span className="required-asterisk">*</span>
+                              </label>
+                              <input
+                                type="date"
+                                className="form-input-enhanced"
+                                name="event_date"
+                                required
+                              />
+                              <span className="helper-text-enhanced">
+                                When did this occur?
+                              </span>
+                            </div>
+                          )}
 
                           {eventTypeSelected === "Return" && (
                             <div className="row">
