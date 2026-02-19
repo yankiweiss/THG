@@ -93,15 +93,41 @@ function InvestorDetail() {
 
   const uniqueYears = Array.from(new Set(allYears)).sort((a, b) => a - b);
 
-  const formatDate = (dateComingIn) => {
-    if (!dateComingIn) return "N/A";
-    const date = new Date(dateComingIn);
-    return date.toLocaleDateString("en-US", {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-    });
-  };
+const formatDate = (dateComingIn) => {
+  if (!dateComingIn) return "N/A";
+
+  let date;
+
+  // If it's already a Date object
+  if (dateComingIn instanceof Date) {
+    date = dateComingIn;
+  } else if (typeof dateComingIn === "string") {
+    // Try to parse as ISO string
+    const parsed = new Date(dateComingIn);
+
+    if (isNaN(parsed)) {
+      // If parsing failed, try manual split
+      const parts = dateComingIn.split("-").map(Number);
+      if (parts.length === 3) {
+        const [year, month, day] = parts;
+        date = new Date(Date.UTC(year, month - 1, day));
+      } else {
+        return "Invalid Date";
+      }
+    } else {
+      date = parsed;
+    }
+  } else {
+    return "Invalid Date";
+  }
+
+  return date.toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+    timeZone: "UTC",
+  });
+};
 
   const formatCurrency = (value) => {
     if (!value) return "$0";
@@ -256,6 +282,11 @@ const calculateExpectedPrefReturn = () => {
     // You can add success notification or redirect here
   };
 
+// getting all Return events 
+  const returnEvents = events?.filter((e) => e.event_type === "Return");
+
+ 
+
   const getQuarterRange = (date) => {
     const month = date.getMonth();
     const year = date.getFullYear();
@@ -277,7 +308,6 @@ const calculateExpectedPrefReturn = () => {
 
     const yearStart = new Date(selectedYear, 0, 1);
     const yearEnd = new Date(selectedYear, 11, 31);
-
 
 
     const overlapStart = originalStart > yearStart ? originalStart : yearStart;
@@ -313,11 +343,7 @@ const calculateExpectedPrefReturn = () => {
     return result;
   };
 
-
-
-  const returnEvents = events?.filter((e) => e.event_type === "Return");
-
-  let chartPoints = [];
+   let chartPoints = [];
 
   returnEvents.forEach((event) => {
     const points = splitEventByQuarter(
@@ -329,6 +355,30 @@ const calculateExpectedPrefReturn = () => {
 
     chartPoints = chartPoints.concat(points);
   });
+
+
+  const aggregateByQuarter = (points, selectedYear) => {
+    const quarters = [0, 3, 6, 9]; // Jan, Apr, Jul, Oct
+    const result = [];
+
+    quarters.forEach((month) => {
+      const quarterStart = new Date(selectedYear, month, 1);
+      const quarterEnd = new Date(selectedYear, month + 3, 0)
+
+      // sum all actual amounts that belong to this quarter
+      const sum = points
+        .filter((p) => p.x >= quarterStart && p.x <= quarterEnd)
+        .reduce((acc, p) => acc + p.y, 0);
+      result.push({ x: quarterStart, y: sum });
+    });
+
+    const yearEndTotal = points.reduce((acc, p) => acc + p.y, 0);
+    result.push({ x: new Date(selectedYear, 11, 31), y: yearEndTotal });
+
+    return result;
+  };
+
+  
 
   // Expected Return per Quarter for Char.js,
 
@@ -349,24 +399,7 @@ const calculateExpectedPrefReturn = () => {
 
 
 
-  const aggregateByQuarter = (points, selectedYear) => {
-    const quarters = [0, 3, 6, 9]; // Jan, Apr, Jul, Oct
-    const result = [];
-
-    quarters.forEach((month) => {
-      const quarterStart = new Date(selectedYear, month, 1);
-      // sum all actual amounts that belong to this quarter
-      const sum = points
-        .filter((p) => p.x.getTime() === quarterStart.getTime())
-        .reduce((acc, p) => acc + p.y, 0);
-      result.push({ x: quarterStart, y: sum });
-    });
-
-    const yearEndTotal = points.reduce((acc, p) => acc + p.y, 0);
-    result.push({ x: new Date(selectedYear, 11, 31), y: yearEndTotal });
-
-    return result;
-  };
+  
 
   const yearEndDataset = [
     {
@@ -381,7 +414,10 @@ const calculateExpectedPrefReturn = () => {
     },
   ];
 
+ 
+
   const actualPerQuarter = aggregateByQuarter(chartPoints, selectedYear);
+   console.log(actualPerQuarter)
   const expectedPerQuarter = expectedQuarterReturn(selectedYear);
 
   const missingPerQuarter = expectedPerQuarter.map((exp, i) => {
@@ -395,7 +431,7 @@ const calculateExpectedPrefReturn = () => {
     datasets: [
       {
         label: "ACTUAL QUARTER RETURN",
-        data: chartPoints,
+        data: actualPerQuarter,
         backgroundColor: "rgba(75,192,192,0.6)",
         barThickness: 40, // fixed width
       maxBarThickness: 50, // optional
