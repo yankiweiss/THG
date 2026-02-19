@@ -397,18 +397,25 @@ const calculateExpectedPrefReturn = () => {
         label: "ACTUAL QUARTER RETURN",
         data: chartPoints,
         backgroundColor: "rgba(75,192,192,0.6)",
+        barThickness: 40, // fixed width
+      maxBarThickness: 50, // optional
       },
       {
         label: "EXPECTED QUARTER RETURN",
         data: expectedQuarterReturn(selectedYear),
         backgroundColor: "rgba(192, 132, 75, 0.6)",
+        barThickness: 40, // fixed width
+      maxBarThickness: 50, // optional
       },
       {
         label: "MISSING AMOUNT PER QUARTER",
         data: missingPerQuarter,
         backgroundColor: "rgba(192, 75, 75, 0.6)",
+        barThickness: 40, // fixed width
+      maxBarThickness: 50, // optional
       },
       ...yearEndDataset,
+      
     ],
   };
 
