@@ -5,17 +5,15 @@ import { useParams } from "react-router-dom";
 
 import { useNavigate } from "react-router-dom";
 
-
 function PropertyDetail() {
   const [data, setData] = useState([]);
-  console.log(data)
-  
- const handleCancel = () => {
+  console.log(data);
+
+  const handleCancel = () => {
     setIsOpen(false);
   };
 
- 
- const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [addInvestor, setAddInvestor] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
 
@@ -32,20 +30,38 @@ function PropertyDetail() {
       .catch((err) => console.error(err));
   }, [id]);
 
-  
-
-  
-
   // ✅ Safe: runs AFTER render
-  
- 
-
- 
 
   //  function getQuarter(dateString) {
   //    const month = new Date(dateString).getMonth(); // 0–11
   //    return Math.floor(month / 3); // 0–3
   //  }
+
+  // update field in the properties database table 
+
+  const updateField = async (field , value) => {
+    try {
+      const response = await fetch(
+        `https://thg-seven.vercel.app/api/properties/${id}`, 
+        {
+          method : 'PUT',
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            field,
+            value
+          }),
+          }
+        )
+        
+        const result = await response.json();
+        setData(result)
+      
+    } catch (err) {
+      console.error("Update failed:", err); 
+    }
+  }
 
   const formatCurrency = (value) => {
     if (!value) return "$0";
@@ -67,10 +83,7 @@ function PropertyDetail() {
     });
   };
 
- 
   const navigate = useNavigate();
-
-  
 
   const addNewInvestor = async (e) => {
     e.preventDefault();
@@ -81,7 +94,7 @@ function PropertyDetail() {
 
     const payload = {
       ...dataObject,
-      property_id : id
+      property_id: id,
     };
 
     console.log(payload);
@@ -94,14 +107,8 @@ function PropertyDetail() {
       body: JSON.stringify(payload),
     });
 
-
-
-    setAddInvestor(false)
-
-  
+    setAddInvestor(false);
   };
-
-  
 
   return (
     <>
@@ -357,18 +364,7 @@ function PropertyDetail() {
           object-fit: cover;
         }
 
-        .property-name-input {
-          background: rgba(255, 255, 255, 0.15);
-          border: 2px solid rgba(255, 255, 255, 0.3);
-          color: white;
-          font-size: 2.5rem;
-          font-weight: 700;
-          padding: 0.75rem 1rem;
-          border-radius: 12px;
-          transition: var(--transition);
-          backdrop-filter: blur(10px);
-          width: 100%;
-        }
+       
 
         .property-name-input:focus {
           background: rgba(255, 255, 255, 0.25);
@@ -794,6 +790,15 @@ function PropertyDetail() {
           background: #f9fafb;
           transform: translateY(-2px);
         }
+             .property-title:focus {
+  background: transparent !important;
+  border: #f9fafb69 !important;
+  border-size: 5px !important;
+  border-style: solid !important;
+  color: white !important;
+  
+}
+        
 
         .chip-initial {
           width: 28px;
@@ -1009,7 +1014,7 @@ function PropertyDetail() {
             width: 100%;
             justify-content: center;
           }
-        
+         
         
       `}</style>
 
@@ -1029,9 +1034,20 @@ function PropertyDetail() {
             </div>
             <div className="hero-info">
               <div>
-                <h1 className="property-title">
-                  {data.property_name || "Property Name"}
-                </h1>
+                <label className="form-label fs-2 fst-italic">
+                  Property Name:
+                </label>
+                <input
+                  className="form-control property-title bg-transparent border-0 w-100"
+                  value={data?.property_name}
+                  onChange={(e) =>
+                    setData({ ...data, property_name: e.target.value })
+                  }
+                  onBlur={(e) => updateField(
+                    "property_name",
+                    e.target.value
+                  )}
+                />
               </div>
 
               <div className="stats-grid">
@@ -1046,9 +1062,15 @@ function PropertyDetail() {
                     💰
                   </div>
                   <div className="stat-label">Purchase Price</div>
-                  <div className="stat-value">
-                    {formatCurrency(data.purchase_price)}
-                  </div>
+                  <input
+                    className="form-control stat-value bg-transparent border-0 "
+                    value={formatCurrency(data.purchase_price)}
+
+                    
+                    onChange={(e) =>
+                      setData({ ...data, purchase_price: e.target.value })
+                    }
+                  />
                 </div>
 
                 <div className="stat-card-modern">
@@ -1194,13 +1216,14 @@ function PropertyDetail() {
       </div>
 
       {isOpen && (
-        <div className="modal-overlay-enhanced"
-           onClick={(e) => {
-                      if (e.target === e.currentTarget) {
-                        handleCancel();
-                      }
-                    }}
-                    >
+        <div
+          className="modal-overlay-enhanced"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) {
+              handleCancel();
+            }
+          }}
+        >
           <div className="modal-container-enhanced">
             {/* HEADER */}
             <div className="modal-header-enhanced">
@@ -1217,7 +1240,7 @@ function PropertyDetail() {
                 type="button"
                 className="modal-close-enhanced"
                 aria-label="Close"
-               onClick={handleCancel}
+                onClick={handleCancel}
               >
                 <svg
                   width="24"
@@ -1291,50 +1314,45 @@ function PropertyDetail() {
                     </div>
                   </div>
                 </div>
-                     <div className="modal-footer-enhanced">
-                          <button
-                            type="button"
-                            className="btn-secondary-enhanced"
-                            onClick={handleCancel}
-                            disabled={isSubmitting}
-                          >
-                            Cancel
-                          </button>
-                          <button
-                            type="submit"
-                            className="btn-primary-enhanced"
-                            disabled={isSubmitting}
-                          >
-                            {isSubmitting ? (
-                              <>
-                                <span className="spinner-enhanced"></span>
-                                <span>Saving...</span>
-                              </>
-                            ) : (
-                              <>
-                                <span>Save Event</span>
-                                <svg
-                                  width="16"
-                                  height="16"
-                                  viewBox="0 0 16 16"
-                                  fill="none"
-                                  stroke="currentColor"
-                                  strokeWidth="2"
-                                >
-                                  <path
-                                    d="M12 8H4M8 4v8"
-                                    strokeLinecap="round"
-                                  />
-                                </svg>
-                              </>
-                            )}
-                          </button>
-                        </div>
+                <div className="modal-footer-enhanced">
+                  <button
+                    type="button"
+                    className="btn-secondary-enhanced"
+                    onClick={handleCancel}
+                    disabled={isSubmitting}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="btn-primary-enhanced"
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <span className="spinner-enhanced"></span>
+                        <span>Saving...</span>
+                      </>
+                    ) : (
+                      <>
+                        <span>Save Event</span>
+                        <svg
+                          width="16"
+                          height="16"
+                          viewBox="0 0 16 16"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                        >
+                          <path d="M12 8H4M8 4v8" strokeLinecap="round" />
+                        </svg>
+                      </>
+                    )}
+                  </button>
+                </div>
               </div>
             </form>
           </div>
-
-               
         </div>
       )}
     </>
