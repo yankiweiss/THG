@@ -91,8 +91,8 @@ const getPropertyById = async (req, res) => {
           id, 
           property_name,
           purchase_price,
-          closing_date::timestamptz at time zone 'America/New_York' closing_date,
-          secure_url
+          closing_date,
+          secure_url,
         FROM properties WHERE id = $1`,
         [propertyId]
     );

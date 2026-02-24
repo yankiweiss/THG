@@ -23,6 +23,7 @@ function PropertyDetail() {
   };
 
  console.log(data.closing_date)
+ console.log("Parsed:", new Date(data.closing_date));
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [addInvestor, setAddInvestor] = useState(false);
@@ -1094,14 +1095,13 @@ function PropertyDetail() {
                   </div>
                   <div className="stat-label">Closing Date</div>
                   <DatePicker className="stat-value w-75 no-border-datepicker"
-                selected={data.closing_date}
+                selected={data?.closing_date}
                     onChange={(date) => {
                       setData({
                         ...data,
                         closing_date: format(date, "yyyy-MM-dd"), // store ISO in state
                       });
                     }}
-                    dateFormat="MM/dd/yyyy"
                     popperPlacement="top-start"
 
                     onBlur={(e) =>  updateField("closing_date", e.target.value)}
