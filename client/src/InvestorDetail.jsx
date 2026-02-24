@@ -30,7 +30,7 @@ ChartJS.register(
 
 function InvestorDetail() {
   const [data, setData] = useState();
-  console.log(data)
+  console.log(data);
   const [addEvent, setAddEvent] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedYear, setSelectedYear] = useState("");
@@ -93,41 +93,41 @@ function InvestorDetail() {
 
   const uniqueYears = Array.from(new Set(allYears)).sort((a, b) => a - b);
 
-const formatDate = (dateComingIn) => {
-  if (!dateComingIn) return "N/A";
+  const formatDate = (dateComingIn) => {
+    if (!dateComingIn) return "N/A";
 
-  let date;
+    let date;
 
-  // If it's already a Date object
-  if (dateComingIn instanceof Date) {
-    date = dateComingIn;
-  } else if (typeof dateComingIn === "string") {
-    // Try to parse as ISO string
-    const parsed = new Date(dateComingIn);
+    // If it's already a Date object
+    if (dateComingIn instanceof Date) {
+      date = dateComingIn;
+    } else if (typeof dateComingIn === "string") {
+      // Try to parse as ISO string
+      const parsed = new Date(dateComingIn);
 
-    if (isNaN(parsed)) {
-      // If parsing failed, try manual split
-      const parts = dateComingIn.split("-").map(Number);
-      if (parts.length === 3) {
-        const [year, month, day] = parts;
-        date = new Date(Date.UTC(year, month - 1, day));
+      if (isNaN(parsed)) {
+        // If parsing failed, try manual split
+        const parts = dateComingIn.split("-").map(Number);
+        if (parts.length === 3) {
+          const [year, month, day] = parts;
+          date = new Date(Date.UTC(year, month - 1, day));
+        } else {
+          return "Invalid Date";
+        }
       } else {
-        return "Invalid Date";
+        date = parsed;
       }
     } else {
-      date = parsed;
+      return "Invalid Date";
     }
-  } else {
-    return "Invalid Date";
-  }
 
-  return date.toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-    timeZone: "UTC",
-  });
-};
+    return date.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+      timeZone: "UTC",
+    });
+  };
 
   const formatCurrency = (value) => {
     if (!value) return "$0";
@@ -138,8 +138,6 @@ const formatDate = (dateComingIn) => {
       maximumFractionDigits: 0,
     }).format(value);
   };
-
-
 
   const calculateActualReturn = () => {
     const sum =
@@ -153,64 +151,63 @@ const formatDate = (dateComingIn) => {
     return Number(sum.toFixed(2));
   };
 
-  
+  // Need to review below function
 
-const calculateExpectedPrefReturn = () => {
-  const perfReturn = investments?.perf_return || 0;
-  const rate = perfReturn / 100;
-  const today = new Date();
+  const calculateExpectedPrefReturn = () => {
+    const perfReturn = investments?.perf_return || 0;
+    const rate = perfReturn / 100;
+    const today = new Date();
 
-  if (!property?.closing_date || !investments?.invested_amount) return 0;
+    if (!property?.closing_date || !investments?.invested_amount) return 0;
 
-  let totalExpected = 0;
+    let totalExpected = 0;
 
-  // 1️⃣ Build chronological event list
-  const timeline = [
-    {
-      date: new Date(property?.closing_date),
-      amount: investments?.invested_amount || 0,
-      type: "Initial Investment",
-    },
-    ...(events || []).map((e) => ({
-      date: new Date(e.event_date),
-      amount: Number(e.event_amount) || 0,
-      type: e.event_type,
-    })),
-  ];
+    // 1️⃣ Build chronological event list
+    const timeline = [
+      {
+        date: new Date(property?.closing_date),
+        amount: investments?.invested_amount || 0,
+        type: "Initial Investment",
+      },
+      ...(events || []).map((e) => ({
+        date: new Date(e.event_date),
+        amount: Number(e.event_amount) || 0,
+        type: e.event_type,
+      })),
+    ];
 
-  // 2️⃣ Sort by date ascending
-  timeline.sort((a, b) => a.date - b.date);
+    // 2️⃣ Sort by date ascending
+    timeline.sort((a, b) => a.date - b.date);
 
-  let currentPrincipal = 0;
+    let currentPrincipal = 0;
 
-  for (let i = 0; i < timeline.length; i++) {
-    const event = timeline[i];
+    for (let i = 0; i < timeline.length; i++) {
+      const event = timeline[i];
 
-    // 3️⃣ Update principal first (before calculating return)
-    if (
-      event.type === "Initial Investment" ||
-      event.type === "Investment" ||
-      event.type === "Capital Call"
-    ) {
-      currentPrincipal += Number(event.amount);
+      // 3️⃣ Update principal first (before calculating return)
+      if (
+        event.type === "Initial Investment" ||
+        event.type === "Investment" ||
+        event.type === "Capital Call"
+      ) {
+        currentPrincipal += Number(event.amount);
+      }
+
+      if (event.type === "Return of Capital") {
+        currentPrincipal -= Number(event.amount);
+        if (currentPrincipal < 0) currentPrincipal = 0;
+      }
+
+      // 4️⃣ Calculate return from this event date to next event (or today)
+      const daysElapsed = (today - event.date) / (1000 * 60 * 60 * 24);
+
+      if (daysElapsed > 0 && currentPrincipal > 0) {
+        totalExpected += currentPrincipal * rate * (daysElapsed / 365);
+      }
     }
 
-    if (event.type === "Return of Capital") {
-      currentPrincipal -= Number(event.amount);
-      if (currentPrincipal < 0) currentPrincipal = 0;
-    }
-
-    // 4️⃣ Calculate return from this event date to next event (or today)
-   const daysElapsed = (today - event.date) / (1000 * 60 * 60 * 24);
-
-    if (daysElapsed > 0 && currentPrincipal > 0) {
-      totalExpected += currentPrincipal * rate * (daysElapsed / 365);
-    }
-  }
-
-  return Number(totalExpected.toFixed(2));
-};
-
+    return Number(totalExpected.toFixed(2));
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -282,41 +279,41 @@ const calculateExpectedPrefReturn = () => {
     // You can add success notification or redirect here
   };
 
-// getting all Return events 
+  const msPerDay = 1000 * 60 * 60 * 24;
+  // CHART.js functions
+  // getting all Return events
   const returnEvents = events?.filter((e) => e.event_type === "Return");
 
- 
-
+  // defining all quarters and start date and end date.
   const getQuarterRange = (date) => {
     const month = date.getMonth();
     const year = date.getFullYear();
 
-    if (month <= 2)
-      return { start: new Date(year, 0, 1), end: new Date(year, 2, 31) };
-    if (month <= 5)
-      return { start: new Date(year, 3, 1), end: new Date(year, 5, 30) };
-    if (month <= 8)
-      return { start: new Date(year, 6, 1), end: new Date(year, 8, 30) };
-    return { start: new Date(year, 9, 1), end: new Date(year, 11, 31) };
-  };
+   if (month <= 2)
+  return { start: new Date(year, 0, 1), end: new Date(year, 3, 0) };
+if (month <= 5)
+  return { start: new Date(year, 3, 1), end: new Date(year, 6, 0) };
+if (month <= 8)
+  return { start: new Date(year, 6, 1), end: new Date(year, 9, 0) };
+return { start: new Date(year, 9, 1), end: new Date(year, 12, 0) };
+  }
 
   const splitEventByQuarter = (startDate, endDate, amount, selectedYear) => {
     const result = [];
 
     const originalStart = new Date(startDate);
+    
     const originalEnd = new Date(endDate);
 
     const yearStart = new Date(selectedYear, 0, 1);
     const yearEnd = new Date(selectedYear, 11, 31);
-
 
     const overlapStart = originalStart > yearStart ? originalStart : yearStart;
     const overlapEnd = originalEnd < yearEnd ? originalEnd : yearEnd;
 
     if (overlapStart > overlapEnd) return [];
 
-    const totalDays =
-      (originalEnd - originalStart + 1) / (1000 * 60 * 60 * 24);
+   const totalDays = Math.round((originalEnd - originalStart) / msPerDay) + 1;
 
     let current = new Date(overlapStart);
 
@@ -325,10 +322,10 @@ const calculateExpectedPrefReturn = () => {
 
       // Clamp quarter to event range
       const periodStart = current > quarterStart ? current : quarterStart;
-      const periodEnd = endDate < quarterEnd ? endDate : quarterEnd;
+      const periodEnd = overlapEnd < quarterEnd ? overlapEnd : quarterEnd;
 
       const daysInPeriod =
-        (periodEnd - periodStart + 1) / (1000 * 60 * 60 * 24);
+  Math.round((periodEnd - periodStart) / msPerDay) + 1;
 
       const portion = (daysInPeriod / totalDays) * amount;
 
@@ -343,7 +340,7 @@ const calculateExpectedPrefReturn = () => {
     return result;
   };
 
-   let chartPoints = [];
+  let chartPoints = [];
 
   returnEvents.forEach((event) => {
     const points = splitEventByQuarter(
@@ -355,7 +352,7 @@ const calculateExpectedPrefReturn = () => {
 
     chartPoints = chartPoints.concat(points);
   });
-
+  
 
   const aggregateByQuarter = (points, selectedYear) => {
     const quarters = [0, 3, 6, 9]; // Jan, Apr, Jul, Oct
@@ -363,7 +360,7 @@ const calculateExpectedPrefReturn = () => {
 
     quarters.forEach((month) => {
       const quarterStart = new Date(selectedYear, month, 1);
-      const quarterEnd = new Date(selectedYear, month + 3, 0)
+      const quarterEnd = new Date(selectedYear, month + 3, 0);
 
       // sum all actual amounts that belong to this quarter
       const sum = points
@@ -378,7 +375,7 @@ const calculateExpectedPrefReturn = () => {
     return result;
   };
 
-  
+  const actualPerQuarter = aggregateByQuarter(chartPoints, selectedYear);
 
   // Expected Return per Quarter for Char.js,
 
@@ -397,10 +394,6 @@ const calculateExpectedPrefReturn = () => {
     ];
   };
 
-
-
-  
-
   const yearEndDataset = [
     {
       label: "TO DATE CALCULATIONS",
@@ -414,10 +407,6 @@ const calculateExpectedPrefReturn = () => {
     },
   ];
 
- 
-
-  const actualPerQuarter = aggregateByQuarter(chartPoints, selectedYear);
-   console.log(actualPerQuarter)
   const expectedPerQuarter = expectedQuarterReturn(selectedYear);
 
   const missingPerQuarter = expectedPerQuarter.map((exp, i) => {
@@ -427,6 +416,7 @@ const calculateExpectedPrefReturn = () => {
       y: Math.max(exp.y - actualY, 0), // never negative
     };
   });
+
   const chartData = {
     datasets: [
       {
@@ -434,24 +424,23 @@ const calculateExpectedPrefReturn = () => {
         data: actualPerQuarter,
         backgroundColor: "rgba(75,192,192,0.6)",
         barThickness: 40, // fixed width
-      maxBarThickness: 50, // optional
+        maxBarThickness: 50, // optional
       },
       {
         label: "EXPECTED QUARTER RETURN",
         data: expectedQuarterReturn(selectedYear),
         backgroundColor: "rgba(192, 132, 75, 0.6)",
         barThickness: 40, // fixed width
-      maxBarThickness: 50, // optional
+        maxBarThickness: 50, // optional
       },
       {
         label: "MISSING AMOUNT PER QUARTER",
         data: missingPerQuarter,
         backgroundColor: "rgba(192, 75, 75, 0.6)",
         barThickness: 40, // fixed width
-      maxBarThickness: 50, // optional
+        maxBarThickness: 50, // optional
       },
       ...yearEndDataset,
-      
     ],
   };
 
@@ -485,8 +474,29 @@ const calculateExpectedPrefReturn = () => {
     scales: {
       x: {
         type: "time",
+        min: new Date(selectedYear, 0, 1), // April 1 (month is 0-indexed)
+        max: new Date(selectedYear, 11, 30),
         time: {
           unit: "quarter",
+        },
+        ticks: {
+          callback: function (value) {
+            const startDate = new Date(value);
+
+            const startMonth = startDate.getMonth();
+            const year = startDate.getFullYear();
+
+            // Last day of the quarter
+            const endDate = new Date(year, startMonth + 3, 0);
+
+            const format = (date) =>
+              date.toLocaleDateString("en-US", {
+                month: "short",
+                day: "numeric",
+              });
+
+            return `${selectedYear} ${format(startDate)} - ${format(endDate)}`;
+          },
         },
       },
       y: {
@@ -510,19 +520,21 @@ const calculateExpectedPrefReturn = () => {
       return result + investmentEvents;
     }, 0);
 
-    const returnEvents = events?.filter((e) => e.event_type === 'Return of Capital').map((e) => e.event_amount);
+    const returnEvents = events
+      ?.filter((e) => e.event_type === "Return of Capital")
+      .map((e) => e.event_amount);
 
-    const totalFromReturnEvents = returnEvents.reduce((result, returnEvents) => {
-      return result + returnEvents;
-    }, 0)
-
-
+    const totalFromReturnEvents = returnEvents.reduce(
+      (result, returnEvents) => {
+        return result + returnEvents;
+      },
+      0,
+    );
 
     const initialInvestment = Number(investments?.invested_amount);
 
     return Number(total + initialInvestment - totalFromReturnEvents).toFixed(2);
   };
-
 
   return (
     <>
@@ -1240,7 +1252,6 @@ const calculateExpectedPrefReturn = () => {
               <div>
                 <h1 className="property-title">
                   👤 {investor?.name || "Investor Name"}
-
                 </h1>
                 <p className="investor-name">
                   🏠 {property?.property_name || "Property Name"}
@@ -1264,7 +1275,6 @@ const calculateExpectedPrefReturn = () => {
           <p className="section-subtitle">
             Overview of capital invested and return performance to date.
           </p>
-
         </div>
 
         <div className="stats-container m-5">
@@ -1311,7 +1321,6 @@ const calculateExpectedPrefReturn = () => {
           </>
         </div>
       </div>
-
 
       <div className="m-5">
         <div className="card shadow-sm m-5">
@@ -1521,23 +1530,23 @@ const calculateExpectedPrefReturn = () => {
                           {(eventTypeSelected === "Investment" ||
                             eventTypeSelected === "Capital Call" ||
                             eventTypeSelected === "Return of Capital") && (
-                              <div className="form-field-enhanced col-md-6 mt-4">
-                                <label className="form-label-enhanced">
-                                  <span className="label-icon-enhanced">📅</span>
-                                  <span>Event Date</span>
-                                  <span className="required-asterisk">*</span>
-                                </label>
-                                <input
-                                  type="date"
-                                  className="form-input-enhanced"
-                                  name="event_date"
-                                  required
-                                />
-                                <span className="helper-text-enhanced">
-                                  When did this occur?
-                                </span>
-                              </div>
-                            )}
+                            <div className="form-field-enhanced col-md-6 mt-4">
+                              <label className="form-label-enhanced">
+                                <span className="label-icon-enhanced">📅</span>
+                                <span>Event Date</span>
+                                <span className="required-asterisk">*</span>
+                              </label>
+                              <input
+                                type="date"
+                                className="form-input-enhanced"
+                                name="event_date"
+                                required
+                              />
+                              <span className="helper-text-enhanced">
+                                When did this occur?
+                              </span>
+                            </div>
+                          )}
 
                           {eventTypeSelected === "Return" && (
                             <div className="row">

@@ -1,13 +1,15 @@
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import { NumericFormat } from "react-number-format";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 import { useNavigate } from "react-router-dom";
 
 function PropertyDetail() {
   const [data, setData] = useState([]);
-  console.log(data);
 
   const handleCancel = () => {
     setIsOpen(false);
@@ -21,14 +23,19 @@ function PropertyDetail() {
     navigate(`/investorDetail/${propertyId}/${investorId}`);
   };
 
-  const { id } = useParams();
+  let { id } = useParams();
+
+  const fetchProperty = useCallback(async () => {
+    const res = await fetch(
+      `https://thg-seven.vercel.app/api/properties/${id}`,
+    );
+    const property = await res.json();
+    setData(property);
+  }, [id]);
 
   useEffect(() => {
-    fetch(`https://thg-seven.vercel.app/api/properties/${id}`)
-      .then((res) => res.json())
-      .then((data) => setData(data))
-      .catch((err) => console.error(err));
-  }, [id]);
+    fetchProperty();
+  }, [fetchProperty]);
 
   // ✅ Safe: runs AFTER render
 
@@ -37,32 +44,24 @@ function PropertyDetail() {
   //    return Math.floor(month / 3); // 0–3
   //  }
 
-  // update field in the properties database table 
+  // update field in the properties database table
 
-  const updateField = async (field , value) => {
+  const updateField = async (field, value) => {
     try {
-      const response = await fetch(
-        `https://thg-seven.vercel.app/api/properties/${id}`, 
-        {
-          method : 'PUT',
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            field,
-            value
-          }),
-          }
-        )
-        
-        const result = await response.json();
-        setData(result)
-      
-    } catch (err) {
-      console.error("Update failed:", err); 
-    }
-  }
+      await fetch(`https://thg-seven.vercel.app/api/properties/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ field, value }),
+      });
 
+      // ✅ Now this works correctly
+      fetchProperty();
+    } catch (err) {
+      console.error("Update failed:", err);
+    }
+  };
   const formatCurrency = (value) => {
     if (!value) return "$0";
     return new Intl.NumberFormat("en-US", {
@@ -71,16 +70,6 @@ function PropertyDetail() {
       minimumFractionDigits: 0,
       maximumFractionDigits: 0,
     }).format(value);
-  };
-
-  const formatDate = (dateComingIn) => {
-    if (!dateComingIn) return "N/A";
-    const date = new Date(dateComingIn);
-    return date.toLocaleDateString("en-US", {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-    });
   };
 
   const navigate = useNavigate();
@@ -124,6 +113,8 @@ function PropertyDetail() {
           --shadow-lg: 0 12px 24px rgba(0,0,0,0.15);
           --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
+
+       
 
           .form-row-enhanced {
           display: grid;
@@ -295,6 +286,11 @@ function PropertyDetail() {
           justify-content: center;
           gap: 2rem;
         }
+          .no-border-datepicker {
+  border: none;
+  outline: none;
+  box-shadow: none;
+}
 
         .property-title {
           font-family: 'Playfair Display', serif;
@@ -417,7 +413,7 @@ function PropertyDetail() {
           transition: var(--transition);
           border: 1px solid #e5e7eb;
           position: relative;
-          overflow: hidden;
+         
         }
 
         .stat-card-modern::before {
@@ -515,7 +511,7 @@ function PropertyDetail() {
           padding: 1.75rem;
           transition: var(--transition);
           position: relative;
-          overflow: hidden;
+          
         }
 
         .investor-card-modern::before {
@@ -643,7 +639,7 @@ function PropertyDetail() {
   display: flex;
   flex-direction: column;
   overflow-y: scroll; 
-   overflow-x: hidden; 
+  
 }
 
         @keyframes slideUp {
@@ -1043,10 +1039,7 @@ function PropertyDetail() {
                   onChange={(e) =>
                     setData({ ...data, property_name: e.target.value })
                   }
-                  onBlur={(e) => updateField(
-                    "property_name",
-                    e.target.value
-                  )}
+                  onBlur={(e) => updateField("property_name", e.target.value)}
                 />
               </div>
 
@@ -1062,13 +1055,20 @@ function PropertyDetail() {
                     💰
                   </div>
                   <div className="stat-label">Purchase Price</div>
-                  <input
-                    className="form-control stat-value bg-transparent border-0 "
-                    value={formatCurrency(data.purchase_price)}
-
-                    
-                    onChange={(e) =>
-                      setData({ ...data, purchase_price: e.target.value })
+                  <NumericFormat
+                    style={{ border: "none" }}
+                    className="stat-value w-100"
+                    value={data.purchase_price}
+                    thousandSeparator={true}
+                    prefix={"$"}
+                    onValueChange={(values) => {
+                      setData({
+                        ...data,
+                        purchase_price: values.floatValue || 0,
+                      });
+                    }}
+                    onBlur={() =>
+                      updateField("purchase_price", data.purchase_price)
                     }
                   />
                 </div>
@@ -1084,9 +1084,20 @@ function PropertyDetail() {
                     📅
                   </div>
                   <div className="stat-label">Closing Date</div>
-                  <div className="stat-value" style={{ fontSize: "1.5rem" }}>
-                    {formatDate(data.closing_date)}
-                  </div>
+                  <DatePicker className="stat-value w-75 no-border-datepicker"
+                 
+                    selected={
+                      data.closing_date ? new Date(data.closing_date) : null
+                    }
+                    onChange={(date) => {
+                      setData({
+                        ...data,
+                        closing_date: date.toISOString(), // store ISO in state
+                      });
+                    }}
+                    dateFormat="MM/dd/yyyy"
+                    popperPlacement="top-start"
+                  />
                 </div>
 
                 <div className="stat-card-modern">
