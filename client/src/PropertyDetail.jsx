@@ -6,6 +6,13 @@ import { NumericFormat } from "react-number-format";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
+import { parse, format , isValid} from "date-fns";
+
+
+
+
+
+
 import { useNavigate } from "react-router-dom";
 
 function PropertyDetail() {
@@ -14,6 +21,8 @@ function PropertyDetail() {
   const handleCancel = () => {
     setIsOpen(false);
   };
+
+ console.log(data.closing_date)
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [addInvestor, setAddInvestor] = useState(false);
@@ -1085,18 +1094,17 @@ function PropertyDetail() {
                   </div>
                   <div className="stat-label">Closing Date</div>
                   <DatePicker className="stat-value w-75 no-border-datepicker"
-                 
-                    selected={
-                      data.closing_date ? new Date(data.closing_date) : null
-                    }
+                selected={data.closing_date}
                     onChange={(date) => {
                       setData({
                         ...data,
-                        closing_date: date.toISOString(), // store ISO in state
+                        closing_date: format(date, "yyyy-MM-dd"), // store ISO in state
                       });
                     }}
                     dateFormat="MM/dd/yyyy"
                     popperPlacement="top-start"
+
+                    onBlur={(e) =>  updateField("closing_date", e.target.value)}
                   />
                 </div>
 

@@ -87,9 +87,17 @@ const getPropertyById = async (req, res) => {
 
   try {
     const propertyResult = await client.query (
-        `SELECT * FROM properties WHERE id = $1`,
+        `SELECT 
+          id, 
+          property_name,
+          purchase_price,
+          closing_date::timestamptz at time zone 'America/New_York',
+          secure_url
+        FROM properties WHERE id = $1`,
         [propertyId]
     );
+
+
 
 
     const investorResult = await client.query(
@@ -108,7 +116,7 @@ const getPropertyById = async (req, res) => {
       [propertyId]
     );
 
-   
+ 
 
     res.json({
       ...propertyResult.rows[0],
