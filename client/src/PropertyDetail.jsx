@@ -1065,11 +1065,13 @@ function PropertyDetail() {
                   </div>
                   <div className="stat-label">Purchase Price</div>
                   <NumericFormat
-                    style={{ border: "none" }}
-                    className="stat-value w-100"
+                    style={{ border: "none", outline: 'none'}}
+                    className="stat-value w-75"
                     value={data.purchase_price}
                     thousandSeparator={true}
                     prefix={"$"}
+                     decimalScale={2} 
+                     fixedDecimalScale={true}
                     onValueChange={(values) => {
                       setData({
                         ...data,

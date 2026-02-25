@@ -1,5 +1,5 @@
 import { useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
+import {useCallback, useEffect, useState } from "react";
 import "chartjs-adapter-date-fns";
 
 import {
@@ -228,14 +228,7 @@ function InvestorDetail() {
 
   console.log(investor);
 
-  useEffect(() => {
-    fetch(
-      `https://thg-seven.vercel.app/api/investor/${propertyId}/${investorId}`,
-    )
-      .then((res) => res.json())
-      .then((data) => setData(data))
-      .catch((err) => console.error(err));
-  }, [propertyId, investorId]);
+  
 
   const formatNumber = (value) => {
     if (!value) return "";
@@ -254,9 +247,7 @@ function InvestorDetail() {
       investorId,
     };
 
-    console.log(payload);
-
-    const response = await fetch("https://thg-seven.vercel.app/api/event", {
+     const response = await fetch("https://thg-seven.vercel.app/api/event", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -277,6 +268,40 @@ function InvestorDetail() {
     }
 
     // You can add success notification or redirect here
+  };
+
+  
+
+const fetchInvestor = useCallback(async () => {
+        const res = await fetch(
+          `https://thg-seven.vercel.app/api/investor/${propertyId}/${investorId}`,
+        );
+        const investor = await res.json();
+        setData(investor);
+      }, [propertyId, investorId]);
+
+    
+useEffect(() => {
+    fetchInvestor();
+  }, [fetchInvestor]);
+   
+
+
+  const updateField = async (field, value) => {
+    try {
+      await fetch(`https://thg-seven.vercel.app/api/investor/${id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ field, value }),
+      });
+
+      // ✅ Now this works correctly
+      fetchInvestor();
+    } catch (err) {
+      console.error("Update failed:", err);
+    }
   };
 
   const msPerDay = 1000 * 60 * 60 * 24;
@@ -1250,9 +1275,18 @@ return { start: new Date(year, 9, 1), end: new Date(year, 12, 0) };
             </div>
             <div className="hero-info">
               <div>
-                <h1 className="property-title">
-                  👤 {investor?.name || "Investor Name"}
-                </h1>
+                <div>
+                <span>👤</span>
+                 <input
+                  className="form-control property-title bg-transparent border-0 w-100"
+                  value={investor?.name}
+                  onChange={(e) =>
+                    setData({ ...investor, name: e.target.value })
+                  }
+                  onBlur={(e) => updateField("name", e.target.value)}
+                />
+                </div>
+                
                 <p className="investor-name">
                   🏠 {property?.property_name || "Property Name"}
                 </p>

@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { NumericFormat } from "react-number-format";
 
 function Properties() {
   const navigate = useNavigate();
   const [data, setData] = useState([]);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
-   const [viewMode, setViewMode] = useState("grid"); // 'grid' or 'list'
+  const [viewMode, setViewMode] = useState("grid"); // 'grid' or 'list'
 
   const goToPropertyDetail = (id) => {
     navigate(`/property/${id}`);
@@ -16,7 +17,7 @@ function Properties() {
     if (!propertyId) return;
 
     const confirmed = window.confirm(
-      "Are you sure you want to delete this property? This cannot be undone."
+      "Are you sure you want to delete this property? This cannot be undone.",
     );
     if (!confirmed) return;
 
@@ -25,7 +26,7 @@ function Properties() {
         `https://thg-seven.vercel.app/api/properties/${propertyId}`,
         {
           method: "DELETE",
-        }
+        },
       );
       const result = await res.json();
 
@@ -59,13 +60,11 @@ function Properties() {
   }, []);
 
   const searchData = data.filter((row) =>
-    row.property_name?.toLowerCase().includes(search.toLowerCase())
+    row.property_name?.toLowerCase().includes(search.toLowerCase()),
   );
 
   return (
     <>
-
-    
       <style>{`
       :root{ --primary-gradient: linear-gradient(135deg, #0240dbe5 0%, #a2b9dd 100%);
           --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -221,7 +220,8 @@ function Properties() {
                     "Loading..."
                   ) : (
                     <>
-                      {data.length} {data.length === 1 ? "property" : "properties"} total
+                      {data.length}{" "}
+                      {data.length === 1 ? "property" : "properties"} total
                       {search && ` • ${searchData.length} matching`}
                     </>
                   )}
@@ -235,8 +235,13 @@ function Properties() {
                       onClick={() => setViewMode("grid")}
                       title="Grid View"
                     >
-                      <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
-                        <path d="M1 2.5A1.5 1.5 0 0 1 2.5 1h3A1.5 1.5 0 0 1 7 2.5v3A1.5 1.5 0 0 1 5.5 7h-3A1.5 1.5 0 0 1 1 5.5v-3zm8 0A1.5 1.5 0 0 1 10.5 1h3A1.5 1.5 0 0 1 15 2.5v3A1.5 1.5 0 0 1 13.5 7h-3A1.5 1.5 0 0 1 9 5.5v-3zm-8 8A1.5 1.5 0 0 1 2.5 9h3A1.5 1.5 0 0 1 7 10.5v3A1.5 1.5 0 0 1 5.5 15h-3A1.5 1.5 0 0 1 1 13.5v-3zm8 0A1.5 1.5 0 0 1 10.5 9h3a1.5 1.5 0 0 1 1.5 1.5v3a1.5 1.5 0 0 1-1.5 1.5h-3A1.5 1.5 0 0 1 9 13.5v-3z"/>
+                      <svg
+                        width="20"
+                        height="20"
+                        fill="currentColor"
+                        viewBox="0 0 16 16"
+                      >
+                        <path d="M1 2.5A1.5 1.5 0 0 1 2.5 1h3A1.5 1.5 0 0 1 7 2.5v3A1.5 1.5 0 0 1 5.5 7h-3A1.5 1.5 0 0 1 1 5.5v-3zm8 0A1.5 1.5 0 0 1 10.5 1h3A1.5 1.5 0 0 1 15 2.5v3A1.5 1.5 0 0 1 13.5 7h-3A1.5 1.5 0 0 1 9 5.5v-3zm-8 8A1.5 1.5 0 0 1 2.5 9h3A1.5 1.5 0 0 1 7 10.5v3A1.5 1.5 0 0 1 5.5 15h-3A1.5 1.5 0 0 1 1 13.5v-3zm8 0A1.5 1.5 0 0 1 10.5 9h3a1.5 1.5 0 0 1 1.5 1.5v3a1.5 1.5 0 0 1-1.5 1.5h-3A1.5 1.5 0 0 1 9 13.5v-3z" />
                       </svg>
                     </button>
                     <button
@@ -244,8 +249,16 @@ function Properties() {
                       onClick={() => setViewMode("list")}
                       title="List View"
                     >
-                      <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
-                        <path fillRule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5z"/>
+                      <svg
+                        width="20"
+                        height="20"
+                        fill="currentColor"
+                        viewBox="0 0 16 16"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5z"
+                        />
                       </svg>
                     </button>
                   </div>
@@ -268,7 +281,7 @@ function Properties() {
                     <button
                       className="btn btn-link position-absolute end-0 top-50 translate-middle-y"
                       onClick={() => setSearch("")}
-                      style={{ textDecoration: 'none' }}
+                      style={{ textDecoration: "none" }}
                     >
                       ✕
                     </button>
@@ -285,12 +298,26 @@ function Properties() {
             // Loading Skeleton
             <div className={viewMode === "grid" ? "row g-4" : ""}>
               {[1, 2, 3, 4, 5, 6].map((i) => (
-                <div key={i} className={viewMode === "grid" ? "col-md-6 col-lg-4" : "mb-3"}>
+                <div
+                  key={i}
+                  className={viewMode === "grid" ? "col-md-6 col-lg-4" : "mb-3"}
+                >
                   <div className="card border-0 shadow-sm">
-                    <div className="skeleton" style={{ height: viewMode === "grid" ? "200px" : "120px" }}></div>
+                    <div
+                      className="skeleton"
+                      style={{
+                        height: viewMode === "grid" ? "200px" : "120px",
+                      }}
+                    ></div>
                     <div className="card-body">
-                      <div className="skeleton rounded mb-2" style={{ height: "20px", width: "70%" }}></div>
-                      <div className="skeleton rounded" style={{ height: "16px", width: "40%" }}></div>
+                      <div
+                        className="skeleton rounded mb-2"
+                        style={{ height: "20px", width: "70%" }}
+                      ></div>
+                      <div
+                        className="skeleton rounded"
+                        style={{ height: "16px", width: "40%" }}
+                      ></div>
                     </div>
                   </div>
                 </div>
@@ -315,19 +342,28 @@ function Properties() {
                           className="card-img-top"
                           style={{ objectFit: "cover", height: "220px" }}
                         />
-                        
                       </div>
 
                       <div className="card-body d-flex flex-column">
                         {/* Property Name */}
-                        <h5 className="card-title fw-bold mb-3">{row.property_name}</h5>
+                        <h5 className="card-title fw-bold mb-3">
+                          {row.property_name}
+                        </h5>
 
                         {/* Property Info */}
                         {row.purchase_price && (
                           <div className="mb-3">
                             <small className="text-muted">Purchase Price</small>
-                            <div className="fw-bold text-success">
-                              ${Number(row.purchase_price).toLocaleString()}
+                            <div>
+                              <NumericFormat
+                                className="fw-bold text-success"
+                                style={{ border: "none" }}
+                                value={row.purchase_price}
+                                thousandSeparator={true}
+                                prefix={"$"}
+                                 decimalScale={2} 
+                     fixedDecimalScale={true}
+                              />
                             </div>
                           </div>
                         )}
@@ -351,9 +387,17 @@ function Properties() {
                             }}
                             title="Delete property"
                           >
-                            <svg width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                              <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z"/>
-                              <path fillRule="evenodd" d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"/>
+                            <svg
+                              width="16"
+                              height="16"
+                              fill="currentColor"
+                              viewBox="0 0 16 16"
+                            >
+                              <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6z" />
+                              <path
+                                fillRule="evenodd"
+                                d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1zM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z"
+                              />
                             </svg>
                           </button>
                         </div>
@@ -380,18 +424,22 @@ function Properties() {
                               src={row.secure_url}
                               alt={row.property_name}
                               className="rounded"
-                              style={{ 
-                                objectFit: "cover", 
-                                width: "100%", 
-                                height: "100px" 
+                              style={{
+                                objectFit: "cover",
+                                width: "100%",
+                                height: "100px",
                               }}
                             />
                           </div>
                           <div className="col-md-6">
-                            <h5 className="fw-bold mb-2">{row.property_name}</h5>
+                            <h5 className="fw-bold mb-2">
+                              {row.property_name}
+                            </h5>
                             {row.purchase_price && (
                               <div>
-                                <small className="text-muted">Purchase Price: </small>
+                                <small className="text-muted">
+                                  Purchase Price:{" "}
+                                </small>
                                 <span className="fw-semibold text-success">
                                   ${Number(row.purchase_price).toLocaleString()}
                                 </span>
@@ -407,7 +455,7 @@ function Properties() {
                                   goToPropertyDetail(row.id);
                                 }}
                               >
-                               View Full Details →
+                                View Full Details →
                               </button>
                               <button
                                 className="btn btn-outline-danger"
@@ -432,13 +480,15 @@ function Properties() {
             <div className="empty-state">
               <div className="empty-state-icon">🏘️</div>
               <h4 className="fw-bold mb-2">
-                {search ? "No properties match your search" : "No properties found"}
+                {search
+                  ? "No properties match your search"
+                  : "No properties found"}
               </h4>
               <p className="text-muted">
                 {search ? (
                   <>
                     Try adjusting your search terms or{" "}
-                    <button 
+                    <button
                       className="btn btn-link p-0"
                       onClick={() => setSearch("")}
                     >
@@ -453,7 +503,6 @@ function Properties() {
           )}
         </div>
       </div>
-  
     </>
   );
 }

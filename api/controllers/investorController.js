@@ -86,11 +86,34 @@ const getInvestorByID = async (req, res) => {
     res.status(500).json({ message: 'Server error' });
   }
 };
+
+const updateInvestorField = async (req, res) => {
+  const {id }  = req.params;
+  const {field, value } = req.body;
+
+  try {
+
+    const result = await dataBasePool.query (
+      `UPDATE investors
+      SET ${field} = $1
+      WHERE id = $2
+      RETURNING *; `, 
+      [value , id]
+
+    )
+    
+    res.json(result.rows[0]);
+    
+  } catch (err) {
+     console.error(err);
+    res.status(500).json({ error: "Update failed" });
+  }
+}
    
   
 
 
 
 export {
-    addingInvestorToProp, getInvestorByID
+    addingInvestorToProp, getInvestorByID, updateInvestorField
 }

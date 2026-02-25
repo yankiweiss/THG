@@ -5,6 +5,7 @@ import {
   FaCheckCircle,
 } from "react-icons/fa";
 import "./index.css";
+import { NumericFormat } from "react-number-format";
 
 function AddDealLP() {
   const [uploadProgress, setUploadProgress] = useState(0);
@@ -560,14 +561,24 @@ try {
                       Purchase Price *
                     </label>
                     <div className="input-group-modern">
-                      <span className="input-prefix">$</span>
-                      <input
-                        className="form-control form-control-modern with-prefix"
-                        name="purchase_price"
-                        placeholder="1,000,000"
-                        type="number"
-                        required
-                      />
+
+                      
+                      <NumericFormat
+                   
+                    className="form-control form-control-modern with-prefix"
+                   placeholder="$1,500,000"
+                    thousandSeparator={true}
+                    prefix={"$"}
+                    name="purchase_price"
+                    decimalScale={2} 
+                     fixedDecimalScale={true}
+                     onValueChange={({ value }) => {
+    // directly set the input's value attribute so the form sees it
+    document.querySelector('input[name="purchase_price"]').value = value;
+  }}
+                   
+                  />
+                     
                     </div>
                   </div>
 
