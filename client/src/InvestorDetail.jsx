@@ -30,7 +30,6 @@ ChartJS.register(
 
 function InvestorDetail() {
   const [data, setData] = useState();
-  console.log(data);
   const [addEvent, setAddEvent] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedYear, setSelectedYear] = useState("");
@@ -289,7 +288,7 @@ useEffect(() => {
 
   const updateField = async (field, value) => {
     try {
-      await fetch(`https://thg-seven.vercel.app/api/investor/${id}`, {
+      await fetch(`https://thg-seven.vercel.app/api/investor/${investorId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -997,6 +996,8 @@ return { start: new Date(year, 9, 1), end: new Date(year, 12, 0) };
           border-color: #8b5cf6;
           box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.1);
         }
+          .form-control:focus{
+          color: white}
 
         .helper-text-enhanced {
           font-size: 0.8125rem;
@@ -1275,17 +1276,29 @@ return { start: new Date(year, 9, 1), end: new Date(year, 12, 0) };
             </div>
             <div className="hero-info">
               <div>
-                <div>
-                <span>👤</span>
+
+                <h3 className="fst-italic">Investor Name:</h3>
+                
+                  <div className="d-flex align-items-center">
+                <div className="me-2 fs-1">👤</div>
+                
                  <input
-                  className="form-control property-title bg-transparent border-0 w-100"
+                  className="form-control property-title bg-transparent border-0 w-75 mt-2"
                   value={investor?.name}
                   onChange={(e) =>
-                    setData({ ...investor, name: e.target.value })
-                  }
+                    setData((prev) => ({ 
+                      ...prev,
+                       investor: {
+                      ...prev.investor, 
+                      name: e.target.value
+                    }
+                  }))
+                }
                   onBlur={(e) => updateField("name", e.target.value)}
                 />
                 </div>
+                
+                
                 
                 <p className="investor-name">
                   🏠 {property?.property_name || "Property Name"}
