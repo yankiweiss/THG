@@ -26,7 +26,7 @@ function Reports() {
 
      
 
-    <div className="card shadow-sm border-0 rounded-4 p-4">
+    <div className="card shadow-lg border-0 rounded-4 p-4">
 
     {/* Investor / Property Info */}
     <div className="d-flex justify-content-between align-items-center mb-4">
@@ -43,7 +43,7 @@ function Reports() {
 
     {/* Table */}
     <div className="table-responsive">
-      <table className="table align-middle text-center mb-0 table-hover">
+      <table className="table align-middle text-center mb-0 table-hover table-bordered">
         <thead className="table-light">
           <tr>
             <th></th>
@@ -65,7 +65,7 @@ function Reports() {
             
           </tr>
         </thead>
-        <tbody>
+        <tbody className="table-group-divider">
           <tr>
             <th className="text-start fw-normal">2025</th>
             <td>$12,500</td>
