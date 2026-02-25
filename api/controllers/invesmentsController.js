@@ -6,41 +6,30 @@ const getAllInvestments = async (req, res) => {
     try {
 
         const getAllInvestmentsDB = `
-   SELECT
-  investments.id AS investment_id,
-  investments.property_id,
-  investments.investor_id,
-
-  properties.property_name AS property_name,
-  investors.name AS investor_name,
-
-  COALESCE(
-    json_agg(
-      json_build_object(
-        'id', events.id,
-        'type', events.event_type,
-        'amount', events.event_amount,
-        'date', events.event_date
-      )
-    ) FILTER (WHERE events.id IS NOT NULL),
-    '[]'
-  ) AS events
-
-FROM investments
-
-JOIN properties
-  ON investments.property_id = properties.id
-
-JOIN investors
-  ON investments.investor_id = investors.id
-
-LEFT JOIN events
-  ON events.investment_id = investment_id
-
-GROUP BY
-  investments.id,
-  properties.property_name,
-  investors.name;`
+ SELECT
+    i.id AS investment_id,
+    i.property_id,
+    i.investor_id,
+    p.property_name,
+    inv.name AS investor_name,
+    COALESCE(ev.events, '[]'::json) AS events
+FROM investments i
+JOIN properties p ON i.property_id = p.id
+JOIN investors inv ON i.investor_id = inv.id
+LEFT JOIN (
+    SELECT
+        investment_id,
+        json_agg(
+            json_build_object(
+                'id', id,
+                'type', event_type,
+                'amount', event_amount,
+                'date', event_date
+            )
+        ) AS events
+    FROM events
+    GROUP BY investment_id
+) ev ON ev.investment_id = i.id`;
 
   const result = await dataBasePool.query(getAllInvestmentsDB);
   res.json(result.rows);

@@ -1,8 +1,13 @@
 import "bootstrap/dist/css/bootstrap.min.css";
 import { useEffect, useState } from "react";
+import { calculateActualReturn } from "./utils/CalculatingReturns";
 
 function Reports() {
   const [data, setData] = useState();
+
+  console.log(data)
+
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -21,7 +26,7 @@ function Reports() {
   
   return ( 
         <div className="container py-5">
-        <div className="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-1">
+        <div className="d-flex justify-content-between align-items-center mb-5 flex-wrap gap-1">
           <div>
             <h2 className="fw-bold mb-0">Investment Reports</h2>
             <p className="text-muted mb-0 small">
@@ -40,7 +45,7 @@ function Reports() {
 
         {data?.map((i) => (
 
-        <div className="card shadow-lg border-0 rounded-4 p-4 mb-4">
+        <div className="card shadow-lg border-0 rounded-4 p-4 m-4">
           {/* Investor / Property Info */}
           <div className="d-flex justify-content-between align-items-center mb-4">
             <div>
@@ -80,10 +85,11 @@ function Reports() {
                 </tr>
               </thead>
               <tbody className="table-group-divider">
+                {console.log(i.events)}
                 <tr>
                   <th className="text-start fw-normal">2025</th>
                   <td>$12,500</td>
-                  <td>$9,200</td>
+                  <td>{calculateActualReturn(i.events)}</td>
                   <td>$11,300</td>
                   <td>$14,000</td>
                   <td>$11,300</td>
