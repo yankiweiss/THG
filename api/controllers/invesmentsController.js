@@ -11,8 +11,8 @@ const getAllInvestments = async (req, res) => {
   investments.property_id,
   investments.investor_id,
 
-  properties.name AS property_name,
-  investors.name AS investor_name,
+  properties.property_name AS property_name,
+  investors.investor_name AS investor_name,
 
   COALESCE(
     json_agg(
@@ -35,7 +35,7 @@ JOIN investors
   ON investments.investor_id = investors.id
 
 LEFT JOIN events
-  ON events.investor_id = investors.id
+  ON events.investment_id = investment_id
 
 GROUP BY
   investments.id,
