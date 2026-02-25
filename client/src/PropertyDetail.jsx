@@ -6,10 +6,6 @@ import { NumericFormat } from "react-number-format";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
-
-
-
-
 import { useNavigate } from "react-router-dom";
 
 function PropertyDetail() {
@@ -19,25 +15,14 @@ function PropertyDetail() {
     setIsOpen(false);
   };
 
-  console.log("closing_date raw:", data.closing_date);
+  const toLocalDate = (dateString) => {
+    if (!dateString) return null;
 
- const toLocalDate = (dateString) => {
-  if (!dateString || typeof dateString !== "string") return null;
+    const [year, month, day] = dateString.split("-").map(Number);
+    return new Date(year, month - 1, day);
+  };
 
-  const parts = dateString.split("-");
-  if (parts.length !== 3) return null;
-
-  const year = Number(parts[0]);
-  const month = Number(parts[1]);
-  const day = Number(parts[2]);
-
-  if (!year || !month || !day) return null;
-
-  const date = new Date(year, month - 1, day);
-
-  return isNaN(date.getTime()) ? null : date;
-};
-  
+  console.log(data.closing_date);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [addInvestor, setAddInvestor] = useState(false);
@@ -1108,23 +1093,29 @@ function PropertyDetail() {
                     📅
                   </div>
                   <div className="stat-label">Closing Date</div>
-                 <DatePicker
-  selected={toLocalDate(data.closing_date)}
-  onChange={(date) => {
-    if (!date) return;
+                  <DatePicker
+                
+                    className="stat-value w-75 no-border-datepicker "
+                     
+                    selected={toLocalDate(data.closing_date)}
+                    onChange={(date) => {
+                      if (!date) return;
 
-    const formatted = `${date.getFullYear()}-${String(
-      date.getMonth() + 1
-    ).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+                      const formatted = `${date.getFullYear()}-${String(
+                        date.getMonth() + 1,
+                      ).padStart(
+                        2,
+                        "0",
+                      )}-${String(date.getDate()).padStart(2, "0")}`;
 
-    setData({
-      ...data,
-      closing_date: formatted,
-    });
+                      setData({
+                        ...data,
+                        closing_date: formatted,
+                      });
 
-    updateField("closing_date", formatted);
-  }}
-/>
+                      updateField("closing_date", formatted);
+                    }}
+                  />
                 </div>
 
                 <div className="stat-card-modern">
