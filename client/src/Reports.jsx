@@ -89,7 +89,7 @@ function Reports() {
                 <tr>
                   <th className="text-start fw-normal">2025</th>
                   <td>$12,500</td>
-                  <td>{calculateActualReturn(i.events)}</td>
+                  <td>${calculateActualReturn(i.events)}</td>
                   <td>$11,300</td>
                   <td>$14,000</td>
                   <td>$11,300</td>

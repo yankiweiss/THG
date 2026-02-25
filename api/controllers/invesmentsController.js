@@ -1,11 +1,8 @@
 import dataBasePool from "../model/db.js";
 
-
 const getAllInvestments = async (req, res) => {
-
-    try {
-
-        const getAllInvestmentsDB = `
+  try {
+    const getAllInvestmentsDB = `
  SELECT
     i.id AS investment_id,
     i.property_id,
@@ -24,27 +21,20 @@ LEFT JOIN (
                 'id', id,
                 'type', event_type,
                 'amount', event_amount,
-                'date', event_date
+                'date', event_date,
+                'from, from_data,
+                'to, to_date
             )
         ) AS events
     FROM events
     GROUP BY investment_id
 ) ev ON ev.investment_id = i.id`;
 
-  const result = await dataBasePool.query(getAllInvestmentsDB);
-  res.json(result.rows);
-        
-    } catch (error) {
-      console.log(error)  
-    }
-  
-
-  
+    const result = await dataBasePool.query(getAllInvestmentsDB);
+    res.json(result.rows);
+  } catch (error) {
+    console.log(error);
+  }
 };
 
-
- 
-
-export {
-getAllInvestments
-}
+export { getAllInvestments };
