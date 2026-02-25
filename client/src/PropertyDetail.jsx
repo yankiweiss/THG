@@ -6,9 +6,6 @@ import { NumericFormat } from "react-number-format";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
-import { parse, format , isValid} from "date-fns";
-
-
 
 
 
@@ -22,8 +19,25 @@ function PropertyDetail() {
     setIsOpen(false);
   };
 
- console.log(data.closing_date)
- console.log("Parsed:", new Date(data.closing_date));
+  console.log("closing_date raw:", data.closing_date);
+
+ const toLocalDate = (dateString) => {
+  if (!dateString || typeof dateString !== "string") return null;
+
+  const parts = dateString.split("-");
+  if (parts.length !== 3) return null;
+
+  const year = Number(parts[0]);
+  const month = Number(parts[1]);
+  const day = Number(parts[2]);
+
+  if (!year || !month || !day) return null;
+
+  const date = new Date(year, month - 1, day);
+
+  return isNaN(date.getTime()) ? null : date;
+};
+  
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [addInvestor, setAddInvestor] = useState(false);
@@ -1094,18 +1108,23 @@ function PropertyDetail() {
                     📅
                   </div>
                   <div className="stat-label">Closing Date</div>
-                  <DatePicker className="stat-value w-75 no-border-datepicker"
-                selected={data?.closing_date}
-                    onChange={(date) => {
-                      setData({
-                        ...data,
-                        closing_date: format(date, "yyyy-MM-dd"), // store ISO in state
-                      });
-                    }}
-                    popperPlacement="top-start"
+                 <DatePicker
+  selected={toLocalDate(data.closing_date)}
+  onChange={(date) => {
+    if (!date) return;
 
-                    onBlur={(e) =>  updateField("closing_date", e.target.value)}
-                  />
+    const formatted = `${date.getFullYear()}-${String(
+      date.getMonth() + 1
+    ).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+
+    setData({
+      ...data,
+      closing_date: formatted,
+    });
+
+    updateField("closing_date", formatted);
+  }}
+/>
                 </div>
 
                 <div className="stat-card-modern">
