@@ -39,7 +39,7 @@ LEFT JOIN events
 
 GROUP BY
   investments.id,
-  properties.name,
+  properties.property_name,
   investors.name;`
 
   const result = await dataBasePool.query(getAllInvestmentsDB);
