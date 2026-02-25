@@ -22,7 +22,7 @@ LEFT JOIN (
                 'type', event_type,
                 'amount', event_amount,
                 'date', event_date,
-                'from', from_data,
+                'from', from_date,
                 'to', to_date
             )
         ) AS events
