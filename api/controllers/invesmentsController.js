@@ -12,7 +12,7 @@ const getAllInvestments = async (req, res) => {
   investments.investor_id,
 
   properties.property_name AS property_name,
-  investors.investor_name AS investor_name,
+  investors.name AS investor_name,
 
   COALESCE(
     json_agg(
