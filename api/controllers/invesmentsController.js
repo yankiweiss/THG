@@ -19,8 +19,8 @@ const getAllInvestments = async (req, res) => {
       json_build_object(
         'id', events.id,
         'type', events.event_type,
-        'amount', events.amount,
-        'date', events.date
+        'amount', events.event_amount,
+        'date', events.event_date
       )
     ) FILTER (WHERE events.id IS NOT NULL),
     '[]'
