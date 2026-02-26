@@ -1,16 +1,22 @@
 import "bootstrap/dist/css/bootstrap.min.css";
 import { useState } from "react";
-import {
-  FaCloudUploadAlt,
-  FaCheckCircle,
-} from "react-icons/fa";
+import { FaCloudUploadAlt, FaCheckCircle } from "react-icons/fa";
 import "./index.css";
 import { NumericFormat } from "react-number-format";
+import { useNavigate } from "react-router-dom";
 
 function AddDealLP() {
   const [uploadProgress, setUploadProgress] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [previewImage, setPreviewImage] = useState(null);
+  const [numericFields, setNumericFields] = useState({
+    purchase_price: 0,
+    amount_invested: 0,
+  });
+
+  console.log(numericFields);
+
+  const navigate = useNavigate()
 
   // need to look into below if needed.
   const [investors, setInvestors] = useState([]);
@@ -29,72 +35,71 @@ function AddDealLP() {
   const handleForm = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
-  
-try {
-  
-    const form = e.target;
-    const picFile = form.querySelector('[name="pictures"]').files[0];
 
-    const uploadToCloudinary = async (file) => {
-      const fd = new FormData();
-      fd.append("file", file);
-      fd.append("upload_preset", "thehamiltongroup");
+    try {
+      const form = e.target;
+      const picFile = form.querySelector('[name="pictures"]').files[0];
 
-      setUploadProgress(30);
-      const res = await fetch(
-        `https://api.cloudinary.com/v1_1/dhwtnj8eb/image/upload`,
-        {
-          method: "POST",
-          body: fd,
+      const uploadToCloudinary = async (file) => {
+        const fd = new FormData();
+        fd.append("file", file);
+        fd.append("upload_preset", "thehamiltongroup");
+
+        setUploadProgress(30);
+        const res = await fetch(
+          `https://api.cloudinary.com/v1_1/dhwtnj8eb/image/upload`,
+          {
+            method: "POST",
+            body: fd,
+          },
+        );
+
+        setUploadProgress(70);
+        const data = await res.json();
+        setUploadProgress(100);
+        return data.secure_url;
+      };
+
+      let uploadedPicUrl = "";
+      if (picFile) {
+        uploadedPicUrl = await uploadToCloudinary(picFile);
+      }
+
+      if (!uploadedPicUrl) {
+        alert("Image upload failed");
+        setIsSubmitting(false);
+        return;
+      }
+
+      const formData = new FormData(form);
+      const dataObject = Object.fromEntries(formData.entries());
+
+      const payload = {
+        ...dataObject,
+        pictures: uploadedPicUrl,
+        investors: [investors],
+      };
+
+      console.log(payload);
+
+      await fetch("https://thg-seven.vercel.app/api/properties/addDeal", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
         },
-      );
-
-      setUploadProgress(70);
-      const data = await res.json();
-      setUploadProgress(100);
-      return data.secure_url;
-    };
-
-    let uploadedPicUrl = "";
-    if (picFile) {
-      uploadedPicUrl = await uploadToCloudinary(picFile);
-    }
-
-    if (!uploadedPicUrl) {
-      alert("Image upload failed");
+        body: JSON.stringify(payload),
+      });
+    } catch (err) {
+      console.error(err);
+      alert("Something went wrong. Check console.");
+    } finally {
       setIsSubmitting(false);
-      return;
     }
 
-    const formData = new FormData(form);
-    const dataObject = Object.fromEntries(formData.entries());
+    navigate("/properties")
 
-    const payload = {
-      ...dataObject,
-      pictures: uploadedPicUrl,
-      investors: [investors],
-    };
-
-    console.log(payload);
-
-    await fetch("https://thg-seven.vercel.app/api/properties/addDeal", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(payload),
-    });
-  
-} catch (err) {
-   console.error(err);
-    alert("Something went wrong. Check console.");
-}finally {
-   setIsSubmitting(false);
-}
-   
     // You can add success notification or redirect here
-  }
-
+  };
 
   return (
     <>
@@ -561,26 +566,29 @@ try {
                       Purchase Price *
                     </label>
                     <div className="input-group-modern">
-
-                      
                       <NumericFormat
-                   
-                    className="form-control form-control-modern with-prefix"
-                   placeholder="$1,500,000"
-                    thousandSeparator={true}
-                    prefix={"$"}
-                    name="purchase_price"
-                    decimalScale={2} 
-                     fixedDecimalScale={true}
-                     onValueChange={({ value }) => {
-    // directly set the input's value attribute so the form sees it
-    document.querySelector('input[name="purchase_price"]').value = value;
-  }}
-                   
-                  />
-                     
+                        className="form-control form-control-modern with-prefix"
+                        placeholder="$1,500,000"
+                        thousandSeparator={true}
+                        prefix={"$"}
+                        decimalScale={2}
+                        fixedDecimalScale={true}
+                        onValueChange={(values) => {
+                          // Keep the numeric value in state
+                          setNumericFields((prev) => ({
+                            ...prev,
+                            purchase_price: values.floatValue || 0,
+                          }));
+                        }}
+                      />
                     </div>
                   </div>
+
+                  <input
+                    type="hidden"
+                    name="purchase_price"
+                    value={numericFields.purchase_price}
+                  />
 
                   <div className="col-md-3">
                     <label className="form-label-modern">Closing Date *</label>
@@ -694,7 +702,12 @@ try {
                     <input
                       className="form-control form-control-modern"
                       placeholder="e.g., John Smith"
-                      onChange={(e) => setInvestors({...investors, 'investor_name': e.target.value})}
+                      onChange={(e) =>
+                        setInvestors({
+                          ...investors,
+                          investor_name: e.target.value,
+                        })
+                      }
                       required
                     />
                   </div>
@@ -704,16 +717,25 @@ try {
                       Amount Invested *
                     </label>
                     <div className="input-group-modern">
-                      <span className="input-prefix">$</span>
-                      <input
+                      <NumericFormat
                         className="form-control form-control-modern with-prefix"
-                        placeholder="100,000"
-                        type="number"
-                        onChange={(e) => setInvestors({...investors, 'invested_amount' : e.target.value})}
-                        required
+                        placeholder="$100,000.00"
+                        thousandSeparator={true}
+                        prefix={"$"}
+                        decimalScale={2}
+                        fixedDecimalScale={true}
+                        onValueChange={(values) => {
+                          // Keep the numeric value in state
+                          setNumericFields((prev) => ({
+                            ...prev,
+                            amount_invested: values.floatValue || 0,
+                          }));
+                        }}
                       />
                     </div>
                   </div>
+
+                  <input type="hidden" name="amount_invested" value={numericFields.amount_invested}/>
 
                   <div className="col-md-3">
                     <label className="form-label-modern">
@@ -725,7 +747,12 @@ try {
                         placeholder="8"
                         type="number"
                         step="0.1"
-                        onChange={(e) => setInvestors({...investors, 'perf_return' : e.target.value})}
+                        onChange={(e) =>
+                          setInvestors({
+                            ...investors,
+                            perf_return: e.target.value,
+                          })
+                        }
                         required
                       />
                       <span

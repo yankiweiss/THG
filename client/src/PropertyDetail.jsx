@@ -11,6 +11,8 @@ import { useNavigate } from "react-router-dom";
 function PropertyDetail() {
   const [data, setData] = useState([]);
 
+  
+
   const handleCancel = () => {
     setIsOpen(false);
   };
@@ -1083,6 +1085,8 @@ function PropertyDetail() {
                     }
                   />
                 </div>
+
+                
 
                 <div className="stat-card-modern">
                   <div

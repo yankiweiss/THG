@@ -1,6 +1,7 @@
 import { useParams } from "react-router-dom";
-import {useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import "chartjs-adapter-date-fns";
+import { NumericFormat } from "react-number-format";
 
 import {
   Chart as ChartJS,
@@ -35,11 +36,16 @@ function InvestorDetail() {
   const [selectedYear, setSelectedYear] = useState("");
   const [eventTypeSelected, setEventTypeSelected] = useState("");
   const { propertyId, investorId } = useParams();
+  const [numericFields, setNumericFields] = useState({
+    event_amount: 0,
+  });
 
   const property = data?.property;
   const investor = data?.investor;
   const investments = data?.investments || {};
   const events = data?.events || [];
+
+  console.log(data);
 
   const eventTypes = [
     {
@@ -225,10 +231,6 @@ function InvestorDetail() {
     setAddEvent(false);
   };
 
-  console.log(investor);
-
-  
-
   const formatNumber = (value) => {
     if (!value) return "";
     return Number(value).toLocaleString("en-US");
@@ -246,7 +248,7 @@ function InvestorDetail() {
       investorId,
     };
 
-     const response = await fetch("https://thg-seven.vercel.app/api/event", {
+    const response = await fetch("https://thg-seven.vercel.app/api/event", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -269,22 +271,17 @@ function InvestorDetail() {
     // You can add success notification or redirect here
   };
 
-  
+  const fetchInvestor = useCallback(async () => {
+    const res = await fetch(
+      `https://thg-seven.vercel.app/api/investor/${propertyId}/${investorId}`,
+    );
+    const investor = await res.json();
+    setData(investor);
+  }, [propertyId, investorId]);
 
-const fetchInvestor = useCallback(async () => {
-        const res = await fetch(
-          `https://thg-seven.vercel.app/api/investor/${propertyId}/${investorId}`,
-        );
-        const investor = await res.json();
-        setData(investor);
-      }, [propertyId, investorId]);
-
-    
-useEffect(() => {
+  useEffect(() => {
     fetchInvestor();
   }, [fetchInvestor]);
-   
-
 
   const updateField = async (field, value) => {
     try {
@@ -313,20 +310,20 @@ useEffect(() => {
     const month = date.getMonth();
     const year = date.getFullYear();
 
-   if (month <= 2)
-  return { start: new Date(year, 0, 1), end: new Date(year, 3, 0) };
-if (month <= 5)
-  return { start: new Date(year, 3, 1), end: new Date(year, 6, 0) };
-if (month <= 8)
-  return { start: new Date(year, 6, 1), end: new Date(year, 9, 0) };
-return { start: new Date(year, 9, 1), end: new Date(year, 12, 0) };
-  }
+    if (month <= 2)
+      return { start: new Date(year, 0, 1), end: new Date(year, 3, 0) };
+    if (month <= 5)
+      return { start: new Date(year, 3, 1), end: new Date(year, 6, 0) };
+    if (month <= 8)
+      return { start: new Date(year, 6, 1), end: new Date(year, 9, 0) };
+    return { start: new Date(year, 9, 1), end: new Date(year, 12, 0) };
+  };
 
   const splitEventByQuarter = (startDate, endDate, amount, selectedYear) => {
     const result = [];
 
     const originalStart = new Date(startDate);
-    
+
     const originalEnd = new Date(endDate);
 
     const yearStart = new Date(selectedYear, 0, 1);
@@ -337,7 +334,7 @@ return { start: new Date(year, 9, 1), end: new Date(year, 12, 0) };
 
     if (overlapStart > overlapEnd) return [];
 
-   const totalDays = Math.round((originalEnd - originalStart) / msPerDay) + 1;
+    const totalDays = Math.round((originalEnd - originalStart) / msPerDay) + 1;
 
     let current = new Date(overlapStart);
 
@@ -348,8 +345,7 @@ return { start: new Date(year, 9, 1), end: new Date(year, 12, 0) };
       const periodStart = current > quarterStart ? current : quarterStart;
       const periodEnd = overlapEnd < quarterEnd ? overlapEnd : quarterEnd;
 
-      const daysInPeriod =
-  Math.round((periodEnd - periodStart) / msPerDay) + 1;
+      const daysInPeriod = Math.round((periodEnd - periodStart) / msPerDay) + 1;
 
       const portion = (daysInPeriod / totalDays) * amount;
 
@@ -376,7 +372,6 @@ return { start: new Date(year, 9, 1), end: new Date(year, 12, 0) };
 
     chartPoints = chartPoints.concat(points);
   });
-  
 
   const aggregateByQuarter = (points, selectedYear) => {
     const quarters = [0, 3, 6, 9]; // Jan, Apr, Jul, Oct
@@ -997,7 +992,7 @@ return { start: new Date(year, 9, 1), end: new Date(year, 12, 0) };
           box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.1);
         }
           .form-control:focus{
-          color: white}
+          color: black}
 
         .helper-text-enhanced {
           font-size: 0.8125rem;
@@ -1276,30 +1271,27 @@ return { start: new Date(year, 9, 1), end: new Date(year, 12, 0) };
             </div>
             <div className="hero-info">
               <div>
-
                 <h3 className="fst-italic">Investor Name:</h3>
-                
-                  <div className="d-flex align-items-center">
-                <div className="me-2 fs-1">👤</div>
-                
-                 <input
-                  className="form-control property-title bg-transparent border-0 w-75 mt-2"
-                  value={investor?.name}
-                  onChange={(e) =>
-                    setData((prev) => ({ 
-                      ...prev,
-                       investor: {
-                      ...prev.investor, 
-                      name: e.target.value
+
+                <div className="d-flex align-items-center">
+                  <div className="me-2 fs-1">👤</div>
+
+                  <input
+                    className="form-control property-title bg-transparent border-0 w-75 mt-2"
+                    value={investor?.name}
+                    onChange={(e) =>
+                      setData((prev) => ({
+                        ...prev,
+                        investor: {
+                          ...prev.investor,
+                          name: e.target.value,
+                        },
+                      }))
                     }
-                  }))
-                }
-                  onBlur={(e) => updateField("name", e.target.value)}
-                />
+                    onBlur={(e) => updateField("name", e.target.value)}
+                  />
                 </div>
-                
-                
-                
+
                 <p className="investor-name">
                   🏠 {property?.property_name || "Property Name"}
                 </p>
@@ -1500,16 +1492,28 @@ return { start: new Date(year, 9, 1), end: new Date(year, 12, 0) };
                                 <span className="required-asterisk">*</span>
                               </label>
                               <div className="input-wrapper-enhanced">
-                                <span className="input-prefix-enhanced">$</span>
+                                <NumericFormat
+                                  className="form-control "
+                                  placeholder="$1,500,000"
+                                  thousandSeparator={true}
+                                  
+                                  prefix={"$"}
+                                  decimalScale={2}
+                                  fixedDecimalScale={true}
+                                  onValueChange={(values) => {
+                                    setNumericFields((prev) => ({
+                                      ...prev,
+                                      event_amount: values.floatValue || 0,
+                                    }));
+                                  }}
+                                />
                                 <input
-                                  type="number"
-                                  className="form-input-enhanced input-with-prefix-enhanced"
+                                  type="hidden"
                                   name="event_amount"
-                                  placeholder="100,000"
-                                  step="0.01"
-                                  required
+                                  value={numericFields.event_amount}
                                 />
                               </div>
+
                               <span className="helper-text-enhanced">
                                 Transaction amount in USD
                               </span>
