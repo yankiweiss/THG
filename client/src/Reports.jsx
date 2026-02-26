@@ -145,12 +145,12 @@ function Reports() {
             <div className="d-flex justify-content-between align-items-center mb-4">
               <div>
                 <div className="text-muted small">Investor</div>
-                <div className="fw-semibold fs-5">{i.investor_name}</div>
+                <div className="fw-semibold fs-4">{i.investor_name}</div>
               </div>
 
               <div>
                 <div className="text-muted small">Property</div>
-                <div className="fw-semibold fs-5">{i.property_name}</div>
+                <div className="fw-semibold fs-4">{i.property_name}</div>
               </div>
             </div>
 
