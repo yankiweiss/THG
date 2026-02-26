@@ -30,6 +30,7 @@ ChartJS.register(
 function Reports() {
   // getting all data as useState
   const [data, setData] = useState();
+  const [search, setSearch] = useState("");
 
   // get out unique years from the events from and to
 
@@ -49,7 +50,11 @@ function Reports() {
     return [...allYears].sort();
   };
 
-  console.log(data);
+  const searchPandI = data?.filter(
+    (i) =>
+      i.property_name?.toLowerCase().includes(search.toLowerCase()) ||
+      i.investor_name?.toLowerCase().includes(search.toLowerCase()),
+  );
 
   const chartOptions = {
     responsive: true,
@@ -81,9 +86,9 @@ function Reports() {
     scales: {
       x: {
         type: "category", // <-- change this
-    title: {
-      display: true,
-      text: "Quarter",
+        title: {
+          display: true,
+          text: "Quarter",
         },
         ticks: {},
 
@@ -127,11 +132,13 @@ function Reports() {
             type="text"
             className="form-control rounded-pill"
             placeholder="🔍 Search investor or property..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
           />
         </div>
       </div>
 
-      {data?.map((i) => {
+      {searchPandI?.map((i) => {
         return (
           <div className="card shadow-lg border-0 rounded-4 p-4 m-4">
             {/* Investor / Property Info */}
@@ -174,9 +181,7 @@ function Reports() {
                     datasets: [
                       {
                         label: "ACTUAL RETURN", // the label shown in the tooltip/legend
-                        data: [
-                          newCal(i.events, y)
-                        ],
+                        data: [newCal(i.events, y)],
                         backgroundColor: "rgba(75,192,192,0.6)", // color of bars
                         barThickness: 40,
                         maxBarThickness: 50,
