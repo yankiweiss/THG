@@ -735,7 +735,7 @@ function AddDealLP() {
                     </div>
                   </div>
 
-                  <input type="hidden" name="amount_invested" value={numericFields.amount_invested}/>
+                  <input type="hidden" name="invested_amount" value={numericFields.amount_invested}/>
 
                   <div className="col-md-3">
                     <label className="form-label-modern">
