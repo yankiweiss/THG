@@ -11,7 +11,7 @@ function AddDealLP() {
   const [previewImage, setPreviewImage] = useState(null);
   const [numericFields, setNumericFields] = useState({
     purchase_price: 0,
-    amount_invested: 0,
+    invested_amount: 0,
   });
 
   console.log(numericFields);
@@ -19,7 +19,14 @@ function AddDealLP() {
   const navigate = useNavigate()
 
   // need to look into below if needed.
-  const [investors, setInvestors] = useState([]);
+  const [investors, setInvestors] = useState({
+  investor_name: "",
+  invested_amount: 0,
+  perf_return: 0,
+  role: "LP",
+});
+
+  console.log
 
   const handleImagePreview = (e) => {
     const file = e.target.files[0];
@@ -726,16 +733,16 @@ function AddDealLP() {
                         fixedDecimalScale={true}
                         onValueChange={(values) => {
                           // Keep the numeric value in state
-                          setNumericFields((prev) => ({
+                          setInvestors((prev) => ({
                             ...prev,
-                            amount_invested: values.floatValue || 0,
+                            invested_amount: values.floatValue || 0,
                           }));
                         }}
                       />
                     </div>
                   </div>
 
-                  <input type="hidden" name="invested_amount" value={numericFields.amount_invested}/>
+                  
 
                   <div className="col-md-3">
                     <label className="form-label-modern">
