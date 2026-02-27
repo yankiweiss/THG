@@ -535,7 +535,7 @@ function InvestorDetail() {
       .map((e) => e.event_amount);
 
     const total = investmentEvents.reduce((result, investmentEvents) => {
-      return result + investmentEvents;
+      return result + Number(investmentEvents);
     }, 0);
 
     const returnEvents = events
@@ -544,7 +544,7 @@ function InvestorDetail() {
 
     const totalFromReturnEvents = returnEvents.reduce(
       (result, returnEvents) => {
-        return result + returnEvents;
+        return result + Number(returnEvents);
       },
       0,
     );
