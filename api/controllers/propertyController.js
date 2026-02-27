@@ -51,7 +51,7 @@ const postAProperty = async (req, res) => {
           investorID,
           propertyID,
           role,
-          invested_amount,
+          purchase_price,
           perf_return,
         ]
     )
