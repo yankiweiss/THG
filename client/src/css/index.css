@@ -686,6 +686,7 @@
 .investor-card {
   background: linear-gradient(135deg, #7f8491, #6d7c9b); /* dark-to-medium blue gradient */
   color: #f9fafb;
+  background: #3d578f;
   width: 350px;
   border-radius: 15px;
   padding: 1rem;
@@ -696,6 +697,8 @@
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   border: 2px solid rgba(0, 0, 0, 0.356);
 }
+
+
 .investor-card::before {
   content: "";
   position: absolute;
