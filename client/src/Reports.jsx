@@ -36,8 +36,7 @@ function Reports() {
   const [search, setSearch] = useState("");
   console.log(data)
 
-  const events =  data?.events;
-const investments = data?.investments;
+  
 
   // get out unique years from the events from and to
 
@@ -47,9 +46,9 @@ const investments = data?.investments;
     const allYears = new Set();
 
     events.forEach((e) => {
-      if(!e.from || !e.to) return;
-      const from = new Date(e.from).getFullYear();
-      const to = new Date(e.to).getFullYear();
+      if(!e.from_date || !e.to_date) return;
+      const from = new Date(e.from_date).getFullYear();
+      const to = new Date(e.to_date).getFullYear();
 
       for (let y = from; y <= to; y++) {
         allYears.add(y);

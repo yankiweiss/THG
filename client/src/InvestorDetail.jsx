@@ -982,7 +982,7 @@ function InvestorDetail() {
           
         
 
-      <div className="section-card mx-3">
+      <div className="section-card ">
        <div className="section-header">
           <h2 >
             <span style={{ fontSize: "1.5rem" }}>📈</span>
