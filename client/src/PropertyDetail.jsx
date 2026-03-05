@@ -1,3 +1,4 @@
+import "./css/index.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "bootstrap/dist/js/bootstrap.bundle.min.js";
 import { useCallback, useEffect, useState } from "react";
@@ -5,13 +6,12 @@ import { useParams } from "react-router-dom";
 import { NumericFormat } from "react-number-format";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import "./css/index.css";
 
 import { useNavigate } from "react-router-dom";
 
 function PropertyDetail() {
   const [data, setData] = useState([]);
-
-  
 
   const handleCancel = () => {
     setIsOpen(false);
@@ -113,18 +113,7 @@ function PropertyDetail() {
   return (
     <>
       <style>{`
-        :root {
        
-          --primary-gradient: linear-gradient(135deg, #0240dbe5 0%, #a2b9dd 100%);
-          --success-gradient: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-          --info-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-          --border-radius: 16px;
-          --shadow-sm: 0 2px 4px rgba(0,0,0,0.08);
-          --shadow-md: 0 4px 12px rgba(0,0,0,0.1);
-          --shadow-lg: 0 12px 24px rgba(0,0,0,0.15);
-          --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
        
 
           .form-row-enhanced {
@@ -244,384 +233,33 @@ function PropertyDetail() {
           padding: 2rem;
         }
 
-        /* HERO SECTION */
-        .hero-section {
-          position: relative;
-          border-radius: 24px;
-          overflow: hidden;
-          margin-bottom: 3rem;
-          background: linear-gradient(135deg, #0240dbe5 0%, #a2b9dd 100%);
-          box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-        }
 
-        .hero-content {
-          display: grid;
-          grid-template-columns: 500px 1fr;
-          gap: 3rem;
-          padding: 3rem;
-          position: relative;
-          z-index: 2;
-        }
-
-        .hero-image {
-          width: 100%;
-          height: 350px;
-          object-fit: cover;
-          border-radius: 16px;
-          box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
-          border: 3px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .property-badge {
-          position: absolute;
-          top: -12px;
-          left: -12px;
-          background: linear-gradient(135deg, #00d4ff 0%, #028fbe 100%);
-          color: #0a0a0a;
-          padding: 0.5rem 1.25rem;
-          border-radius: 20px;
-          font-weight: 700;
-          font-size: 0.75rem;
-          text-transform: uppercase;
-          letter-spacing: 1px;
-          box-shadow: 0 8px 20px rgba(0, 212, 255, 0.4);
-        }
-
-        .hero-image-container {
-          position: relative;
-        }
-
-        .hero-info {
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-          gap: 2rem;
-        }
           .no-border-datepicker {
   border: none;
   outline: none;
   box-shadow: none;
 }
 
-        .property-title {
-          font-family: 'Playfair Display', serif;
-          font-size: 3.5rem;
-          font-weight: 900;
-          line-height: 1.1;
-          color: #ffffff;
-          margin-bottom: 1rem;
-          text-shadow: 2px 4px 8px rgba(0, 0, 0, 0.3);
-        }
 
-        .investor-name {
-          font-size: 1.5rem;
-          font-weight: 700;
-          color: #00d4ff;
-          margin-bottom: 0.5rem;
-        }
+      
 
-        .closing-date {
-          font-size: 1.125rem;
-          color: rgba(255, 255, 255, 0.7);
-          font-weight: 500;
-        }
+      
 
-
-        body {
-          background: #f8f9fa;
-        }
-
-        .property-hero {
-          background: var(--primary-gradient);
-          border-radius: var(--border-radius);
-          padding: 0;
-          margin-bottom: 2rem;
-          overflow: hidden;
-          box-shadow: var(--shadow-lg);
-          position: relative;
-        }
-
-        .property-hero::before {
-          content: '';
-          position: absolute;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          background: linear-gradient(135deg, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.1) 100%);
-          z-index: 1;
-        }
-
-        .hero-content {
-          position: relative;
-          z-index: 2;
-          color: white;
-          padding: 3rem 2.5rem;
-        }
-
-        .property-image-wrapper {
-          position: relative;
-          height: 100%;
-          min-height: 400px;
-        }
-
-        .property-image {
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-        }
 
        
 
-        .property-name-input:focus {
-          background: rgba(255, 255, 255, 0.25);
-          border-color: rgba(255, 255, 255, 0.6);
-          outline: none;
-          box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.1);
-        }
+      
 
-        .property-name-input::placeholder {
-          color: rgba(255, 255, 255, 0.7);
-        }
+       
 
-        .property-name-display {
-          font-size: 2.5rem;
-          font-weight: 700;
-          margin: 0;
-          text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
-        }
+       
 
-        .edit-btn {
-          background: rgba(255, 255, 255, 0.2);
-          border: 2px solid rgba(255, 255, 255, 0.4);
-          color: white;
-          padding: 0.5rem 1.5rem;
-          border-radius: 8px;
-          font-weight: 500;
-          transition: var(--transition);
-          cursor: pointer;
-          backdrop-filter: blur(10px);
-        }
+       
 
-        .edit-btn:hover {
-          background: rgba(255, 255, 255, 0.3);
-          border-color: rgba(255, 255, 255, 0.6);
-          transform: translateY(-2px);
-        }
+      
 
-        .stats-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-          gap: 1.5rem;
-          margin-top: 2rem;
-        }
-
-        .stat-card-modern {
-          background: white;
-          border-radius: 12px;
-          padding: 1.5rem;
-          box-shadow: var(--shadow-sm);
-          transition: var(--transition);
-          border: 1px solid #e5e7eb;
-          position: relative;
-         
-        }
-
-        .stat-card-modern::before {
-          content: '';
-          position: absolute;
-          top: 0;
-          left: 0;
-          width: 4px;
-          height: 100%;
-          background: var(--primary-gradient);
-          transform: scaleY(0);
-          transition: var(--transition);
-        }
-
-        .stat-card-modern:hover {
-          transform: translateY(-4px);
-          box-shadow: var(--shadow-md);
-        }
-
-        .stat-card-modern:hover::before {
-          transform: scaleY(1);
-        }
-
-        .stat-label {
-          font-size: 0.8125rem;
-          color: #6b7280;
-          font-weight: 600;
-          text-transform: uppercase;
-          letter-spacing: 0.5px;
-          margin-bottom: 0.5rem;
-          display: flex;
-          align-items: center;
-          gap: 0.5rem;
-        }
-
-        .stat-value {
-          font-size: 1.875rem;
-          font-weight: 700;
-          color: #1f2937;
-          line-height: 1.2;
-        }
-
-        .stat-icon {
-          width: 40px;
-          height: 40px;
-          border-radius: 10px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-size: 1.25rem;
-          margin-bottom: 0.75rem;
-        }
-
-        .section-card {
-          background: white;
-          border-radius: var(--border-radius);
-          box-shadow: var(--shadow-sm);
-          border: 1px solid #e5e7eb;
-          overflow: hidden;
-          margin-bottom: 2rem;
-        }
-
-        .section-header {
-          padding: 2rem 2.5rem 1.5rem;
-          border-bottom: 2px solid #f3f4f6;
-        }
-
-        .section-title {
-          font-size: 1.5rem;
-          font-weight: 700;
-          color: #1f2937;
-          margin: 0 0 0.5rem 0;
-          display: flex;
-          align-items: center;
-          gap: 0.75rem;
-        }
-
-        .section-subtitle {
-          color: #6b7280;
-          font-size: 0.9375rem;
-          margin: 0;
-        }
-
-        .investor-grid {
-          display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-          gap: 1.5rem;
-          padding: 2rem 2.5rem;
-        }
-
-        .investor-card-modern {
-          background: white;
-          border: 2px solid #e5e7eb;
-          border-radius: 12px;
-          padding: 1.75rem;
-          transition: var(--transition);
-          position: relative;
-          
-        }
-
-        .investor-card-modern::before {
-          content: '';
-          position: absolute;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 4px;
-          background: var(--primary-gradient);
-          transform: scaleX(0);
-          transition: var(--transition);
-        }
-
-        .investor-card-modern:hover {
-          border-color: #a78bfa;
-          transform: translateY(-4px);
-          box-shadow: var(--shadow-md);
-        }
-
-        .investor-card-modern:hover::before {
-          transform: scaleX(1);
-        }
-
-        .investor-name {
-          font-size: 1.25rem;
-          font-weight: 700;
-          color: #1f2937;
-          margin-bottom: 1.5rem;
-          display: flex;
-          align-items: center;
-          gap: 0.5rem;
-        }
-
-        .investor-initial {
-          width: 40px;
-          height: 40px;
-          border-radius: 50%;
-          background: var(--primary-gradient);
-          color: white;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-weight: 700;
-          font-size: 1.125rem;
-        }
-
-        .investor-stats {
-          display: grid;
-          grid-template-columns: 1fr 1fr;
-          gap: 1.25rem;
-          margin-bottom: 1.5rem;
-        }
-
-        .investor-stat-item {
-          text-align: center;
-          padding: 1rem;
-          background: #f9fafb;
-          border-radius: 8px;
-        }
-
-        .investor-stat-label {
-          font-size: 0.75rem;
-          color: #6b7280;
-          font-weight: 600;
-          text-transform: uppercase;
-          letter-spacing: 0.5px;
-          margin-bottom: 0.5rem;
-        }
-
-        .investor-stat-value {
-          font-size: 1.125rem;
-          font-weight: 700;
-          color: #059669;
-        }
-
-        .investor-stat-badge {
-          display: inline-block;
-          padding: 0.375rem 0.875rem;
-          background: var(--primary-gradient);
-          color: white;
-          border-radius: 20px;
-          font-weight: 600;
-          font-size: 0.9375rem;
-        }
-
-        .view-details-btn {
-          width: 100%;
-          background: var(--primary-gradient);
-          border: none;
-          color: white;
-          padding: 0.75rem;
-          border-radius: 8px;
-          font-weight: 600;
-          transition: var(--transition);
-          cursor: pointer;
-          position: relative;
-          overflow: hidden;
-        }
+   
+       
               .modal-overlay-enhanced {
           position: fixed;
           inset: 0;
@@ -642,8 +280,8 @@ function PropertyDetail() {
 
        .modal-container-enhanced {
   background: white;
-  border-radius: 20px;
-  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+  border-radius: 24px;
+  box-shadow: 0 30px 80px rgba(0,0,0,0.2);
   max-width: 800px;
   width: 100%;
   max-height: 90vh;
@@ -665,12 +303,13 @@ function PropertyDetail() {
         }
 
         .modal-header-enhanced {
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-          padding: 2rem 2.5rem;
+          background: #111827;
+            padding: 2rem;
           display: flex;
           justify-content: space-between;
           align-items: flex-start;
           position: relative;
+           color: white;
       }
 
         .modal-header-enhanced::before {
@@ -748,29 +387,9 @@ function PropertyDetail() {
           flex: 1;
         }
 
-        .view-details-btn::before {
-          content: '';
-          position: absolute;
-          top: 50%;
-          left: 50%;
-          width: 0;
-          height: 0;
-          border-radius: 50%;
-          background: rgba(255, 255, 255, 0.2);
-          transform: translate(-50%, -50%);
-          transition: width 0.6s, height 0.6s;
-        }
+      
 
-        .view-details-btn:hover::before {
-          width: 300px;
-          height: 300px;
-        }
-
-        .view-details-btn:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
-        }
-
+        
         .quick-investors {
           display: flex;
           gap: 1rem;
@@ -891,8 +510,7 @@ function PropertyDetail() {
         }
       }
 
-        .btn-secondary-enhanced,
-        .btn-primary-enhanced {
+        .btn-secondary-enhanced{
           padding: 0.875rem 1.75rem;
           border-radius: 10px;
           font-weight: 600;
@@ -918,15 +536,18 @@ function PropertyDetail() {
         }
 
         .btn-primary-enhanced {
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-          color: white;
-          box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
-        }
+   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: 12px;
+  padding: 0.75rem 1.75rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
 
-        .btn-primary-enhanced:hover:not(:disabled) {
-          transform: translateY(-2px);
-          box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
-        }
+       .btn-primary-enhanced:hover {
+  background: #1f2937;
+  transform: translateY(-2px);
+}
 
         .btn-primary-enhanced:disabled,
         .btn-secondary-enhanced:disabled {
@@ -1016,8 +637,7 @@ function PropertyDetail() {
             flex-direction: column-reverse;
           }
 
-          .btn-secondary-enhanced,
-          .btn-primary-enhanced {
+          .btn-secondary-enhanced {
             width: 100%;
             justify-content: center;
           }
@@ -1027,9 +647,8 @@ function PropertyDetail() {
 
       <div className="page-wrapper">
         <div className="hero-section">
-          <div className="hero-content">
-            <div className="hero-image-container">
-              <div className="property-badge">PROPERTY</div>
+          <div className="hero">
+            <div className="hero-left">
               <img
                 src={
                   data.secure_url ||
@@ -1039,23 +658,21 @@ function PropertyDetail() {
                 className="hero-image"
               />
             </div>
-            <div className="hero-info">
-              <div>
-                <label className="form-label fs-2 fst-italic">
-                  Property Name:
-                </label>
-                <input
-                  className="form-control property-title bg-transparent border-0 w-100"
-                  value={data?.property_name}
-                  onChange={(e) =>
-                    setData({ ...data, property_name: e.target.value })
-                  }
-                  onBlur={(e) => updateField("property_name", e.target.value)}
-                />
-              </div>
+            <div className="hero-right">
+              <span className="hero-eyebrow">Property</span>
+              <input
+                className="hero-main-title"
+                value={data?.property_name}
+                onChange={(e) =>
+                  setData({ ...data, property_name: e.target.value })
+                }
+                onBlur={(e) => updateField("property_name", e.target.value)}
+              />
 
-              <div className="stats-grid">
-                <div className="stat-card-modern">
+              <div className="hero-context"></div>
+
+              <div className="hero-stats-inline">
+                <div className="stat-inline">
                   <div
                     className="stat-icon"
                     style={{
@@ -1065,15 +682,15 @@ function PropertyDetail() {
                   >
                     💰
                   </div>
-                  <div className="stat-label">Purchase Price</div>
+                  <div className="stat-label-inline">Purchase Price</div>
                   <NumericFormat
-                    style={{ border: "none", outline: 'none'}}
-                    className="stat-value w-75"
+                    style={{ border: "none", outline: "none" }}
+                    className="stat-value-inline"
                     value={data.purchase_price}
                     thousandSeparator={true}
                     prefix={"$"}
-                     decimalScale={2} 
-                     fixedDecimalScale={true}
+                    decimalScale={2}
+                    fixedDecimalScale={true}
                     onValueChange={(values) => {
                       setData({
                         ...data,
@@ -1086,9 +703,7 @@ function PropertyDetail() {
                   />
                 </div>
 
-                
-
-                <div className="stat-card-modern">
+                <div className="stat-inline">
                   <div
                     className="stat-icon"
                     style={{
@@ -1098,11 +713,9 @@ function PropertyDetail() {
                   >
                     📅
                   </div>
-                  <div className="stat-label">Closing Date</div>
+                  <div className="stat-label-inline">Closing Date</div>
                   <DatePicker
-                
-                    className="stat-value w-75 no-border-datepicker "
-                     
+                    className="stat-value-inline"
                     selected={toLocalDate(data.closing_date)}
                     onChange={(date) => {
                       if (!date) return;
@@ -1124,7 +737,7 @@ function PropertyDetail() {
                   />
                 </div>
 
-                <div className="stat-card-modern">
+                <div className="stat-inline">
                   <div
                     className="stat-icon"
                     style={{
@@ -1134,8 +747,8 @@ function PropertyDetail() {
                   >
                     👥
                   </div>
-                  <div className="stat-label">Total Investors</div>
-                  <div className="stat-value">
+                  <div className="stat-label-inline">Total Investors</div>
+                  <div className="stat-value-inline">
                     {data.investors?.length || 0}
                   </div>
                 </div>
@@ -1143,20 +756,20 @@ function PropertyDetail() {
             </div>
           </div>
         </div>
-      </div>
 
-      {/* QUICK INVESTORS OVERVIEW */}
-      {data.investors && data.investors.length > 0 && (
-        <div className="section-card">
-          <div className="section-header">
-            <h2 className="section-title">
-              <span style={{ fontSize: "1.5rem" }}>👥</span>
-              Quick Investor Overview
-            </h2>
-            <p className="section-subtitle">
-              {data.investors.length} investor
-              {data.investors.length !== 1 ? "s" : ""} in this property
-            </p>
+        {/* QUICK INVESTORS OVERVIEW */}
+        {data.investors && data.investors.length > 0 && (
+          <div className="section-card">
+            <div className="section-header">
+              <h2 className="section-title" style={{ padding: "10px 50px" }}>
+                <span style={{ fontSize: "1.5rem" }}>👥</span>
+                Quick Investor Overview
+              </h2>
+              <p className="section-subtitle" style={{ padding: "1px 50px" }}>
+                {data.investors.length} investor
+                {data.investors.length !== 1 ? "s" : ""} in this property
+              </p>
+            </div>
             <div className="quick-investors">
               {data.investors.map((investor) => (
                 <div
@@ -1175,221 +788,235 @@ function PropertyDetail() {
               ))}
             </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* DETAILED INVESTOR PORTFOLIO */}
-      <div className="section-card">
-        <div className="section-header">
-          <div className="d-flex justify-content-between align-items-center">
-            <div>
-              <h2 className="section-title">
-                <span style={{ fontSize: "1.5rem" }}>📋</span>
-                Investor Portfolio Details
-              </h2>
-              <p className="section-subtitle">
-                Comprehensive breakdown of investor contributions and returns
-              </p>
-            </div>
+        {/* DETAILED INVESTOR PORTFOLIO */}
+        <div className="section-card">
+          <div className="section-header">
+            <div className="d-flex justify-content-between align-items-center">
+              <div>
+                <h2 className="section-title">
+                  <span style={{ fontSize: "1.5rem" }}>📋</span>
+                  Investor Portfolio Details
+                </h2>
+                <p className="section-subtitle">
+                  Comprehensive breakdown of investor contributions and returns
+                </p>
+              </div>
+               
 
-            <div>
-              <button
-                className="btn btn-primary"
-                onClick={() => setIsOpen(true)}
-              >
-                Add Investor{" "}
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {data.investors && data.investors.length > 0 ? (
-          <div className="investor-grid">
-            {data.investors.map((investor) => (
-              <div key={investor.id} className="investor-card-modern">
-                <div className="investor-name">
-                  <div className="investor-initial">
-                    {investor.name?.charAt(0).toUpperCase() || "?"}
-                  </div>
-                  <span>{investor.name}</span>
-                </div>
-
-                <div className="investor-stats">
-                  <div className="investor-stat-item">
-                    <div className="investor-stat-label">Invested</div>
-                    <div className="investor-stat-value">
-                      {formatCurrency(investor.invested_amount)}
-                    </div>
-                  </div>
-
-                  <div className="investor-stat-item">
-                    <div className="investor-stat-label">Pref Return</div>
-                    <div>
-                      <span className="investor-stat-badge">
-                        {investor.perf_return || 0}%
-                      </span>
-                    </div>
-                  </div>
-                </div>
-
+              <div>
                 <button
-                  className="view-details-btn"
-                  onClick={() => goToInvestorDetail(data.id, investor.id)}
+                  className="btn btn-primary"
+                  onClick={() => setIsOpen(true)}
                 >
-                  View Full Details →
+                  Add Investor{" "}
                 </button>
               </div>
-            ))}
-          </div>
-        ) : !addInvestor ? (
-          <div className="empty-state">
-            <div className="empty-state-icon">📊</div>
-            <h3>No Investors Yet</h3>
-            <p>Add investors to track their portfolio details</p>
-          </div>
-        ) : null}
-      </div>
-
-      {isOpen && (
-        <div
-          className="modal-overlay-enhanced"
-          onClick={(e) => {
-            if (e.target === e.currentTarget) {
-              handleCancel();
-            }
-          }}
-        >
-          <div className="modal-container-enhanced">
-            {/* HEADER */}
-            <div className="modal-header-enhanced">
-              <div className="modal-header-content">
-                <div className="modal-icon-circle">👥</div>
-                <div>
-                  <h2 className="modal-title-enhanced">Add New Investor</h2>
-                  <p className="modal-subtitle-enhanced">
-                    Provide the required information to onboard a new investor.
-                  </p>
-                </div>
-              </div>
-              <button
-                type="button"
-                className="modal-close-enhanced"
-                aria-label="Close"
-                onClick={handleCancel}
-              >
-                <svg
-                  width="24"
-                  height="24"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                >
-                  <path d="M18 6L6 18M6 6l12 12" />
-                </svg>
-              </button>
             </div>
-
-            {/* FORM */}
-            <form onSubmit={addNewInvestor}>
-              <div className="modal-body-enhanced">
-                {/* DATE AND AMOUNT ROW */}
-                <div className="form-row-enhanced">
-                  <div className="form-field-enhanced">
-                    <label className="form-label-enhanced">
-                      <span className="label-icon-enhanced"></span>
-                      <span>Investor Name</span>
-                      <span className="required-asterisk">*</span>
-                    </label>
-                    <div className="input-wrapper-enhanced">
-                      <input
-                        type="text"
-                        className="form-input-enhanced input-with-prefix-enhanced"
-                        name="investor_name"
-                        placeholder="John Doe"
-                        required
-                      />
-                    </div>
-                  </div>
-                  <div className="form-field-enhanced">
-                    <label className="form-label-enhanced">
-                      <span className="label-icon-enhanced"></span>
-                      <span>Amount Invested</span>
-                      <span className="required-asterisk">*</span>
-                    </label>
-                    <div className="input-wrapper-enhanced">
-                      <span className="input-prefix-enhanced">$</span>
-                      <input
-                        type="number"
-                        className="form-input-enhanced input-with-prefix-enhanced"
-                        name="investor_name"
-                        placeholder="100,000"
-                        required
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                <div className="form-row-enhanced">
-                  <div className="form-field-enhanced">
-                    <label className="form-label-enhanced">
-                      <span className="label-icon-enhanced"></span>
-                      <span>Perf Return</span>
-                      <span className="required-asterisk">*</span>
-                    </label>
-                    <div className="input-wrapper-enhanced">
-                      <span className="input-prefix-enhanced">$</span>
-                      <input
-                        type="number"
-                        className="form-input-enhanced input-with-prefix-enhanced"
-                        name="investor_name"
-                        placeholder="100,000"
-                        required
-                      />
-                    </div>
-                  </div>
-                </div>
-                <div className="modal-footer-enhanced">
-                  <button
-                    type="button"
-                    className="btn-secondary-enhanced"
-                    onClick={handleCancel}
-                    disabled={isSubmitting}
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    className="btn-primary-enhanced"
-                    disabled={isSubmitting}
-                  >
-                    {isSubmitting ? (
-                      <>
-                        <span className="spinner-enhanced"></span>
-                        <span>Saving...</span>
-                      </>
-                    ) : (
-                      <>
-                        <span>Save Event</span>
-                        <svg
-                          width="16"
-                          height="16"
-                          viewBox="0 0 16 16"
-                          fill="none"
-                          stroke="currentColor"
-                          strokeWidth="2"
-                        >
-                          <path d="M12 8H4M8 4v8" strokeLinecap="round" />
-                        </svg>
-                      </>
-                    )}
-                  </button>
-                </div>
-              </div>
-            </form>
           </div>
+
+          {data.investors && data.investors.length > 0 ? (
+            <div className="investor-grid">
+              {data.investors.map((investor) => (
+                <div
+                  key={investor.id}
+                  className="investor-card-modern"
+                  style={{
+                    border: "1px solid black",
+                    borderRadius: '15px',
+                    width: "250px",
+                    backgroundColor: ' #273b66',
+                  }}
+                >
+                  <div className="investor-name d-flex gap-2 justify-content-center align-items-center">
+                    <div className="investor-initial" style={{border: '1px black solid', borderRadius: '45%', padding: '25px'}}>
+                      {investor.name?.charAt(0).toUpperCase() || "?"}
+                    </div>
+                    <span>{investor.name}</span>
+                  </div>
+
+                  <div
+                    className="hero-stats-inline"
+                    style={{ marginBottom: "15px" }}
+                  >
+                    <div className="in-stat-inline">
+                      <div className="in-stat-label-inline">Invested</div>
+                      <div className="in-stat-value-inline">
+                        {formatCurrency(investor.invested_amount)}
+                      </div>
+                    </div>
+
+                    <div className="stat-inline">
+                      <div className="stat-label-inline">Pref Return</div>
+                      <div>
+                        <span className="stat-value-inline">
+                          {investor.perf_return || 0}%
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <button
+                    className="btn-styled"
+                    onClick={() => goToInvestorDetail(data.id, investor.id)}
+                  >
+                    View Full Details →
+                  </button>
+                </div>
+              ))}
+            </div>
+          ) : !addInvestor ? (
+            <div className="empty-state">
+              <div className="empty-state-icon">📊</div>
+              <h3>No Investors Yet</h3>
+              <p>Add investors to track their portfolio details</p>
+            </div>
+          ) : null}
         </div>
-      )}
+
+        {isOpen && (
+          <div
+            className="modal-overlay-enhanced"
+            onClick={(e) => {
+              if (e.target === e.currentTarget) {
+                handleCancel();
+              }
+            }}
+          >
+            <div className="modal-container-enhanced">
+              {/* HEADER */}
+              <div className="modal-header-enhanced">
+                <div className="modal-header-content">
+                  <div className="modal-icon-circle">👥</div>
+                  <div>
+                    <h2 className="modal-title-enhanced">Add New Investor</h2>
+                    <p className="modal-subtitle-enhanced">
+                      Provide the required information to onboard a new
+                      investor.
+                    </p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  className="modal-close-enhanced"
+                  aria-label="Close"
+                  onClick={handleCancel}
+                >
+                  <svg
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
+                    <path d="M18 6L6 18M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+
+              {/* FORM */}
+              <form onSubmit={addNewInvestor}>
+                <div className="modal-body-enhanced">
+                  {/* DATE AND AMOUNT ROW */}
+                  <div className="form-row-enhanced">
+                    <div className="form-field-enhanced">
+                      <label className="form-label-enhanced">
+                        <span className="label-icon-enhanced"></span>
+                        <span>Investor Name</span>
+                        <span className="required-asterisk">*</span>
+                      </label>
+                      <div className="input-wrapper-enhanced">
+                        <input
+                          type="text"
+                          className="form-input-enhanced input-with-prefix-enhanced"
+                          name="investor_name"
+                          placeholder="John Doe"
+                          required
+                        />
+                      </div>
+                    </div>
+                    <div className="form-field-enhanced">
+                      <label className="form-label-enhanced">
+                        <span className="label-icon-enhanced"></span>
+                        <span>Amount Invested</span>
+                        <span className="required-asterisk">*</span>
+                      </label>
+                      <div className="input-wrapper-enhanced">
+                        <span className="input-prefix-enhanced">$</span>
+                        <input
+                          type="number"
+                          className="form-input-enhanced input-with-prefix-enhanced"
+                          name="investor_name"
+                          placeholder="100,000"
+                          required
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="form-row-enhanced">
+                    <div className="form-field-enhanced">
+                      <label className="form-label-enhanced">
+                        <span className="label-icon-enhanced"></span>
+                        <span>Perf Return</span>
+                        <span className="required-asterisk">*</span>
+                      </label>
+                      <div className="input-wrapper-enhanced">
+                        <span className="input-prefix-enhanced">$</span>
+                        <input
+                          type="number"
+                          className="form-input-enhanced input-with-prefix-enhanced"
+                          name="investor_name"
+                          placeholder="100,000"
+                          required
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <div className="modal-footer-enhanced">
+                    <button
+                      type="button"
+                      className="btn-secondary-enhanced"
+                      onClick={handleCancel}
+                      disabled={isSubmitting}
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      className="btn-primary-enhanced"
+                      disabled={isSubmitting}
+                    >
+                      {isSubmitting ? (
+                        <>
+                          <span className="spinner-enhanced"></span>
+                          <span>Saving...</span>
+                        </>
+                      ) : (
+                        <>
+                          <span>Save Event</span>
+                          <svg
+                            width="16"
+                            height="16"
+                            viewBox="0 0 16 16"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                          >
+                            <path d="M12 8H4M8 4v8" strokeLinecap="round" />
+                          </svg>
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+      </div>
     </>
   );
 }

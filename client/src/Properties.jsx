@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { NumericFormat } from "react-number-format";
+import './css/index.css'
 
 
 function Properties() {
@@ -374,7 +375,7 @@ function Properties() {
                         {/* Action Buttons */}
                         <div className="mt-auto d-flex gap-2">
                           <button
-                            className="view-details-btn"
+                            className="btn-styled"
                             onClick={(e) => {
                               e.stopPropagation();
                               goToPropertyDetail(row.id);
@@ -452,7 +453,7 @@ function Properties() {
                           <div className="col-md-4 text-md-end mt-3 mt-md-0">
                             <div className="d-flex gap-2 justify-content-md-end view-details-btn">
                               <button
-                                className="view-details-btn"
+                                className="btn-styled"
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   goToPropertyDetail(row.id);

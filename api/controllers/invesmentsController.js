@@ -7,6 +7,8 @@ const getAllInvestments = async (req, res) => {
     i.id AS investment_id,
     i.property_id,
     i.investor_id,
+    i.invested_amount,
+    i.perf_return,
     p.property_name,
     inv.name AS investor_name,
     COALESCE(ev.events, '[]'::json) AS events

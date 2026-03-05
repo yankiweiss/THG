@@ -2,6 +2,7 @@ import { useParams } from "react-router-dom";
 import { useCallback, useEffect, useState } from "react";
 import "chartjs-adapter-date-fns";
 import { NumericFormat } from "react-number-format";
+import './css/index.css'
 
 import {
   Chart as ChartJS,
@@ -617,148 +618,8 @@ function InvestorDetail() {
         }
 
         /* HERO SECTION */
-        .hero-section {
-          position: relative;
-          border-radius: 24px;
-          overflow: hidden;
-          margin-bottom: 3rem;
-          background: linear-gradient(135deg, #0240dbe5 0%, #a2b9dd 100%);
-          box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-        }
-
-        .hero-content {
-          display: grid;
-          grid-template-columns: 500px 1fr;
-          gap: 3rem;
-          padding: 3rem;
-          position: relative;
-          z-index: 2;
-        }
-
-        .hero-image {
-          width: 100%;
-          height: 350px;
-          object-fit: cover;
-          border-radius: 16px;
-          box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
-          border: 3px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .property-badge {
-          position: absolute;
-          top: -12px;
-          left: -12px;
-          background: linear-gradient(135deg, #00d4ff 0%, #028fbe 100%);
-          color: #0a0a0a;
-          padding: 0.5rem 1.25rem;
-          border-radius: 20px;
-          font-weight: 700;
-          font-size: 0.75rem;
-          text-transform: uppercase;
-          letter-spacing: 1px;
-          box-shadow: 0 8px 20px rgba(0, 212, 255, 0.4);
-        }
-
-        .hero-image-container {
-          position: relative;
-        }
-
-        .hero-info {
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-          gap: 2rem;
-        }
-
-        .property-title {
-          font-family: 'Playfair Display', serif;
-          font-size: 3.5rem;
-          font-weight: 900;
-          line-height: 1.1;
-          color: #ffffff;
-          margin-bottom: 1rem;
-          text-shadow: 2px 4px 8px rgba(0, 0, 0, 0.3);
-        }
-
-        .investor-name {
-          font-size: 1.5rem;
-          font-weight: 700;
-          color: #00d4ff;
-          margin-bottom: 0.5rem;
-        }
-
-        .closing-date {
-          font-size: 1.125rem;
-          color: rgba(255, 255, 255, 0.7);
-          font-weight: 500;
-        }
-
-        /* STATS GRID */
-        .stats-container {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-          gap: 1.5rem;
-          margin-bottom: 3rem;
-        }
-
-        .stat-card {
-          background: rgba(255, 255, 255, 0.92);
-          backdrop-filter: blur(20px);
-          border: 3px solid rgba(0, 0, 0, 0.1);
-          border-radius: 20px;
-          padding: 1.5rem;
-          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-          position: relative;
-          overflow: hidden;
-        }
-
-        .stat-card::before {
-          content: '';
-          position: absolute;
-          top: 0;
-          left: 0;
-          right: 0;
-          height: 4px;
-          background: linear-gradient(90deg, #00d4ff, #0099cc);
-          transform: scaleX(0);
-          transform-origin: left;
-          transition: transform 0.3s ease;
-        }
-
-        .stat-card:hover {
-          transform: translateY(-8px);
-          box-shadow: 0 20px 40px rgba(0, 28, 34, 0.2);
-          border-color: rgba(0, 1, 2, 0.16);
-        }
-
-        .stat-card:hover::before {
-          transform: scaleX(1);
-        }
-
-        .stat-label {
-          font-size: 0.875rem;
-          color: rgb(0, 0, 0);
-          text-transform: uppercase;
-          letter-spacing: 1px;
-          font-weight: 600;
-          margin-bottom: 0.75rem;
-        }
-
-        .stat-value {
-          font-size: 2.25rem;
-          font-weight: 700;
-          color: #327886;
-          font-family: 'Playfair Display', serif;
-        }
-
-        .stat-icon {
-          position: absolute;
-          top: 1.5rem;
-          right: 1.5rem;
-          font-size: 2rem;
-          opacity: 0.3;
-        }
-
+        
+        
         /* MODAL STYLES */
         .modal-overlay-enhanced {
           position: fixed;
@@ -1255,57 +1116,54 @@ function InvestorDetail() {
       `}</style>
       {/*<Bar data={chartData} options={chartOptions} />*/}
       <div className="page-wrapper">
-        <div className="hero-section">
-          <div className="hero-content">
-            <div className="hero-image-container">
-              <div className="property-badge">PROPERTY</div>
-              <img
-                src={
-                  property?.secure_url ||
-                  "https://via.placeholder.com/350x350?text=Property"
-                }
-                alt="Property"
-                className="hero-image"
-              />
-            </div>
-            <div className="hero-info">
-              <div>
-                <h3 className="fst-italic">Investor Name:</h3>
+        <div className="hero-section ">
+          <div className="hero">
+            
+             
+  <div className="hero-left">
+    <img
+      src={
+        property?.secure_url ||
+        "https://via.placeholder.com/400x300?text=Property"
+      }
+      alt="Property"
+      className="hero-image"
+    />
+  </div>
 
-                <div className="d-flex align-items-center">
-                  <div className="me-2 fs-1">👤</div>
+  <div className="hero-right">
+   
+      <span className="hero-eyebrow">Investor</span>
+      <input
+        className="hero-main-title"
+        value={investor?.name}
+        onChange={(e) =>
+          setData((prev) => ({
+            ...prev,
+            investor: {
+              ...prev.investor,
+              name: e.target.value,
+            },
+          }))
+        }
+        onBlur={(e) => updateField("name", e.target.value)}
+      />
+    
 
-                  <input
-                    className="form-control property-title bg-transparent border-0 w-75 mt-2"
-                    value={investor?.name}
-                    onChange={(e) =>
-                      setData((prev) => ({
-                        ...prev,
-                        investor: {
-                          ...prev.investor,
-                          name: e.target.value,
-                        },
-                      }))
-                    }
-                    onBlur={(e) => updateField("name", e.target.value)}
-                  />
-                </div>
+    <div className="hero-context">
+      <h2>{property?.property_name}</h2>
+      <p>Closing Date: {formatDate(property?.closing_date)}</p>
+    </div>
+  </div>
 
-                <p className="investor-name">
-                  🏠 {property?.property_name || "Property Name"}
-                </p>
-                <p className="closing-date">
-                  📅 Closing Date: {formatDate(property?.closing_date)}
-                </p>
-              </div>
-            </div>
           </div>
-        </div>
-      </div>
+          </div>
+          
+        
 
       <div className="section-card mx-3">
-        <div className="section-header">
-          <h2 className="section-title">
+       <div className="section-header">
+          <h2 >
             <span style={{ fontSize: "1.5rem" }}>📈</span>
             Investment Summary
           </h2>
@@ -1313,7 +1171,11 @@ function InvestorDetail() {
           <p className="section-subtitle">
             Overview of capital invested and return performance to date.
           </p>
-        </div>
+          </div>
+          
+        
+
+       
 
         <div className="stats-container m-5">
           <>
@@ -1360,6 +1222,10 @@ function InvestorDetail() {
         </div>
       </div>
 
+      
+
+      
+
       <div className="m-5">
         <div className="card shadow-sm m-5">
           <div className="card-body m-5">
@@ -1405,7 +1271,7 @@ function InvestorDetail() {
             </div>
             <div>
               <div class="card-body">
-                <table className="table table-hover">
+                <table className="table-modern">
                   <thead>
                     <tr>
                       <th className="text-center">Event Date:</th>
@@ -1704,6 +1570,8 @@ function InvestorDetail() {
           </div>
         </div>
       </div>
+    
+    </div>
     </>
   );
 }
