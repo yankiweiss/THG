@@ -2,10 +2,9 @@ import { useParams } from "react-router-dom";
 import { useCallback, useEffect, useState } from "react";
 import "chartjs-adapter-date-fns";
 import { NumericFormat } from "react-number-format";
-import './css/index.css';
-import { calculateQuarterlyReturns  } from "./utils/CalculatingReturns";
+import "./css/index.css";
+import { calculateQuarterlyReturns } from "./utils/CalculatingReturns";
 import "bootstrap/dist/css/bootstrap.min.css";
-
 
 import {
   Chart as ChartJS,
@@ -19,7 +18,6 @@ import {
   Legend,
 } from "chart.js";
 
-import { Chart } from "chart.js";
 import { Bar } from "react-chartjs-2";
 
 ChartJS.register(
@@ -34,10 +32,11 @@ ChartJS.register(
 );
 
 function InvestorDetail() {
+  //when fetching all data data state is being filled in with object of array with all data
   const [data, setData] = useState();
+
   const [addEvent, setAddEvent] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-
   const [eventTypeSelected, setEventTypeSelected] = useState("");
   const { propertyId, investorId } = useParams();
   const [numericFields, setNumericFields] = useState({
@@ -48,8 +47,6 @@ function InvestorDetail() {
   const investor = data?.investor;
   const investments = data?.investments || {};
   const events = data?.events || [];
-
-  console.log(data);
 
   const eventTypes = [
     {
@@ -87,7 +84,7 @@ function InvestorDetail() {
     const allYears = new Set();
 
     events.forEach((e) => {
-      if(!e.from_date || !e.to_date) return;
+      if (!e.from_date || !e.to_date) return;
       const from = new Date(e.from_date).getFullYear();
       const to = new Date(e.to_date).getFullYear();
 
@@ -139,7 +136,6 @@ function InvestorDetail() {
     return new Intl.NumberFormat("en-US", {
       style: "currency",
       currency: "USD",
-
     }).format(value);
   };
 
@@ -299,10 +295,7 @@ function InvestorDetail() {
     }
   };
 
- 
-
- 
- const chartOptions = {
+  const chartOptions = {
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
@@ -311,7 +304,7 @@ function InvestorDetail() {
           title: function (context) {
             const date = new Date(context[0].raw.x);
 
-           return date.toLocaleDateString()
+            return date.toLocaleDateString();
           },
           label: function (context) {
             const formattedAmount = new Intl.NumberFormat("en-US", {
@@ -325,36 +318,35 @@ function InvestorDetail() {
       },
     },
 
- scales: {
-  x: {
-    type: "time",
-    time: {
-      unit: "quarter",
-    },
-    title: {
-      display: true,
-      text: "Quarter",
-    },
-    
-  },
-  y: {
-    beginAtZero: true,
-    title: {
-      display: true,
-      text: "Amount ($)",
-    },
-    ticks: {
-      callback: function (value) {
-        return new Intl.NumberFormat("en-US", {
-          style: "currency",
-          currency: "USD",
-          minimumFractionDigits: 0,
-        }).format(value);
+    scales: {
+      x: {
+        type: "time",
+        time: {
+          unit: "quarter",
+        },
+        title: {
+          display: true,
+          text: "Quarter",
+        },
+      },
+      y: {
+        beginAtZero: true,
+        title: {
+          display: true,
+          text: "Amount ($)",
+        },
+        ticks: {
+          callback: function (value) {
+            return new Intl.NumberFormat("en-US", {
+              style: "currency",
+              currency: "USD",
+              minimumFractionDigits: 0,
+            }).format(value);
+          },
+        },
       },
     },
-  },
-}
-  }
+  };
 
   const investmentToDate = () => {
     const investmentEvents = events
@@ -936,514 +928,486 @@ function InvestorDetail() {
         }
       `}</style>
       {/*<Bar data={chartData} options={chartOptions} />*/}
+
       <div className="page-wrapper">
         <div className="hero-section ">
           <div className="hero">
-            
-             
-  <div className="hero-left">
-    <img
-      src={
-        property?.secure_url ||
-        "https://via.placeholder.com/400x300?text=Property"
-      }
-      alt="Property"
-      className="hero-image"
-    />
-  </div>
+            <div className="hero-left">
+              <img
+                src={
+                  property?.secure_url ||
+                  "https://via.placeholder.com/400x300?text=Property"
+                }
+                alt="Property"
+                className="hero-image"
+              />
+            </div>
 
-  <div className="hero-right">
-   
-      <span className="hero-eyebrow">Investor</span>
-      <input
-        className="hero-main-title"
-        value={investor?.name}
-        onChange={(e) =>
-          setData((prev) => ({
-            ...prev,
-            investor: {
-              ...prev.investor,
-              name: e.target.value,
-            },
-          }))
-        }
-        onBlur={(e) => updateField("name", e.target.value)}
-      />
-    
+            <div className="hero-right">
+              <span className="hero-eyebrow">Investor</span>
+              <input
+                className="hero-main-title"
+                value={investor?.name}
+                onChange={(e) =>
+                  setData((prev) => ({
+                    ...prev,
+                    investor: {
+                      ...prev.investor,
+                      name: e.target.value,
+                    },
+                  }))
+                }
+                onBlur={(e) => updateField("name", e.target.value)}
+              />
 
-    <div className="hero-context">
-      <h2>{property?.property_name}</h2>
-      <p>Closing Date: {formatDate(property?.closing_date)}</p>
-    </div>
-  </div>
-
+              <div className="hero-context">
+                <h2>{property?.property_name}</h2>
+                <p>Closing Date: {formatDate(property?.closing_date)}</p>
+              </div>
+            </div>
           </div>
-          </div>
-          
-        
-
-      <div className="section-card ">
-       <div className="section-header">
-          <h2 >
-            <span style={{ fontSize: "1.5rem" }}>📈</span>
-            Investment Summary
-          </h2>
-
-          <p className="section-subtitle">
-            Overview of capital invested and return performance to date.
-          </p>
-          </div>
-          
-        
-
-       
-
-        <div className="stats-container m-5">
-          <>
-            <div className="stat-card">
-              <div className="stat-icon">📈</div>
-              <div className="stat-label">INITIAL INVESTMENT</div>
-              <div className="stat-value">
-                {formatCurrency(investments?.invested_amount)}
-              </div>
-            </div>
-            <div className="stat-card">
-              <div className="stat-icon">📈</div>
-              <div className="stat-label">INVESTMENT TO DATE</div>
-              <div className="stat-value">
-                {formatCurrency(investmentToDate())}
-              </div>
-            </div>
-            <div className="stat-card">
-              <div className="stat-icon">💹</div>
-              <div className="stat-label">Perf Return</div>
-              <div className="stat-value">% {investments?.perf_return}</div>
-            </div>
-            <div className="stat-card">
-              <div className="stat-icon">📊</div>
-              <div className="stat-label">Actual Return</div>
-              <div className="stat-value">
-                {formatCurrency(calculateActualReturn())}
-              </div>
-            </div>
-            <div className="stat-card">
-              <div className="stat-icon">📈</div>
-              <div className="stat-label">Expected Return</div>
-              <div className="stat-value">
-                {formatCurrency(
-                  calculateExpectedPrefReturn(
-                    investments?.invested_amount,
-                    investments?.perf_return,
-                    property?.closing_date,
-                  ),
-                )}
-              </div>
-            </div>
-          </>
         </div>
+
+        <div className="section-card ">
+          <div className="section-header">
+            <h2>
+              <span style={{ fontSize: "1.5rem" }}>📈</span>
+              Investment Summary
+            </h2>
+
+            <p className="section-subtitle">
+              Overview of capital invested and return performance to date.
+            </p>
+          </div>
+
+          <div className="stats-container m-5">
+            <>
+              <div className="stat-card">
+                <div className="stat-icon">📈</div>
+                <div className="stat-label">INITIAL INVESTMENT</div>
+                <div className="stat-value">
+                  {formatCurrency(investments?.invested_amount)}
+                </div>
+              </div>
+              <div className="stat-card">
+                <div className="stat-icon">📈</div>
+                <div className="stat-label">INVESTMENT TO DATE</div>
+                <div className="stat-value">
+                  {formatCurrency(investmentToDate())}
+                </div>
+              </div>
+              <div className="stat-card">
+                <div className="stat-icon">💹</div>
+                <div className="stat-label">Perf Return</div>
+                <div className="stat-value">% {investments?.perf_return}</div>
+              </div>
+              <div className="stat-card">
+                <div className="stat-icon">📊</div>
+                <div className="stat-label">Actual Return</div>
+                <div className="stat-value">
+                  {formatCurrency(calculateActualReturn())}
+                </div>
+              </div>
+              <div className="stat-card">
+                <div className="stat-icon">📈</div>
+                <div className="stat-label">Expected Return</div>
+                <div className="stat-value">
+                  {formatCurrency(
+                    calculateExpectedPrefReturn(
+                      investments?.invested_amount,
+                      investments?.perf_return,
+                      property?.closing_date,
+                    ),
+                  )}
+                </div>
+              </div>
+            </>
+          </div>
         </div>
-      
 
-      
+        <div className="report-card">
+          <ul class="nav year-tabs" id={`myTab`} role="tablist">
+            {years(events).map((y, index) => {
+              return (
+                <li key={y} class="nav-item" role="presentation">
+                  <button
+                    className={`nav-link ${index === 0 ? "active" : ""}`}
+                    id={`tab-${y}`}
+                    data-bs-toggle="tab"
+                    data-bs-target={`#content-${y}`}
+                    type="button"
+                    role="tab"
+                  >
+                    {y}
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
 
-      <div className="report-card">
-<ul class="nav year-tabs" id={`myTab`} role="tablist">
-              {years(events).map((y, index) => {
+          <div className="tab-content">
+            {years(events).length > 0 ? (
+              years(events).map((y, index) => {
+                const chartDataPerYear = {
+                  datasets: [
+                    {
+                      label: "ACTUAL RETURN", // the label shown in the tooltip/legend
+                      data: calculateQuarterlyReturns(events, y),
+                      backgroundColor: "rgba(29, 235, 98, 0.6)", // color of bars
+                      barThickness: 40,
+                      maxBarThickness: 29,
+                    },
+                    {
+                      label: "MISSING RETURN", // the label shown in the tooltip/legend
+                      //data: calculateQuarterlyReturns(),
+                      backgroundColor: "rgba(248, 86, 37, 0.88)", // color of bars
+                      barThickness: 40,
+                      maxBarThickness: 29,
+                    },
+                    {
+                      label: "EXPECTED RETURN", // the label shown in the tooltip/legend
+                      //data: expectedQuarterReturn(y, Number(invested_amount), Number(perf_return)),
+                      backgroundColor: "rgba(37, 146, 248, 0.88)", // color of bars
+                      barThickness: 40,
+                      maxBarThickness: 29,
+                    },
+                  ],
+                };
+
                 return (
-                  <li key={y} class="nav-item" role="presentation">
-                    <button
-                      className={`nav-link ${index === 0 ? "active" : ""}`}
-                      id={`tab-${y}`}
-                      data-bs-toggle="tab"
-                      data-bs-target={`#content-${y}`}
-                      type="button"
-                      role="tab"
-                    >
-                      {y}
-                    </button>
-                  </li>
-                );
-              })}
-            </ul>
-
-            <div className="tab-content">
-              {years(events).length > 0 ? (
-                years(events).map((y, index) => {
-                  const chartDataPerYear = {
-                    datasets: [
-                      {
-                        label: "ACTUAL RETURN", // the label shown in the tooltip/legend
-                        data: calculateQuarterlyReturns(events, y),
-                        backgroundColor: "rgba(29, 235, 98, 0.6)", // color of bars
-                        barThickness: 40,
-                        maxBarThickness: 29,
-                      },
-                        {
-                        label: "MISSING RETURN", // the label shown in the tooltip/legend
-                        //data: calculateQuarterlyReturns(),
-                        backgroundColor: "rgba(248, 86, 37, 0.88)", // color of bars
-                        barThickness: 40,
-                        maxBarThickness: 29,
-                      },
-                       {
-                    
-                        label: "EXPECTED RETURN", // the label shown in the tooltip/legend
-                        //data: expectedQuarterReturn(y, Number(invested_amount), Number(perf_return)),
-                        backgroundColor: "rgba(37, 146, 248, 0.88)", // color of bars
-                        barThickness: 40,
-                        maxBarThickness: 29,
-                      },
-                       
-                    ],
-                  };
-
-                  return (
-                    <div
-                      key={y}
-                      className={`tab-pane  ${index === 0 ? "show active" : ""}`}
-                      id={`content-${y}`}
-                      role="tabpanel"
-                    >
-                      <div className="chart-container">
-                      <div style={{ height: "350px"}}>
+                  <div
+                    key={y}
+                    className={`tab-pane  ${index === 0 ? "show active" : ""}`}
+                    id={`content-${y}`}
+                    role="tabpanel"
+                  >
+                    <div className="chart-container">
+                      <div style={{ height: "350px" }}>
                         <Bar data={chartDataPerYear} options={chartOptions} />
                       </div>
                     </div>
-                    </div>
-                  );
-                })
-              ) : (
-                <div className="tab-pane show active">
-                  <p className="text-center py-5">No events yet</p>
-                </div>
-              )}
-            </div>
-            </div>
-          
-
-            {/* Table */}
-          
-    
-
-        <div className="m-5">
-          <div class="card m-5">
-            <div className="d-flex justify-content-between card-header p-5">
-              <div>Capital Events</div>
-              <div>
-                <a href="#h1">
-                  <button
-                    type="button"
-                    className="border-0 btn btn-outline-dark"
-                    onClick={() => setAddEvent(true)}
-                  >
-                    Add event
-                  </button>
-                </a>
+                  </div>
+                );
+              })
+            ) : (
+              <div className="tab-pane show active">
+                <p className="text-center py-5">No events yet</p>
               </div>
-            </div>
+            )}
+          </div>
+        </div>
+
+        {/* Table */}
+
+        <div class="card">
+          <div className="d-flex justify-content-between card-header p-5">
+            <div>Capital Events</div>
             <div>
-              <div class="card-body">
-                <table className="table-modern">
-                  <thead>
+              <a href="#h1">
+                <button
+                  type="button"
+                  className="border-0 btn btn-outline-dark"
+                  onClick={() => setAddEvent(true)}
+                >
+                  Add event
+                </button>
+              </a>
+            </div>
+          </div>
+          <div>
+            <div class="card-body">
+              <table className="table-modern">
+                <thead>
+                  <tr>
+                    <th className="text-center">Event Date:</th>
+                    <th>Event Amount:</th>
+                    <th>Event Type:</th>
+                    <th>Notes:</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {events?.length > 0 ? (
+                    events?.map((e, index) => (
+                      <tr key={index}>
+                        <td className="text-center">
+                          {e.event_type === "Return"
+                            ? `${formatDate(e.from_date)} - ${formatDate(e.to_date)}`
+                            : formatDate(e.event_date)}
+                        </td>
+
+                        <td>${formatNumber(e.event_amount)}</td>
+                        <td>{e.event_type}</td>
+                        <td>{e.notes}</td>
+                      </tr>
+                    ))
+                  ) : (
                     <tr>
-                      <th className="text-center">Event Date:</th>
-                      <th>Event Amount:</th>
-                      <th>Event Type:</th>
-                      <th>Notes:</th>
+                      <td colSpan={4} className="text-center py-5">
+                        No events yet
+                      </td>
                     </tr>
-                  </thead>
-                  <tbody>
-                    {events?.length > 0 ? (
-                      events?.map((e, index) => (
-                        <tr key={index}>
-                          <td className="text-center">
-                            {e.event_type === "Return"
-                              ? `${formatDate(e.from_date)} - ${formatDate(e.to_date)}`
-                              : formatDate(e.event_date)}
-                          </td>
-
-                          <td>${formatNumber(e.event_amount)}</td>
-                          <td>{e.event_type}</td>
-                          <td>{e.notes}</td>
-                        </tr>
-                      ))
-                    ) : (
-                      <div className="text-center mt-5">
-                        <p className="text-muted ">No events yet</p>
-                      </div>
-                    )}
-                  </tbody>
-                </table>
-                {/* event date , event amount, event type , notes ,  */}
-                {addEvent && (
-                  <div
-                    className="modal-overlay-enhanced"
-                    onClick={(e) => {
-                      if (e.target === e.currentTarget) {
-                        handleCancel();
-                      }
-                    }}
-                  >
-                    <div className="modal-container-enhanced">
-                      {/* HEADER */}
-                      <div className="modal-header-enhanced">
-                        <div className="modal-header-content">
-                          <div className="modal-icon-circle">📊</div>
-                          <div>
-                            <h2 className="modal-title-enhanced">
-                              Add New Event
-                            </h2>
-                            <p className="modal-subtitle-enhanced">
-                              Record a capital transaction for this investor
-                            </p>
-                          </div>
+                  )}
+                </tbody>
+              </table>
+              {/* event date , event amount, event type , notes ,  */}
+              {addEvent && (
+                <div
+                  className="modal-overlay-enhanced"
+                  onClick={(e) => {
+                    if (e.target === e.currentTarget) {
+                      handleCancel();
+                    }
+                  }}
+                >
+                  <div className="modal-container-enhanced">
+                    {/* HEADER */}
+                    <div className="modal-header-enhanced">
+                      <div className="modal-header-content">
+                        <div className="modal-icon-circle">📊</div>
+                        <div>
+                          <h2 className="modal-title-enhanced">
+                            Add New Event
+                          </h2>
+                          <p className="modal-subtitle-enhanced">
+                            Record a capital transaction for this investor
+                          </p>
                         </div>
-                        <button
-                          type="button"
-                          className="modal-close-enhanced"
-                          onClick={handleCancel}
-                          aria-label="Close"
-                        >
-                          <svg
-                            width="24"
-                            height="24"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                          >
-                            <path d="M18 6L6 18M6 6l12 12" />
-                          </svg>
-                        </button>
                       </div>
+                      <button
+                        type="button"
+                        className="modal-close-enhanced"
+                        onClick={handleCancel}
+                        aria-label="Close"
+                      >
+                        <svg
+                          width="24"
+                          height="24"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                        >
+                          <path d="M18 6L6 18M6 6l12 12" />
+                        </svg>
+                      </button>
+                    </div>
 
-                      {/* FORM */}
-                      <form onSubmit={handleSubmit}>
-                        <div className="modal-body-enhanced">
-                          {/* DATE AND AMOUNT ROW */}
-                          <div className="form-row-enhanced">
-                            <div className="form-field-enhanced">
-                              <label className="form-label-enhanced">
-                                <span className="label-icon-enhanced">💵</span>
-                                <span>Event Amount</span>
-                                <span className="required-asterisk">*</span>
-                              </label>
-                              <div className="input-wrapper-enhanced">
-                                <NumericFormat
-                                  className="form-control "
-                                  placeholder="$1,500,000"
-                                  thousandSeparator={true}
-                                  
-                                  prefix={"$"}
-                                  decimalScale={2}
-                                  fixedDecimalScale={true}
-                                  onValueChange={(values) => {
-                                    setNumericFields((prev) => ({
-                                      ...prev,
-                                      event_amount: values.floatValue || 0,
-                                    }));
-                                  }}
-                                />
-                                <input
-                                  type="hidden"
-                                  name="event_amount"
-                                  value={numericFields.event_amount}
-                                />
-                              </div>
-
-                              <span className="helper-text-enhanced">
-                                Transaction amount in USD
-                              </span>
-                            </div>
-                          </div>
-
-                          <div className="form-field-enhanced form-field-full">
+                    {/* FORM */}
+                    <form onSubmit={handleSubmit}>
+                      <div className="modal-body-enhanced">
+                        {/* DATE AND AMOUNT ROW */}
+                        <div className="form-row-enhanced">
+                          <div className="form-field-enhanced">
                             <label className="form-label-enhanced">
-                              <span className="label-icon-enhanced">🏷️</span>
-                              <span>Event Type</span>
+                              <span className="label-icon-enhanced">💵</span>
+                              <span>Event Amount</span>
                               <span className="required-asterisk">*</span>
                             </label>
-                            <div className="event-type-grid-enhanced">
-                              {eventTypes.map((type) => (
-                                <label
-                                  key={type.value}
-                                  className="event-type-item-enhanced"
-                                >
-                                  <input
-                                    type="radio"
-                                    name="event_type"
-                                    value={type.name}
-                                    className="event-radio-enhanced"
-                                    required
-                                    onChange={(e) =>
-                                      setEventTypeSelected(e.target.value)
-                                    }
-                                  />
-                                  <div className="event-card-enhanced">
-                                    <div className="event-card-content">
-                                      <span className="event-icon-enhanced">
-                                        {type.icon}
-                                      </span>
-                                      <div className="event-text-enhanced">
-                                        <div className="event-name-enhanced">
-                                          {type.name}
-                                        </div>
-                                        <div className="event-desc-enhanced">
-                                          {type.description}
-                                        </div>
+                            <div className="input-wrapper-enhanced">
+                              <NumericFormat
+                                className="form-control "
+                                placeholder="$1,500,000"
+                                thousandSeparator={true}
+                                prefix={"$"}
+                                decimalScale={2}
+                                fixedDecimalScale={true}
+                                onValueChange={(values) => {
+                                  setNumericFields((prev) => ({
+                                    ...prev,
+                                    event_amount: values.floatValue || 0,
+                                  }));
+                                }}
+                              />
+                              <input
+                                type="hidden"
+                                name="event_amount"
+                                value={numericFields.event_amount}
+                              />
+                            </div>
+
+                            <span className="helper-text-enhanced">
+                              Transaction amount in USD
+                            </span>
+                          </div>
+                        </div>
+
+                        <div className="form-field-enhanced form-field-full">
+                          <label className="form-label-enhanced">
+                            <span className="label-icon-enhanced">🏷️</span>
+                            <span>Event Type</span>
+                            <span className="required-asterisk">*</span>
+                          </label>
+                          <div className="event-type-grid-enhanced">
+                            {eventTypes.map((type) => (
+                              <label
+                                key={type.value}
+                                className="event-type-item-enhanced"
+                              >
+                                <input
+                                  type="radio"
+                                  name="event_type"
+                                  value={type.name}
+                                  className="event-radio-enhanced"
+                                  required
+                                  onChange={(e) =>
+                                    setEventTypeSelected(e.target.value)
+                                  }
+                                />
+                                <div className="event-card-enhanced">
+                                  <div className="event-card-content">
+                                    <span className="event-icon-enhanced">
+                                      {type.icon}
+                                    </span>
+                                    <div className="event-text-enhanced">
+                                      <div className="event-name-enhanced">
+                                        {type.name}
+                                      </div>
+                                      <div className="event-desc-enhanced">
+                                        {type.description}
                                       </div>
                                     </div>
-                                    <div className="event-checkbox-enhanced">
-                                      <svg
-                                        className="checkmark-enhanced"
-                                        width="16"
-                                        height="16"
-                                        viewBox="0 0 16 16"
-                                        fill="none"
-                                      >
-                                        <path
-                                          d="M13.3334 4L6.00002 11.3333L2.66669 8"
-                                          stroke="currentColor"
-                                          strokeWidth="2"
-                                          strokeLinecap="round"
-                                          strokeLinejoin="round"
-                                        />
-                                      </svg>
-                                    </div>
                                   </div>
-                                </label>
-                              ))}
-                            </div>
+                                  <div className="event-checkbox-enhanced">
+                                    <svg
+                                      className="checkmark-enhanced"
+                                      width="16"
+                                      height="16"
+                                      viewBox="0 0 16 16"
+                                      fill="none"
+                                    >
+                                      <path
+                                        d="M13.3334 4L6.00002 11.3333L2.66669 8"
+                                        stroke="currentColor"
+                                        strokeWidth="2"
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                      />
+                                    </svg>
+                                  </div>
+                                </div>
+                              </label>
+                            ))}
                           </div>
-                          {(eventTypeSelected === "Investment" ||
-                            eventTypeSelected === "Capital Call" ||
-                            eventTypeSelected === "Return of Capital") && (
+                        </div>
+                        {(eventTypeSelected === "Investment" ||
+                          eventTypeSelected === "Capital Call" ||
+                          eventTypeSelected === "Return of Capital") && (
+                          <div className="form-field-enhanced col-md-6 mt-4">
+                            <label className="form-label-enhanced">
+                              <span className="label-icon-enhanced">📅</span>
+                              <span>Event Date</span>
+                              <span className="required-asterisk">*</span>
+                            </label>
+                            <input
+                              type="date"
+                              className="form-input-enhanced"
+                              name="event_date"
+                              required
+                            />
+                            <span className="helper-text-enhanced">
+                              When did this occur?
+                            </span>
+                          </div>
+                        )}
+
+                        {eventTypeSelected === "Return" && (
+                          <div className="row">
                             <div className="form-field-enhanced col-md-6 mt-4">
                               <label className="form-label-enhanced">
                                 <span className="label-icon-enhanced">📅</span>
-                                <span>Event Date</span>
+                                <span>From:</span>
                                 <span className="required-asterisk">*</span>
                               </label>
                               <input
                                 type="date"
                                 className="form-input-enhanced"
-                                name="event_date"
+                                name="from_date"
                                 required
                               />
-                              <span className="helper-text-enhanced">
-                                When did this occur?
-                              </span>
                             </div>
-                          )}
 
-                          {eventTypeSelected === "Return" && (
-                            <div className="row">
-                              <div className="form-field-enhanced col-md-6 mt-4">
-                                <label className="form-label-enhanced">
-                                  <span className="label-icon-enhanced">
-                                    📅
-                                  </span>
-                                  <span>From:</span>
-                                  <span className="required-asterisk">*</span>
-                                </label>
-                                <input
-                                  type="date"
-                                  className="form-input-enhanced"
-                                  name="from_date"
-                                  required
-                                />
-                              </div>
-
-                              <div className="form-field-enhanced col-md-6 mt-4">
-                                <label className="form-label-enhanced">
-                                  <span className="label-icon-enhanced">
-                                    📅
-                                  </span>
-                                  <span>To:</span>
-                                  <span className="required-asterisk">*</span>
-                                </label>
-                                <input
-                                  type="date"
-                                  className="form-input-enhanced"
-                                  name="to_date"
-                                  required
-                                />
-                              </div>
+                            <div className="form-field-enhanced col-md-6 mt-4">
+                              <label className="form-label-enhanced">
+                                <span className="label-icon-enhanced">📅</span>
+                                <span>To:</span>
+                                <span className="required-asterisk">*</span>
+                              </label>
+                              <input
+                                type="date"
+                                className="form-input-enhanced"
+                                name="to_date"
+                                required
+                              />
                             </div>
-                          )}
-
-                          {/* EVENT TYPE SELECTOR */}
-
-                          {/* NOTES */}
-                          <div className="form-field-enhanced form-field-full mt-2">
-                            <label className="form-label-enhanced">
-                              <span className="label-icon-enhanced">📝</span>
-                              <span>Notes</span>
-                              <span className="optional-badge">Optional</span>
-                            </label>
-                            <textarea
-                              className="form-textarea-enhanced"
-                              name="notes"
-                              placeholder="Add any additional details about this event..."
-                              rows="4"
-                            ></textarea>
-                            <span className="helper-text-enhanced">
-                              Any relevant context or details
-                            </span>
                           </div>
-                        </div>
+                        )}
 
-                        {/* FOOTER ACTIONS */}
-                        <div className="modal-footer-enhanced">
-                          <button
-                            type="button"
-                            className="btn-secondary-enhanced"
-                            onClick={handleCancel}
-                            disabled={isSubmitting}
-                          >
-                            Cancel
-                          </button>
-                          <button
-                            type="submit"
-                            className="btn-primary-enhanced"
-                            disabled={isSubmitting}
-                          >
-                            {isSubmitting ? (
-                              <>
-                                <span className="spinner-enhanced"></span>
-                                <span>Saving...</span>
-                              </>
-                            ) : (
-                              <>
-                                <span>Save Event</span>
-                                <svg
-                                  width="16"
-                                  height="16"
-                                  viewBox="0 0 16 16"
-                                  fill="none"
-                                  stroke="currentColor"
-                                  strokeWidth="2"
-                                >
-                                  <path
-                                    d="M12 8H4M8 4v8"
-                                    strokeLinecap="round"
-                                  />
-                                </svg>
-                              </>
-                            )}
-                          </button>
+                        {/* EVENT TYPE SELECTOR */}
+
+                        {/* NOTES */}
+                        <div className="form-field-enhanced form-field-full mt-2">
+                          <label className="form-label-enhanced">
+                            <span className="label-icon-enhanced">📝</span>
+                            <span>Notes</span>
+                            <span className="optional-badge">Optional</span>
+                          </label>
+                          <textarea
+                            className="form-textarea-enhanced"
+                            name="notes"
+                            placeholder="Add any additional details about this event..."
+                            rows="4"
+                          ></textarea>
+                          <span className="helper-text-enhanced">
+                            Any relevant context or details
+                          </span>
                         </div>
-                      </form>
-                    </div>
+                      </div>
+
+                      {/* FOOTER ACTIONS */}
+                      <div className="modal-footer-enhanced">
+                        <button
+                          type="button"
+                          className="btn-secondary-enhanced"
+                          onClick={handleCancel}
+                          disabled={isSubmitting}
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          type="submit"
+                          className="btn-primary-enhanced"
+                          disabled={isSubmitting}
+                        >
+                          {isSubmitting ? (
+                            <>
+                              <span className="spinner-enhanced"></span>
+                              <span>Saving...</span>
+                            </>
+                          ) : (
+                            <>
+                              <span>Save Event</span>
+                              <svg
+                                width="16"
+                                height="16"
+                                viewBox="0 0 16 16"
+                                fill="none"
+                                stroke="currentColor"
+                                strokeWidth="2"
+                              >
+                                <path d="M12 8H4M8 4v8" strokeLinecap="round" />
+                              </svg>
+                            </>
+                          )}
+                        </button>
+                      </div>
+                    </form>
                   </div>
-                )}
-              </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
       </div>
-    
-    
     </>
   );
 }

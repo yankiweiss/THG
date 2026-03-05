@@ -520,7 +520,7 @@ function AddDealLP() {
       `}</style>
 
       <div className="page-container">
-        <div className="container" style={{ maxWidth: "1000px" }}>
+        <div className="container" style={{ maxWidth: "1200px" }}>
           {/* HEADER */}
           <div className="header-section">
             <h1 className="main-title">Create New Property</h1>

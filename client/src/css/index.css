@@ -605,7 +605,7 @@
   border-radius: 12px;
   background: #f9fafb; /* light gray */
   cursor: pointer;
-  transition: all 0.2s ease-in-out;
+ 
 }
 
 .quick-investor-chip:hover {
@@ -617,8 +617,8 @@
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background: #10b981; /* emerald-500 */
-  color: #fff;
+  background: #02160f; /* emerald-500 */
+  color: #080808;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -756,11 +756,7 @@
   transition: all 0.2s ease;
 }
 
-/*.btn-details:hover {
-  background: #10b981;
-  border-color: #10b981;
-  color: white;
-}*/
+
 
 /* No investors text */
 .no-investors {
