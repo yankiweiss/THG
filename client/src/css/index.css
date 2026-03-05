@@ -445,7 +445,7 @@
 }
 
 .investor-initial {
-  border: 1px solid #000;
+  border: 2px solid #575757;
   border-radius: 50%;
   width: 60px;
   height: 60px;
@@ -453,7 +453,7 @@
   justify-content: center;
   align-items: center;
   font-weight: bold;
-  font-size: 1.2rem;
+  font-size: 1.75rem;
   background-color: white;
   color: #284fa3;
 }
@@ -684,7 +684,7 @@
 
 /* Investor card */
 .investor-card {
-  background: linear-gradient(135deg, #1e3a8a, #2563eb); /* dark-to-medium blue gradient */
+  background: linear-gradient(135deg, #4c6abd, #2563eb); /* dark-to-medium blue gradient */
   color: #f9fafb;
   width: 350px;
   border-radius: 15px;
@@ -717,22 +717,11 @@
   margin-bottom: 1rem;
 }
 
-.investor-initial {
-  background: #10b981;
-  color: white;
-  font-weight: 700;
-  border-radius: 50%;
-  width: 50px;
-  height: 50px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 1.2rem;
-}
+
 
 .investor-name {
   font-weight: 600;
-  font-size: 1rem;
+  font-size: 1.75rem;
 }
 
 /* Stats */
@@ -748,14 +737,14 @@
 }
 
 .stat-label {
-  font-size: 0.8rem;
-  color: #94a3b8;
+  font-size: 0.9rem;
+  color: #c4d3e9;
 }
 
 .stat-value {
-  font-size: 1rem;
+  font-size: 1.2rem;
   font-weight: 700;
-  color: #363636;
+  color: #141414;
 }
 
 /* Button */
@@ -767,11 +756,11 @@
   transition: all 0.2s ease;
 }
 
-.btn-details:hover {
+/*.btn-details:hover {
   background: #10b981;
   border-color: #10b981;
   color: white;
-}
+}*/
 
 /* No investors text */
 .no-investors {

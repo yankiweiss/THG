@@ -1,14 +1,13 @@
+// getting all events only that are event_type "Return",
+
 const getReturnEvents = (events = []) => {
   return events?.filter((e) => e.event_type === 'Return')
 }
 
 
 export const calculateQuarterlyReturns = (events, selectedYear) => {
-
   const returnEvents = getReturnEvents(events);
-
   let chartPoints = [];
-
   returnEvents.forEach((event) => {
     const points = splitEventByQuarter(
       event.from_date,
@@ -16,11 +15,8 @@ export const calculateQuarterlyReturns = (events, selectedYear) => {
       Number(event.event_amount),
       selectedYear
     )
-
     chartPoints =  chartPoints.concat(points)
   })
-  
-
   return aggregateByQuarter(chartPoints, selectedYear)
 }
 
@@ -30,7 +26,6 @@ const msPerDay = 1000 * 60 * 60 * 24;
   const getQuarterRange = (date) => {
     const month = date.getMonth();
     const year = date.getFullYear();
-
     if (month <= 2)
       return { start: new Date(year, 0, 1), end: new Date(year, 3, 0) };
     if (month <= 5)
@@ -44,9 +39,7 @@ const msPerDay = 1000 * 60 * 60 * 24;
 
  const splitEventByQuarter = (startDate, endDate, amount, selectedYear) => {
     const result = [];
-
     const originalStart = new Date(startDate);
-
     const originalEnd = new Date(endDate);
 
     const yearStart = new Date(selectedYear, 0, 1);
@@ -60,7 +53,6 @@ const msPerDay = 1000 * 60 * 60 * 24;
     const totalDays = Math.round((originalEnd - originalStart) / msPerDay) + 1;
 
     let current = new Date(overlapStart);
-
     while (current <= overlapEnd) {
       let { start: quarterStart, end: quarterEnd } = getQuarterRange(current);
 

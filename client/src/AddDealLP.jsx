@@ -13,9 +13,6 @@ function AddDealLP() {
     purchase_price: 0,
     invested_amount: 0,
   });
-
-  console.log(numericFields);
-
   const navigate = useNavigate()
 
   // need to look into below if needed.
@@ -26,7 +23,7 @@ function AddDealLP() {
   role: "LP",
 });
 
-  console.log
+  
 
   const handleImagePreview = (e) => {
     const file = e.target.files[0];
