@@ -684,7 +684,7 @@
 
 /* Investor card */
 .investor-card {
-  background: linear-gradient(135deg, #949db4, #6d7c9b); /* dark-to-medium blue gradient */
+  background: linear-gradient(135deg, #7f8491, #6d7c9b); /* dark-to-medium blue gradient */
   color: #f9fafb;
   width: 350px;
   border-radius: 15px;
@@ -692,8 +692,9 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  box-shadow: 5px 4px 15px rgba(0,0,0,0.1);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
+  border: 2px solid rgba(0, 0, 0, 0.356);
 }
 .investor-card::before {
   content: "";
