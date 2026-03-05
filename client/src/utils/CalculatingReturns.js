@@ -114,6 +114,22 @@ const msPerDay = 1000 * 60 * 60 * 24;
   };
 
 
+  export  const years = (events = []) => {
+    const allYears = new Set();
+
+    events.forEach((e) => {
+      if (!e.from_date || !e.to_date) return;
+      const from = new Date(e.from_date).getFullYear();
+      const to = new Date(e.to_date).getFullYear();
+
+      for (let y = from; y <= to; y++) {
+        allYears.add(y);
+      }
+    });
+    return [...allYears].sort();
+  };
+
+
   
 
   

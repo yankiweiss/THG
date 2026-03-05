@@ -3,7 +3,7 @@ import { useCallback, useEffect, useState } from "react";
 import "chartjs-adapter-date-fns";
 import { NumericFormat } from "react-number-format";
 import "./css/index.css";
-import { calculateQuarterlyReturns } from "./utils/CalculatingReturns";
+import { calculateQuarterlyReturns, years } from "./utils/CalculatingReturns";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 import {
@@ -80,20 +80,7 @@ function InvestorDetail() {
     },
   ];
 
-  const years = (events = []) => {
-    const allYears = new Set();
-
-    events.forEach((e) => {
-      if (!e.from_date || !e.to_date) return;
-      const from = new Date(e.from_date).getFullYear();
-      const to = new Date(e.to_date).getFullYear();
-
-      for (let y = from; y <= to; y++) {
-        allYears.add(y);
-      }
-    });
-    return [...allYears].sort();
-  };
+ 
 
   const formatDate = (dateComingIn) => {
     if (!dateComingIn) return "N/A";
