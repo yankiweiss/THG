@@ -2,7 +2,10 @@ import { useParams } from "react-router-dom";
 import { useCallback, useEffect, useState } from "react";
 import "chartjs-adapter-date-fns";
 import { NumericFormat } from "react-number-format";
-import './css/index.css'
+import './css/index.css';
+import { calculateQuarterlyReturns  } from "./utils/CalculatingReturns";
+import "bootstrap/dist/css/bootstrap.min.css";
+
 
 import {
   Chart as ChartJS,
@@ -34,7 +37,7 @@ function InvestorDetail() {
   const [data, setData] = useState();
   const [addEvent, setAddEvent] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [selectedYear, setSelectedYear] = useState("");
+
   const [eventTypeSelected, setEventTypeSelected] = useState("");
   const { propertyId, investorId } = useParams();
   const [numericFields, setNumericFields] = useState({
@@ -80,24 +83,20 @@ function InvestorDetail() {
     },
   ];
 
-  const allYears =
-    events?.flatMap((e) => {
-      if (e.event_date) {
-        return [new Date(e.event_date).getFullYear()];
-      } else if (e.from_date && e.to_date) {
-        const startYear = new Date(e.from_date).getFullYear();
-        const endYear = new Date(e.to_date).getFullYear();
-        const years = [];
+  const years = (events = []) => {
+    const allYears = new Set();
 
-        for (let y = startYear; y <= endYear; y++) {
-          years.push(y);
-        }
+    events.forEach((e) => {
+      if(!e.from_date || !e.to_date) return;
+      const from = new Date(e.from_date).getFullYear();
+      const to = new Date(e.to_date).getFullYear();
 
-        return years;
+      for (let y = from; y <= to; y++) {
+        allYears.add(y);
       }
-    }) || [];
-
-  const uniqueYears = Array.from(new Set(allYears)).sort((a, b) => a - b);
+    });
+    return [...allYears].sort();
+  };
 
   const formatDate = (dateComingIn) => {
     if (!dateComingIn) return "N/A";
@@ -300,170 +299,10 @@ function InvestorDetail() {
     }
   };
 
-  const msPerDay = 1000 * 60 * 60 * 24;
-  // CHART.js functions
-  // getting all Return events
-  const returnEvents = events?.filter((e) => e.event_type === "Return");
+ 
 
-  // defining all quarters and start date and end date.
-  const getQuarterRange = (date) => {
-    const month = date.getMonth();
-    const year = date.getFullYear();
-
-    if (month <= 2)
-      return { start: new Date(year, 0, 1), end: new Date(year, 3, 0) };
-    if (month <= 5)
-      return { start: new Date(year, 3, 1), end: new Date(year, 6, 0) };
-    if (month <= 8)
-      return { start: new Date(year, 6, 1), end: new Date(year, 9, 0) };
-    return { start: new Date(year, 9, 1), end: new Date(year, 12, 0) };
-  };
-
-  const splitEventByQuarter = (startDate, endDate, amount, selectedYear) => {
-    const result = [];
-
-    const originalStart = new Date(startDate);
-
-    const originalEnd = new Date(endDate);
-
-    const yearStart = new Date(selectedYear, 0, 1);
-    const yearEnd = new Date(selectedYear, 11, 31);
-
-    const overlapStart = originalStart > yearStart ? originalStart : yearStart;
-    const overlapEnd = originalEnd < yearEnd ? originalEnd : yearEnd;
-
-    if (overlapStart > overlapEnd) return [];
-
-    const totalDays = Math.round((originalEnd - originalStart) / msPerDay) + 1;
-
-    let current = new Date(overlapStart);
-
-    while (current <= overlapEnd) {
-      let { start: quarterStart, end: quarterEnd } = getQuarterRange(current);
-
-      // Clamp quarter to event range
-      const periodStart = current > quarterStart ? current : quarterStart;
-      const periodEnd = overlapEnd < quarterEnd ? overlapEnd : quarterEnd;
-
-      const daysInPeriod = Math.round((periodEnd - periodStart) / msPerDay) + 1;
-
-      const portion = (daysInPeriod / totalDays) * amount;
-
-      // Push with the actual start of period (for accurate charting)
-      result.push({ x: periodStart, y: portion });
-
-      // Move to the next quarter
-      current = new Date(periodEnd);
-      current.setDate(current.getDate() + 1);
-    }
-
-    return result;
-  };
-
-  let chartPoints = [];
-
-  returnEvents.forEach((event) => {
-    const points = splitEventByQuarter(
-      new Date(event.from_date),
-      new Date(event.to_date),
-      event.event_amount,
-      selectedYear,
-    );
-
-    chartPoints = chartPoints.concat(points);
-  });
-
-  const aggregateByQuarter = (points, selectedYear) => {
-    const quarters = [0, 3, 6, 9]; // Jan, Apr, Jul, Oct
-    const result = [];
-
-    quarters.forEach((month) => {
-      const quarterStart = new Date(selectedYear, month, 1);
-      const quarterEnd = new Date(selectedYear, month + 3, 0);
-
-      // sum all actual amounts that belong to this quarter
-      const sum = points
-        .filter((p) => p.x >= quarterStart && p.x <= quarterEnd)
-        .reduce((acc, p) => acc + p.y, 0);
-      result.push({ x: quarterStart, y: sum });
-    });
-
-    const yearEndTotal = points.reduce((acc, p) => acc + p.y, 0);
-    result.push({ x: new Date(selectedYear, 11, 31), y: yearEndTotal });
-
-    return result;
-  };
-
-  const actualPerQuarter = aggregateByQuarter(chartPoints, selectedYear);
-
-  // Expected Return per Quarter for Char.js,
-
-  const expectedQuarterReturn = (selectedYear) => {
-    const amountInvested = investments?.invested_amount || 0;
-    const prefReturn = investments?.perf_return || 0;
-
-    const perfReturnPercent = prefReturn / 100;
-    const quarterReturn = (amountInvested * perfReturnPercent) / 4;
-
-    return [
-      { x: new Date(selectedYear, 0, 1), y: quarterReturn }, // Q1
-      { x: new Date(selectedYear, 3, 1), y: quarterReturn }, // Q2
-      { x: new Date(selectedYear, 6, 1), y: quarterReturn }, // Q3
-      { x: new Date(selectedYear, 9, 1), y: quarterReturn }, // Q4
-    ];
-  };
-
-  const yearEndDataset = [
-    {
-      label: "TO DATE CALCULATIONS",
-      data: [
-        {
-          x: new Date(selectedYear, 11, 31),
-          y: chartPoints.reduce((acc, p) => acc + p.y, 0),
-        },
-      ],
-      backgroundColor: "rgba(0, 0, 0, 0.6)", // dark for year-end
-    },
-  ];
-
-  const expectedPerQuarter = expectedQuarterReturn(selectedYear);
-
-  const missingPerQuarter = expectedPerQuarter.map((exp, i) => {
-    const actualY = actualPerQuarter[i]?.y || 0;
-    return {
-      x: exp.x,
-      y: Math.max(exp.y - actualY, 0), // never negative
-    };
-  });
-
-  const chartData = {
-    datasets: [
-      {
-        label: "ACTUAL QUARTER RETURN",
-        data: actualPerQuarter,
-        backgroundColor: "rgba(75,192,192,0.6)",
-        barThickness: 40, // fixed width
-        maxBarThickness: 50, // optional
-      },
-      {
-        label: "EXPECTED QUARTER RETURN",
-        data: expectedQuarterReturn(selectedYear),
-        backgroundColor: "rgba(192, 132, 75, 0.6)",
-        barThickness: 40, // fixed width
-        maxBarThickness: 50, // optional
-      },
-      {
-        label: "MISSING AMOUNT PER QUARTER",
-        data: missingPerQuarter,
-        backgroundColor: "rgba(192, 75, 75, 0.6)",
-        barThickness: 40, // fixed width
-        maxBarThickness: 50, // optional
-      },
-      ...yearEndDataset,
-    ],
-  };
-
-  const chartOptions = {
+ 
+ const chartOptions = {
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
@@ -472,11 +311,7 @@ function InvestorDetail() {
           title: function (context) {
             const date = new Date(context[0].raw.x);
 
-            return date.toLocaleDateString("en-US", {
-              year: "numeric",
-              month: "short",
-              day: "numeric",
-            });
+           return date.toLocaleDateString()
           },
           label: function (context) {
             const formattedAmount = new Intl.NumberFormat("en-US", {
@@ -490,43 +325,36 @@ function InvestorDetail() {
       },
     },
 
-    scales: {
-      x: {
-        type: "time",
-        min: new Date(selectedYear, 0, 1), // April 1 (month is 0-indexed)
-        max: new Date(selectedYear, 11, 30),
-        time: {
-          unit: "quarter",
-        },
-        ticks: {
-          callback: function (value) {
-            const startDate = new Date(value);
-
-            const startMonth = startDate.getMonth();
-            const year = startDate.getFullYear();
-
-            // Last day of the quarter
-            const endDate = new Date(year, startMonth + 3, 0);
-
-            const format = (date) =>
-              date.toLocaleDateString("en-US", {
-                month: "short",
-                day: "numeric",
-              });
-
-            return `${selectedYear} ${format(startDate)} - ${format(endDate)}`;
-          },
-        },
-      },
-      y: {
-        beginAtZero: true,
-        title: {
-          display: true,
-          text: "Amount ($)",
-        },
+ scales: {
+  x: {
+    type: "time",
+    time: {
+      unit: "quarter",
+    },
+    title: {
+      display: true,
+      text: "Quarter",
+    },
+    
+  },
+  y: {
+    beginAtZero: true,
+    title: {
+      display: true,
+      text: "Amount ($)",
+    },
+    ticks: {
+      callback: function (value) {
+        return new Intl.NumberFormat("en-US", {
+          style: "currency",
+          currency: "USD",
+          minimumFractionDigits: 0,
+        }).format(value);
       },
     },
-  };
+  },
+}
+  }
 
   const investmentToDate = () => {
     const investmentEvents = events
@@ -606,16 +434,9 @@ function InvestorDetail() {
         }
 
 
-        body {
-          font-family: 'DM Sans', sans-serif;
-          color: #f8f9fa;
-          min-height: 100vh;
-        }
+        
 
-        .page-wrapper {
-          margin: 0 auto;
-          padding: 2rem;
-        }
+       
 
         /* HERO SECTION */
         
@@ -1220,38 +1041,89 @@ function InvestorDetail() {
             </div>
           </>
         </div>
-      </div>
-
-      
-
-      
-
-      <div className="m-5">
-        <div className="card shadow-sm m-5">
-          <div className="card-body m-5">
-            <div className="d-flex align-items-center mb-4">
-              <label className="form-label me-2 mb-0 fw-semibold">
-                Select Year:
-              </label>
-              <select
-                className="form-select form-select-sm w-auto"
-                onChange={(e) => setSelectedYear(e.target.value)}
-                value={selectedYear}
-              >
-                <option value="">Select Year</option>
-                {uniqueYears?.map((y) => (
-                  <option key={y} value={y}>
-                    {y}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div style={{ height: "450px" }}>
-              <Bar data={chartData} options={chartOptions} />
-            </div>
-          </div>
         </div>
+      
+
+      
+
+      <div className="report-card">
+<ul class="nav year-tabs" id={`myTab`} role="tablist">
+              {years(events).map((y, index) => {
+                return (
+                  <li key={y} class="nav-item" role="presentation">
+                    <button
+                      className={`nav-link ${index === 0 ? "active" : ""}`}
+                      id={`tab-${y}`}
+                      data-bs-toggle="tab"
+                      data-bs-target={`#content-${y}`}
+                      type="button"
+                      role="tab"
+                    >
+                      {y}
+                    </button>
+                  </li>
+                );
+              })}
+            </ul>
+
+            <div className="tab-content">
+              {years(events).length > 0 ? (
+                years(events).map((y, index) => {
+                  const chartDataPerYear = {
+                    datasets: [
+                      {
+                        label: "ACTUAL RETURN", // the label shown in the tooltip/legend
+                        data: calculateQuarterlyReturns(events, y),
+                        backgroundColor: "rgba(29, 235, 98, 0.6)", // color of bars
+                        barThickness: 40,
+                        maxBarThickness: 29,
+                      },
+                        {
+                        label: "MISSING RETURN", // the label shown in the tooltip/legend
+                        //data: calculateQuarterlyReturns(),
+                        backgroundColor: "rgba(248, 86, 37, 0.88)", // color of bars
+                        barThickness: 40,
+                        maxBarThickness: 29,
+                      },
+                       {
+                    
+                        label: "EXPECTED RETURN", // the label shown in the tooltip/legend
+                        //data: expectedQuarterReturn(y, Number(invested_amount), Number(perf_return)),
+                        backgroundColor: "rgba(37, 146, 248, 0.88)", // color of bars
+                        barThickness: 40,
+                        maxBarThickness: 29,
+                      },
+                       
+                    ],
+                  };
+
+                  return (
+                    <div
+                      key={y}
+                      className={`tab-pane  ${index === 0 ? "show active" : ""}`}
+                      id={`content-${y}`}
+                      role="tabpanel"
+                    >
+                      <div className="chart-container">
+                      <div style={{ height: "350px"}}>
+                        <Bar data={chartDataPerYear} options={chartOptions} />
+                      </div>
+                    </div>
+                    </div>
+                  );
+                })
+              ) : (
+                <div className="tab-pane show active">
+                  <p className="text-center py-5">No events yet</p>
+                </div>
+              )}
+            </div>
+            </div>
+          
+
+            {/* Table */}
+          
+    
 
         <div className="m-5">
           <div class="card m-5">
@@ -1571,7 +1443,7 @@ function InvestorDetail() {
         </div>
       </div>
     
-    </div>
+    
     </>
   );
 }

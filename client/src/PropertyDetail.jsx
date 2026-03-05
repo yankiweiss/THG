@@ -228,10 +228,7 @@ function PropertyDetail() {
         }
 
         
-        .page-wrapper {
-          margin: 0 auto;
-          padding: 2rem;
-        }
+     
 
 
           .no-border-datepicker {
@@ -759,10 +756,10 @@ function PropertyDetail() {
 
         {/* QUICK INVESTORS OVERVIEW */}
         {data.investors && data.investors.length > 0 && (
-          <div className="section-card">
+          <div className="section-card investors-card">
             <div className="section-header">
               <h2 className="section-title" style={{ padding: "10px 50px" }}>
-                <span style={{ fontSize: "1.5rem" }}>👥</span>
+                <span style={{ fontSize: "1.5rem" }} className="section-icon">👥</span>
                 Quick Investor Overview
               </h2>
               <p className="section-subtitle" style={{ padding: "1px 50px" }}>
@@ -780,10 +777,12 @@ function PropertyDetail() {
                   <div className="chip-initial">
                     {investor.name?.charAt(0).toUpperCase() || "?"}
                   </div>
-                  <span>{investor.name}</span>
-                  <span style={{ color: "#059669", fontWeight: "700" }}>
+                  <div className="chip-info">
+                  <span className="investor-name">{investor.name}</span>
+                  <span className="investor-amount" style={{ color: "#059669", fontWeight: "700" }}>
                     {formatCurrency(investor.invested_amount)}
                   </span>
+                  </div>
                 </div>
               ))}
             </div>
@@ -791,12 +790,12 @@ function PropertyDetail() {
         )}
 
         {/* DETAILED INVESTOR PORTFOLIO */}
-        <div className="section-card">
-          <div className="section-header">
-            <div className="d-flex justify-content-between align-items-center">
+        <div className="section-card portfolio-card">
+          <div className="section-header d-flex justify-content-between align-items-center">
+           
               <div>
                 <h2 className="section-title">
-                  <span style={{ fontSize: "1.5rem" }}>📋</span>
+                  <span style={{ fontSize: "1.5rem" }} className="section-icon">📋</span>
                   Investor Portfolio Details
                 </h2>
                 <p className="section-subtitle">
@@ -807,63 +806,44 @@ function PropertyDetail() {
 
               <div>
                 <button
-                  className="btn btn-primary"
+                  className="btn btn-primary add-investor-btn"
                   onClick={() => setIsOpen(true)}
                 >
                   Add Investor{" "}
                 </button>
               </div>
-            </div>
+            
           </div>
 
           {data.investors && data.investors.length > 0 ? (
-            <div className="investor-grid">
-              {data.investors.map((investor) => (
-                <div
-                  key={investor.id}
-                  className="investor-card-modern"
-                  style={{
-                    border: "1px solid black",
-                    borderRadius: '15px',
-                    width: "250px",
-                    backgroundColor: ' #273b66',
-                  }}
-                >
-                  <div className="investor-name d-flex gap-2 justify-content-center align-items-center">
-                    <div className="investor-initial" style={{border: '1px black solid', borderRadius: '45%', padding: '25px'}}>
-                      {investor.name?.charAt(0).toUpperCase() || "?"}
-                    </div>
-                    <span>{investor.name}</span>
-                  </div>
+             <div className="investor-grid">
+      {data.investors.map((investor) => (
+        <div key={investor.id} className="investor-card">
+          <div className="investor-header">
+            <div className="investor-initial">
+              {investor.name?.charAt(0).toUpperCase() || "?"}
+            </div>
+            <span className="investor-name">{investor.name}</span>
+          </div>
 
-                  <div
-                    className="hero-stats-inline"
-                    style={{ marginBottom: "15px" }}
-                  >
-                    <div className="in-stat-inline">
-                      <div className="in-stat-label-inline">Invested</div>
-                      <div className="in-stat-value-inline">
-                        {formatCurrency(investor.invested_amount)}
-                      </div>
-                    </div>
+                   <div className="investor-stats">
+            <div className="stat">
+              <div className="stat-label">Invested</div>
+              <div className="stat-value">{formatCurrency(investor.invested_amount)}</div>
+            </div>
+            <div className="stat">
+              <div className="stat-label">Pref Return</div>
+              <div className="stat-value">{investor.perf_return || 0}%</div>
+            </div>
+          </div>
 
-                    <div className="stat-inline">
-                      <div className="stat-label-inline">Pref Return</div>
-                      <div>
-                        <span className="stat-value-inline">
-                          {investor.perf_return || 0}%
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <button
-                    className="btn-styled"
-                    onClick={() => goToInvestorDetail(data.id, investor.id)}
-                  >
-                    View Full Details →
-                  </button>
-                </div>
+          <button
+            className="btn btn-outline-light btn-details"
+            onClick={() => goToInvestorDetail(data.id, investor.id)}
+          >
+            View Full Details →
+          </button>
+        </div>
               ))}
             </div>
           ) : !addInvestor ? (

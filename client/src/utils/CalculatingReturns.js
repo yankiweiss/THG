@@ -1,5 +1,5 @@
 const getReturnEvents = (events = []) => {
-  return events?.filter((e) => e.type === 'Return')
+  return events?.filter((e) => e.event_type === 'Return')
 }
 
 
@@ -11,9 +11,9 @@ export const calculateQuarterlyReturns = (events, selectedYear) => {
 
   returnEvents.forEach((event) => {
     const points = splitEventByQuarter(
-      event.from,
-      event.to,
-      Number(event.amount),
+      event.from_date,
+      event.to_date,
+      Number(event.event_amount),
       selectedYear
     )
 

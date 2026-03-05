@@ -21,11 +21,11 @@ LEFT JOIN (
         json_agg(
             json_build_object(
                 'id', id,
-                'type', event_type,
-                'amount', event_amount,
+                'event_type', event_type,
+                'event_amount', event_amount,
                 'date', event_date,
-                'from', from_date,
-                'to', to_date
+                'from_date', from_date,
+                'to_date', to_date
             )
         ) AS events
     FROM events

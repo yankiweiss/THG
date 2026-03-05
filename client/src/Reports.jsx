@@ -97,6 +97,17 @@ const investments = data?.investments;
       display: true,
       text: "Quarter",
     },
+     ticks: {
+      callback: function(value,index, ticks) {
+
+       
+        const date = new Date(value);
+        if (date.getMonth() === 11 && date.getDate() === 31) {
+          return "Yearly Total";
+        }
+        return `Q${Math.floor(date.getMonth() / 3) + 1}`;
+      }
+    }
   },
   y: {
     beginAtZero: true,
@@ -288,7 +299,7 @@ const investments = data?.investments;
                        {
                     
                         label: "EXPECTED RETURN", // the label shown in the tooltip/legend
-                        //data: expectedQuarterReturn(y, Number(i.investments.invested_amount), Number(i.investments.perf_return)),
+                        data: expectedQuarterReturn(y, Number(i.invested_amount), Number(i.perf_return)),
                         backgroundColor: "rgba(37, 146, 248, 0.88)", // color of bars
                         barThickness: 40,
                         maxBarThickness: 29,
