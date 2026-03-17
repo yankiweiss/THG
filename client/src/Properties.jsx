@@ -88,7 +88,7 @@ function Properties() {
 
           <h1
             className="header"
-            style={{ color: "#1E293B", margin: "0px", paddingBottom: "75px" }}
+            style={{ color: "#1E293B", margin: "0px", paddingBottom: "25px" }}
           >
             PROPERTIES
           </h1>
