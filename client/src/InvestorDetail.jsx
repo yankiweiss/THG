@@ -3,8 +3,10 @@ import { useCallback, useEffect, useState } from "react";
 import "chartjs-adapter-date-fns";
 import { NumericFormat } from "react-number-format";
 import "./css/index.css";
-import { calculateQuarterlyReturns, years } from "./utils/CalculatingReturns";
 import "bootstrap/dist/css/bootstrap.min.css";
+import {fetchInvestors} from './fetch/investments.js'
+import { investmentAmount } from "./utils/CalculatingReturns.js";
+
 
 import {
   Chart as ChartJS,
@@ -34,7 +36,7 @@ ChartJS.register(
 function InvestorDetail() {
   //when fetching all data data state is being filled in with object of array with all data
   const [data, setData] = useState();
-
+// below is being used when adding event is true its creating a modal overlay,
   const [addEvent, setAddEvent] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [eventTypeSelected, setEventTypeSelected] = useState("");
@@ -43,10 +45,36 @@ function InvestorDetail() {
     event_amount: 0,
   });
 
-  const property = data?.property;
-  const investor = data?.investor;
-  const investments = data?.investments || {};
-  const events = data?.events || [];
+  const [axiosData , setAxiosData] = useState(null)
+
+   const property = axiosData?.property;
+  const investor = axiosData?.investor;
+  const investments = axiosData?.investments || {};
+  const events = axiosData?.events || [];
+  
+
+  useEffect(() => {
+  (async () => {
+    try {
+      const response = await fetchInvestors(propertyId, investorId);
+      setAxiosData(response);
+    } catch (error) {
+      console.error(error);
+    }
+  })();
+}, [investorId, propertyId]);
+
+  
+  console.log(axiosData)
+
+  investmentAmount(events, investments, property);
+
+  
+
+  //const property = data?.property;
+  //const investor = data?.investor;
+  //const investments = data?.investments || {};
+  //const events = data?.events || [];
 
   const eventTypes = [
     {
@@ -139,6 +167,8 @@ function InvestorDetail() {
   };
 
   // Need to review below function
+
+
 
   const calculateExpectedPrefReturn = () => {
     const perfReturn = investments?.perf_return || 0;
@@ -252,6 +282,8 @@ function InvestorDetail() {
 
     // You can add success notification or redirect here
   };
+  
+
 
   const fetchInvestor = useCallback(async () => {
     const res = await fetch(
@@ -341,6 +373,8 @@ function InvestorDetail() {
         (e) => e.event_type === "Investment" || e.event_type === "Capital Call",
       )
       .map((e) => e.event_amount);
+
+      
 
     const total = investmentEvents.reduce((result, investmentEvents) => {
       return result + Number(investmentEvents);
@@ -1012,7 +1046,7 @@ function InvestorDetail() {
           </div>
         </div>
 
-        <div className="report-card">
+        {/*<div className="report-card">
           <ul class="nav year-tabs" id={`myTab`} role="tablist">
             {years(events).map((y, index) => {
               return (
@@ -1039,7 +1073,7 @@ function InvestorDetail() {
                   datasets: [
                     {
                       label: "ACTUAL RETURN", // the label shown in the tooltip/legend
-                      data: calculateQuarterlyReturns(events, y),
+                      //data: calculateQuarterlyReturns(events, y),
                       backgroundColor: "rgba(29, 235, 98, 0.6)", // color of bars
                       barThickness: 40,
                       maxBarThickness: 29,
@@ -1082,7 +1116,7 @@ function InvestorDetail() {
               </div>
             )}
           </div>
-        </div>
+        </div>*/}
 
         {/* Table */}
 

@@ -1,770 +1,87 @@
-  body {
-  background: #f6f8fb;
+body{
+  background-color: rgba(124, 173, 219, 0.212);
 }
 
-   .page-wrapper {
-          margin: 0 auto;
-          padding: 2rem;
-        }
-
-.hero-section {
-    position: relative;
-    /* important */
-    background: #273b66;
-    border-radius: 20px;
-    padding: 3rem;
-    margin-bottom: 3rem;
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    overflow: hidden;
-}
-
-.hero-section::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background:
-        radial-gradient(circle at 20% 30%, rgba(59, 130, 246, 0.18), transparent 50%),
-        radial-gradient(circle at 80% 70%, rgba(168, 85, 247, 0.12), transparent 50%);
-    pointer-events: none;
-}
-
-.hero-section::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(circle at 20% 30%, rgba(59, 130, 246, 0.25), transparent 50%);
-    pointer-events: none;
-}
-
-.hero-title {
-    font-size: 2.75rem;
-    font-weight: 700;
-    color: #ffffff;
-    letter-spacing: -0.5px;
-}
-
-.hero-subtitle {
-    font-size: 1.1rem;
-    color: rgb(255, 255, 255);
-    margin-top: 1rem;
-    max-width: 600px;
-}
-
-
-/* text styling */
-.header-text {
-    font-size: 3rem;
-    font-weight: 700;
-    background:
-        radial-gradient(circle at 20% 30%, rgba(59, 130, 246, 0.25), transparent 50%),
-        radial-gradient(circle at 80% 70%, rgba(168, 85, 247, 0.2), transparent 50%);
-    -webkit-background-clip: text;
-    /* clip background to text */
-    -webkit-text-fill-color: transparent;
-    /* make text itself transparent */
-    background-clip: text;
-    /* fallback for non-webkit */
-    text-align: center;
-}
-
-
-
-.investor-meta {
-    margin-bottom: 2rem;
-}
-
-.investor-label {
-    font-size: 0.75rem;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    color: rgba(255, 255, 255, 0.5);
-    display: block;
-    margin-bottom: 0.5rem;
-}
-
-.investor-name-input {
-    font-size: 2.5rem;
-    font-weight: 700;
-    background: transparent;
-    border: none;
-    color: white;
-    outline: none;
-    padding: 0;
-}
-
-.investor-name-input:focus {
-    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
-}
-
-.property-meta h2 {
-    font-size: 1.5rem;
-    font-weight: 600;
-    color: #e5e7eb;
-    margin-bottom: 0.5rem;
-}
-
-.property-meta p {
-    color: rgba(255, 255, 255, 0.6);
-    font-size: 0.95rem;
-}
-
-
-
-
-
-
-/* investor detail table */
-.table-modern {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-.table-modern th {
-    text-align: left;
-    font-size: 0.75rem;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    color: #6b7280;
-    padding-bottom: 1rem;
-    border-bottom: 1px solid #e5e7eb;
-}
-
-.table-modern td {
-    padding: 1rem 0;
-    border-bottom: 1px solid #f1f5f9;
-}
-
-.table-modern tr:hover {
-    background: #f9fafb;
-}
-
-/* main headings for pages */
-
-.hero-title-split {
-    display: flex;
-    flex-direction: column;
-}
-
-.hero-title-split .top-line {
-    font-size: 0.8rem;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    color: rgba(255, 255, 255, 0.5);
-    margin-bottom: 0.75rem;
-}
-
-.hero-title-split .main-line {
-    font-size: 2.75rem;
-    font-weight: 700;
-    color: white;
-}
-
-.hero-title-split .sub-line {
-    font-size: 1rem;
-    color: rgba(255, 255, 255, 0.6);
-    margin-top: 0.75rem;
-}
-
-
-/* investor and property detail main top headings */
-.hero {
-    display: grid;
-    grid-template-columns: 420px 1fr;
-    gap: 3rem;
-    align-items: center;
-    align-items: start;
-}
-
-.hero-image {
-    width: 100%;
-    height: 320px;
-    object-fit: cover;
-    border-radius: 16px;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-.hero-eyebrow {
-    font-size: 1rem;
-    text-transform: uppercase;
-    letter-spacing: 1.5px;
-    color: rgba(255, 255, 255, 0.795);
-    display: block;
-    margin-bottom: 0.75rem;
-}
-
-.hero-main-title {
-    font-size: 2.75rem;
-    font-weight: 700;
-    background: transparent;
-    border: none;
-    color: rgb(252, 250, 250);
-    outline: none;
-    padding: 0;
-    margin-bottom: 1.25rem;
-}
-
-.hero-main-title:focus {
-    border-bottom: 1px solid rgba(255, 255, 255, 0.3);
-}
-
-.hero-context h2 {
-    font-size: 1.25rem;
-    font-weight: 600;
-    color: #e5e7eb;
-    margin-bottom: 0.5rem;
-}
-
-.hero-context p {
-    font-size: 0.9rem;
-    color: rgba(255, 255, 255, 0.6);
-}
-
-.hero-context {
-    margin-top: 1.5rem;
-    padding-top: 1.5rem;
-    border-top: 2px solid rgba(255, 255, 255, 0.438);
-}
-
-.hero-stats-inline {
-    display: flex;
-    gap: 0.50rem;
-    margin-top: 1rem;
-    /* spacing below property input */
-    flex-wrap: wrap;
-    /* allows wrapping on smaller screens */
-    justify-content: center;
-}
-
-.stat-inline {
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-    gap: 1.75rem;
-    background: rgba(255, 255, 255, 0.295);
-    /* subtle background */
-    padding: 0.5rem 0.75rem;
-    border-radius: 12px;
-}
-
-.stat-inline:hover {
-    background: rgba(255, 255, 255, 0.38);
-    transform: translateY(-1px);
-    transition: 0.2s ease;
-}
-
-.stat-icon {
-    font-size: 1.25rem;
-    padding: 0.5rem;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.stat-label-inline {
-    font-size: 0.65rem;
-    color: rgba(255, 255, 255, 0.7);
-    text-transform: uppercase;
-    margin-bottom: 0.15rem;
-}
-
-.stat-value-inline {
-    font-size: 1.25rem;
-    font-weight: 600;
-    color: rgb(248, 247, 247);
-    display: block;
-    background-color: transparent;
-    border: none;
-    line-height: 1.2;
-    outline: none;
-}
-
-/* stats when outside the banner  */
-
-.stats-container {
-    display: flex;
-    flex-wrap: wrap;
-    /* wrap on smaller screens */
-    gap: 1.75rem;
-    /* spacing between cards */
-    justify-content: center;
-    /* center the whole grid */
-    margin-top: 2rem;
-}
-
-.stat-card {
-    flex: 1 1 180px;
-    /* min width 180px, grow equally */
-    max-width: 220px;
-    /* optional max width */
-    background: #ffffff;
-    border: 1px solid #e5e7eb;
-    border-radius: 16px;
-    padding: 1.5rem;
-    display: flex;
-    flex-direction: column;
-    /* stack icon, label, value vertically */
-    align-items: center;
-    /* center content horizontally */
-    text-align: center;
-    /* center text */
-    gap: 0.75rem;
-    transition: 0.2s ease;
-}
-
-.stat-card:hover {
-    transform: translateY(-2px);
-    border-color: #cbd5e1;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
-}
-
-.stat-icon {
-    font-size: 2rem;
-    background: rgba(59, 130, 246, 0.1);
-    /* subtle background */
-    padding: 0.75rem;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.stat-label {
-    font-size: 0.75rem;
-    text-transform: uppercase;
-    color: #6b7280;
-    letter-spacing: 1px;
-}
-
-.stat-value {
-    font-size: 1.25rem;
-    font-weight: 600;
-    color: #111827;
-    line-height: 1.2;
-}
-
-/* buttons */
-.btn-styled{
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    font-weight: 700;
-    padding: 0.75rem 1.8rem;
-    border-radius: 16px;
-    border: none;
-    cursor: pointer;
-    background: #647499;
-    /* subtle transparency like hero overlay */
-    color: #f8fafc;
-    
-    /* frosted effect */
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
-    /* soft shadow for depth */
-    font-size: 1rem;
-    transition: all 0.25s ease;
-    position: relative;
-    overflow: hidden;
-}
-
-/* hover effect */
-
-.btn-styled::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(circle at 20% 30%, rgba(59, 130, 246, 0.25), transparent 50%);
-    pointer-events: none;
-}
-
-/* optional gradient overlay (like hero radial highlights) */
-.btn-styled::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background:
-        radial-gradient(circle at 20% 30%, rgba(59, 130, 246, 0.18), transparent 50%),
-        radial-gradient(circle at 80% 70%, rgba(168, 85, 247, 0.12), transparent 50%);
-    pointer-events: none;
-}
-
-
-
-
-/* gradient style button if needed */
-
-
-.section-card {
-  background-color: #fff; /* or light gray */
-  border-radius: 15px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  padding: 20px;
-  margin: 25px 0;
-  overflow: hidden;
-}
-
-.section-header{
-    border-bottom: 2px solid rgb(199, 199, 199);
-}
-
-.section-header-styled {
-    background: #4769b3d8;
-    border-top-left-radius: 15px;
-    border-top-right-radius: 15px;
-    border-bottom-left-radius: 0;
-    border-bottom-right-radius: 0;
-    box-shadow: var(--shadow-sm);
-    color: white;
-    padding: 15px;
-    border-bottom: 2px solid #0e337e;
-    overflow: hidden;
-    margin-bottom: 2rem;
-}
-
-/*  property detail investor card */
-
-.investor-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 20px;
-  padding: 20px;
-}
-
-.investor-card-modern {
-  background-color: rgba(40, 79, 163, 0.38); /* semi-transparent modern color */
-  border-radius: 15px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-  padding: 20px;
+.navbar{
+  width: 13%;
+  height: 100vh;
+  float: left;
+  background-color: rgb(242, 248, 250);
+  margin: 15px;
+  border-radius: 8px;
   display: flex;
-  flex-direction: column;
+  justify-content: start;
+  gap: 150px;
   align-items: center;
-  text-align: center;
-  transition: transform 0.2s ease;
-}
-
-.investor-card-modern:hover {
-  transform: translateY(-5px);
-}
-
-.investor-initial {
-  border: 2px solid #575757;
-  border-radius: 50%;
-  width: 60px;
-  height: 60px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-weight: bold;
-  font-size: 1.75rem;
-  background-color: white;
-  color: #284fa3;
-}
-
-.hero-stats-inline {
-  display: flex;
-  justify-content: space-around;
-  width: 100%;
-  margin: 15px 0;
-}
-
-.in-stat-inline {
-  display: flex;
   flex-direction: column;
-  gap: 5px;
+  box-shadow: 2px 2px 2px 1px rgba(147, 165, 172, 0.534) ,  -5px 2px 2px rgba(147, 165, 172, 0.534);;
+
+}
+.logo_company_name{
+  margin-top: 20px;
 }
 
-.in-stat-label-inline {
-  font-size: 0.85rem;
-  color: #555;
-}
 
-.in-stat-value-inline {
-  font-weight: 600;
-  font-size: 1rem;
-}
 
-.btn-styled {
-  background-color: #284fa3;
-  color: white;
-  border: none;
-  border-radius: 0 0 15px 15px; /* round only bottom corners */
-  padding: 10px;
-  width: 100%;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-
-.btn-styled:hover {
-  background-color: #1f3d7a;
-}
-
- .report-card {
-  background: white;
-  border-radius: 18px;
-  padding: 28px;
-  margin-bottom: 30px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.06);
-  transition: transform 0.2s ease;
-}
-
-.report-card:hover {
-  transform: translateY(-4px);
-}
-  .report-meta {
+.icon {
+  width: 210px;
   display: flex;
-  justify-content: space-between;
-  margin-bottom: 25px;
-}
-
-.meta-label {
-  font-size: 12px;
-  text-transform: uppercase;
-  color: #888;
-  letter-spacing: .05em;
-}
-
-.meta-value {
+  justify-content: space-evenly;
+  margin-bottom: 15px;
+  padding: 7px;
   font-size: 20px;
-  font-weight: 600;
-  color: #1a1a1a;
-}
-  .year-tabs {
-  border-bottom: none;
-  margin-bottom: 20px;
-}
-
-.year-tabs .nav-link {
-  border-radius: 50px;
+  background-color: white;
+  border-radius: 5px;
   border: none;
-  padding: 6px 16px;
-  margin-right: 6px;
-  background: #eef2f8;
-  color: #444;
-  font-weight: 500;
-}
-
-.year-tabs .nav-link.active {
-  background: #2b6ef2;
-  color: white;
-}
-  .chart-container {
-  background: #fafbfe;
-  border-radius: 12px;
-  padding: 20px;
-}
-  .search-input {
-  border-radius: 30px;
-  padding-left: 18px;
-  border: 1px solid #ddd;
-  background: white;
-}
-
-.search-input:focus {
-  border-color: #2b6ef2;
-  box-shadow: 0 0 0 3px rgba(43,110,242,0.15);
-}
-.investors-card {
-  background: #ffffff;
-  border-radius: 16px;
-  padding: 1.5rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  margin-bottom: 2rem;
-}
-
-.section-header {
-  margin-bottom: 1rem;
-  text-align: left;
-}
-
-.section-title {
-  display: flex;
+  color: blue;
+  box-shadow: 2px 2px 2px 1px rgba(81, 102, 109, 0.473) ;
   align-items: center;
-  font-size: 1.5rem;
-  gap: 0.5rem;
-  margin-bottom: 0.25rem;
+  gap: 10px;
 }
-
-.section-icon {
-  font-size: 2rem;
-}
-
-.section-subtitle {
-  font-size: 0.95rem;
-  color: #6b7280; /* gray-500 */
-}
-
-.quick-investors {
+.log{
   display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem;
+  flex-direction: column;
+  justify-content: end;
+  margin-top: 150px;
+}
+.properties{
+  float: right;
+  width: 80%;
+  
 }
 
-.quick-investor-chip {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.5rem 0.75rem;
-  border-radius: 12px;
-  background: #f9fafb; /* light gray */
-  cursor: pointer;
- 
+.search input{
+  border: none;
+  background-color: transparent;
+  outline: none;
 }
 
-.quick-investor-chip:hover {
-  background: #ecfdf5; /* green-50 */
-  transform: translateY(-2px);
-}
+.search{
 
-.chip-initial {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background: #02160f; /* emerald-500 */
-  color: #080808;
+  width: 350px;
+  padding: 5px;
+  border-radius: 15px;
+  background-color: white;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: 700;
-  text-transform: uppercase;
+  box-shadow: 2px 2px 2px 1px rgba(81, 102, 109, 0.473) ;
 }
 
-.chip-info {
+.prop_section{
+  margin-top: 50px;
+}
+
+.prop_wrapper{
+  width: 90%;
+  background-color: white;
   display: flex;
-  flex-direction: column;
-}
-
-.investor-name {
-  font-weight: 600;
-  font-size: 0.95rem;
-}
-
-.investor-amount {
-  color: #059669;
-  font-weight: 700;
-  font-size: 0.9rem;
-}
-
-.portfolio-card {
-  background: #f8f9fc;
-  border-radius: 16px;
-  padding: 1.5rem;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.08);
-  margin-bottom: 2rem;
-}
-
-/* Header */
-.section-title {
-  font-size: 1.5rem;
-  display: flex;
+  border-radius: 8px;
   align-items: center;
-  gap: 0.5rem;
-  margin-bottom: 0.25rem;
-}
-
-.section-icon {
-  font-size: 2rem;
-}
-
-.section-subtitle {
-  font-size: 0.95rem;
-  color: #6b7280;
-}
-
-.add-investor-btn {
-  background-color: #2563eb;
-  border-radius: 12px;
-  padding: 0.5rem 1rem;
-}
-
-/* Investor grid */
-.investor-grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  margin-top: 1rem;
-}
-
-/* Investor card */
-.investor-card {
-  background: linear-gradient(135deg, #7f8491, #6d7c9b); /* dark-to-medium blue gradient */
-  color: #f9fafb;
-  background: #3d578f;
-  width: 350px;
-  border-radius: 15px;
-  padding: 1rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  box-shadow: 5px 4px 15px rgba(0,0,0,0.1);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-  border: 2px solid rgba(0, 0, 0, 0.356);
-}
+ 
 
 
-.investor-card::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: 15px;
-  background: rgba(255, 255, 255, 0.05); /* subtle highlight overlay */
-  pointer-events: none;
-}
-
-.investor-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
-}
-
-/* Header inside card */
-.investor-header {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  margin-bottom: 1rem;
 }
 
 
 
-.investor-name {
-  font-weight: 600;
-  font-size: 1.75rem;
-}
-
-/* Stats */
-.investor-stats {
-  width: 100%;
-  display: flex;
-  justify-content: space-around;
-  margin-bottom: 1rem;
-}
-
-.stat {
-  text-align: center;
-}
-
-.stat-label {
-  font-size: 0.9rem;
-  color: #c4d3e9;
-}
-
-.stat-value {
-  font-size: 1.2rem;
-  font-weight: 700;
-  color: #141414;
-}
-
-/* Button */
-.btn-details {
-  width: 100%;
-  border-radius: 12px;
-  border: 1px solid #f9fafb;
-  color: #f9fafb;
-  transition: all 0.2s ease;
-}
-
-
-
-/* No investors text */
-.no-investors {
-  text-align: center;
-  color: #6b7280;
-  margin-top: 1rem;
-}

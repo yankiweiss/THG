@@ -1,6 +1,6 @@
 import "bootstrap/dist/css/bootstrap.min.css";
 import { useEffect, useState } from "react";
-import { calculateQuarterlyReturns, expectedQuarterReturn } from "./utils/CalculatingReturns";
+//import { calculateQuarterlyReturns, expectedQuarterReturn } from "./utils/CalculatingReturns";
 import "chartjs-adapter-date-fns";
 
 import {
@@ -303,6 +303,7 @@ function Reports() {
                         barThickness: 40,
                         maxBarThickness: 29,
                       },
+                       
                        
                     ],
                   };

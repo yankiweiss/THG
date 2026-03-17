@@ -1,137 +1,116 @@
-// getting all events only that are event_type "Return",
+// function helpers
 
-const getReturnEvents = (events = []) => {
-  return events?.filter((e) => e.event_type === 'Return')
-}
+const msInDays = 24 * 60 * 60 * 1000;
 
+// Return divided Annually
 
-export const calculateQuarterlyReturns = (events, selectedYear) => {
-  const returnEvents = getReturnEvents(events);
-  let chartPoints = [];
-  returnEvents.forEach((event) => {
-    const points = splitEventByQuarter(
-      event.from_date,
-      event.to_date,
-      Number(event.event_amount),
-      selectedYear
-    )
-    chartPoints =  chartPoints.concat(points)
-  })
-  return aggregateByQuarter(chartPoints, selectedYear)
-}
+// check which quarter date is going into.
+// below is not finish yet.
 
+const now = new Date();
+const thisYear = now.getFullYear();
 
-const msPerDay = 1000 * 60 * 60 * 24;  
-  
-  const getQuarterRange = (date) => {
-    const month = date.getMonth();
-    const year = date.getFullYear();
-    if (month <= 2)
-      return { start: new Date(year, 0, 1), end: new Date(year, 3, 0) };
-    if (month <= 5)
-      return { start: new Date(year, 3, 1), end: new Date(year, 6, 0) };
-    if (month <= 8)
-      return { start: new Date(year, 6, 1), end: new Date(year, 9, 0) };
-    return { start: new Date(year, 9, 1), end: new Date(year, 12, 0) };
+const quarters = {};
+
+let i = 1;
+
+for (let m = 0; m < 12; m += 3) {
+  const startDate = new Date(thisYear, m, 1);
+  const endDate = new Date(thisYear, m + 3, 0);
+
+  quarters[`Q${i}`] = {
+    startDate,
+    endDate,
   };
 
+  i++;
+}
 
+const checkQuarter = (date) => {
+  const month = date.getMonth();
+  console.log(month);
 
- const splitEventByQuarter = (startDate, endDate, amount, selectedYear) => {
-    const result = [];
-    const originalStart = new Date(startDate);
-    const originalEnd = new Date(endDate);
-
-    const yearStart = new Date(selectedYear, 0, 1);
-    const yearEnd = new Date(selectedYear, 11, 31);
-
-    const overlapStart = originalStart > yearStart ? originalStart : yearStart;
-    const overlapEnd = originalEnd < yearEnd ? originalEnd : yearEnd;
-
-    if (overlapStart > overlapEnd) return [];
-
-    const totalDays = Math.round((originalEnd - originalStart) / msPerDay) + 1;
-
-    let current = new Date(overlapStart);
-    while (current <= overlapEnd) {
-      let { start: quarterStart, end: quarterEnd } = getQuarterRange(current);
-
-      // Clamp quarter to event range
-      const periodStart = current > quarterStart ? current : quarterStart;
-      const periodEnd = overlapEnd < quarterEnd ? overlapEnd : quarterEnd;
-
-      const daysInPeriod = Math.round((periodEnd - periodStart) / msPerDay) + 1;
-
-      const portion = (daysInPeriod / totalDays) * Number(amount);
-
-      // Push with the actual start of period (for accurate charting)
-      result.push({ x: periodStart, y: portion });
-
-      // Move to the next quarter
-      current = new Date(periodEnd);
-      current.setDate(current.getDate() + 1);
+  for (let i = 1; i <= 4; i++) {
+    const getQuarterDate = quarters[`Q${i}`].startDate.getMonth();
+    if (getQuarterDate === month) {
+      console.log(quarters[`Q${i}`].startDate, month);
     }
+  }
+  // how can i get the m value in the start date, its going into that quarter i think i will need to extract the key.
+};
 
-    return result;
-  };
+checkQuarter(new Date(2026, 0, 3));
 
+// given two dates it will see the different in days
+
+const checkDateDifference = (firstDate) => {
+  const today = new Date().getTime();
+
+  const msDifferenceFromDays = today - firstDate;
+
+  const totalDays = Math.ceil(msDifferenceFromDays / msInDays);
+
+  return totalDays;
+};
+
+// below is creating a quarters object with live dates;
+
+// calculate amount invested;
+
+export const investmentAmount = (events, investments, property) => {
   
+  let expectedReturn = 0;
 
-  const aggregateByQuarter = (points, selectedYear) => {
-    const quarters = [0, 3, 6, 9]; // Jan, Apr, Jul, Oct
-    const result = [];
-
-    quarters.forEach((month) => {
-      const quarterStart = new Date(selectedYear, month, 1);
-      const quarterEnd = new Date(selectedYear, month + 3, 0);
-
-      // sum all actual amounts that belong to this quarter
-      const sum = points
-        .filter((p) => p.x >= quarterStart && p.x <= quarterEnd)
-        .reduce((acc, p) => acc + Number(p.y), 0);
-      result.push({ x: quarterStart, y: sum });
-    });
-
-    const yearEndTotal = points.reduce((acc, p) => acc + p.y, 0);
-    result.push({ x: new Date(selectedYear, 11, 31), y: yearEndTotal });
-
-    return result;
+  const initialInvestment = {
+    event_date: property?.closing_date,
+    event_amount: investments?.invested_amount,
+    event_type: "Initial Investment",
   };
 
-  export const expectedQuarterReturn = (selectedYear, investedAmount , prefReturn) => {
-    const amountInvested = investedAmount || 0;
-    const percent = prefReturn || 0;
+  const allEvents = [...events, initialInvestment];
 
-    const perfReturnPercent = percent / 100;
-    const quarterReturn = (amountInvested * perfReturnPercent) / 4;
+  for (let i = 0; i < allEvents.length; i++) {
+    const currentEvent = allEvents[i];
+    if (
+      currentEvent?.event_type === "Investment" ||
+      currentEvent?.event_type === "Capital Call" ||
+      currentEvent?.event_type === "Initial Investment"
+    ) {
+      let eventAmount = Number(currentEvent.event_amount);
+      let totalDays = checkDateDifference(
+        new Date(currentEvent.event_date).getTime()
+      );
+      let investorRate = investments?.perf_return / 100;
+      const perfReturn = eventAmount * investorRate;
+      let annualRate = Number(perfReturn) / 365;
+      expectedReturn += totalDays * Number(annualRate);
+    }
+  }
+  console.log(Number(expectedReturn).toFixed(2));
+  // this sounds all good now i need it should communicate with chart.js 
+};
 
-    return [
-      { x: new Date(selectedYear, 0, 1), y: quarterReturn }, // Q1
-      { x: new Date(selectedYear, 3, 1), y: quarterReturn }, // Q2
-      { x: new Date(selectedYear, 6, 1), y: quarterReturn }, // Q3
-      { x: new Date(selectedYear, 9, 1), y: quarterReturn }, // Q4
-    ];
-  };
+// expected return function;
 
+// when havering over a graph in the chart.js it should show the event that its associated with it and go to that event as well
 
-  export  const years = (events = []) => {
-    const allYears = new Set();
+export const calculateQuarterlyReturns = () => {
+  console.log("ok");
+};
+export const years = (events = []) => {
+  const allYears = new Set();
 
-    events.forEach((e) => {
-      if (!e.from_date || !e.to_date) return;
-      const from = new Date(e.from_date).getFullYear();
-      const to = new Date(e.to_date).getFullYear();
+  events.forEach((e) => {
+    if (!e.from_date || !e.to_date) return;
+    const from = new Date(e.from_date).getFullYear();
+    const to = new Date(e.to_date).getFullYear();
 
-      for (let y = from; y <= to; y++) {
-        allYears.add(y);
-      }
-    });
-    return [...allYears].sort();
-  };
+    for (let y = from; y <= to; y++) {
+      allYears.add(y);
+    }
+  });
+  return [...allYears].sort();
+};
 
-
-  
-
-  
-
-
+// 1. i want to accomplish that all of the calculations should be bind with the same quarter dates,
+// 2. all missing expecting return functions should be in one function.
