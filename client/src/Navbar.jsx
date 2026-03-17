@@ -57,8 +57,8 @@ function Navbar() {
         </div>
 
         <section className="log">
-          <button className="icon">Log Out</button>
-          <button className="icon">Log In</button>
+          <button className="logOut">Log Out</button>
+          
         </section>
       </div>
     </>

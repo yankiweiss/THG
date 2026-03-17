@@ -1,8 +1,8 @@
-body{
+body {
   background-color: rgba(124, 173, 219, 0.212);
 }
 
-.navbar{
+.navbar {
   width: 13%;
   height: 100vh;
   float: left;
@@ -11,53 +11,51 @@ body{
   border-radius: 8px;
   display: flex;
   justify-content: start;
-  gap: 150px;
+  gap: 75px;
   align-items: center;
   flex-direction: column;
-  box-shadow: 2px 2px 2px 1px rgba(147, 165, 172, 0.534) ,  -5px 2px 2px rgba(147, 165, 172, 0.534);;
-
+  box-shadow:
+    2px 2px 2px 1px rgba(147, 165, 172, 0.534),
+    -5px 2px 2px rgba(147, 165, 172, 0.534);
 }
-.logo_company_name{
-  margin-top: 20px;
+.logo_company_name {
+  margin-top: 30px;
 }
-
-
 
 .icon {
   width: 210px;
   display: flex;
-  justify-content: space-evenly;
-  margin-bottom: 15px;
+  margin-bottom: 10px;
   padding: 7px;
   font-size: 20px;
   background-color: white;
   border-radius: 5px;
   border: none;
-  color: blue;
-  box-shadow: 2px 2px 2px 1px rgba(81, 102, 109, 0.473) ;
+  color: rgb(0, 0, 19);
+  box-shadow: 2px 2px 2px 1px rgba(81, 102, 109, 0.473);
   align-items: center;
-  gap: 10px;
-}
-.log{
-  display: flex;
-  flex-direction: column;
-  justify-content: end;
-  margin-top: 150px;
-}
-.properties{
-  float: right;
-  width: 80%;
-  
+  gap: 20px;
 }
 
-.search input{
+.icon:hover {
+  background-color: lightblue;
+}
+.log {
+  display: flex;
+  justify-content: center;
+}
+.properties {
+  float: right;
+  width: 80%;
+}
+
+.search input {
   border: none;
   background-color: transparent;
   outline: none;
 }
 
-.search{
-
+.search {
   width: 350px;
   padding: 5px;
   border-radius: 15px;
@@ -65,22 +63,100 @@ body{
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 2px 2px 2px 1px rgba(81, 102, 109, 0.473) ;
+  box-shadow: 2px 2px 2px 1px rgba(81, 102, 109, 0.473);
 }
 
-.prop_section{
+.prop_section {
   margin-top: 50px;
 }
 
-.prop_wrapper{
+.prop_wrapper {
   width: 90%;
   background-color: white;
   display: flex;
   border-radius: 8px;
+  height: 150px;
+  box-shadow: 2px 2px 2px 1px rgba(81, 102, 109, 0.473);
+  
+}
+
+.column-flex {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   align-items: center;
- 
+}
 
 
+.display-section {
+  display: flex;
+  flex-direction: column;
+  width: 90%;
+  
+}
+.investor-section {
+  background-color: rgba(191, 216, 224, 0.952);
+  width: 100%;
+  
+}
+
+.info{
+  display: flex;
+  gap: 50px;
+}
+.property_flex{
+  display: flex;
+  height: 85%;
+  align-items: center;
+  background-color: rgb(225, 242, 248);
+  
+}
+
+.fin-text{
+  color: rgb(153, 153, 153);
+}
+.fin-amount{
+  font-size: 25px;
+}
+
+.financial-flex{
+  display: flex;
+  justify-content: end;
+  gap: 25px;
+  width: 75%;
+}
+
+.investors-flex{
+  display: flex;
+ gap: 25px;
+  align-items: center;
+}
+.investors_name_flex{
+  display: flex;
+  gap: 35px;
+  justify-content: center;
+  width: 65%;
+}
+.investor_name{
+  background-color: white;
+  padding: 3px 15px;
+  border-radius: 8px;
+  color: blue;
+}
+
+
+.logOut {
+  position: absolute;
+  bottom: 75px;
+  width: 210px;
+  display: flex;
+  padding: 7px;
+  font-size: 20px;
+  background-color: white;
+  border-radius: 5px;
+  border: none;
+  color: rgb(0, 0, 19);
+  box-shadow: 2px 2px 2px 1px rgba(81, 102, 109, 0.473);
 }
 
 
