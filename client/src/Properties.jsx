@@ -90,7 +90,12 @@ function Properties() {
 
           <h1
             className="header"
-            style={{ color: "#000000", margin: "0px", paddingBottom: "25px", fontWeight: 'bold' }}
+            style={{
+              color: "#000000",
+              margin: "0px",
+              paddingBottom: "25px",
+              fontWeight: "bold",
+            }}
           >
             PROPERTIES
           </h1>
@@ -105,64 +110,52 @@ function Properties() {
               <img
                 src={data[0]?.secure_url}
                 style={{
-                  width: "350px",
-                  height: "100%",
-                  borderTopLeftRadius: "8px",
-                  borderBottomLeftRadius: "8px",
+                  width: "25%",
+                  height: "auto",
+                  //borderTopLeftRadius: "8px",
+                  //borderBottomLeftRadius: "8px",
                 }}
               />
 
               <div className="display-section">
                 <div className="property_flex ">
-                  <div>
-                    <h5 style={{marginLeft: '25PX', fontWeight: 'bold'}}>{data[0]?.property_name}</h5>
-                  </div>
+                  <h5  style={{ marginLeft: "25PX", fontWeight: "bold" }} className="property_flex_item">
+                    {data[0]?.property_name}
+                  </h5>
 
-                  <div className="financial-flex">
+                <div className="flex-right property_flex_item">
+                  <div className="column-flex">
+                    <h6 className="fin-text">PURCHASE PRICE</h6>
+
+                    <h6 className="fin-amount">${data[0]?.purchase_price}</h6>
+                  </div>
 
                   <div className="column-flex ">
-                    <div>
-                      <h6 className="fin-text">PURCHASE PRICE</h6>
-                    </div>
-                    <div>
-                      <h6 className="fin-amount">${data[0]?.purchase_price}</h6>
-                    </div>
-                  </div>
+                    <h6 className="fin-text">CLOSING DATE</h6>
 
-                  <div className="column-flex">
-                    <div>
-                      <h6 className="fin-text">CLOSING DATE</h6>
-                    </div>
-                    <div>
-                      <h6 className="fin-amount">${data[0]?.purchase_price}</h6>
-                    </div>
+                    <h6 className="fin-amount">${data[0]?.purchase_price}</h6>
                   </div>
                 </div>
                 </div>
+                
 
                 <div className="investor-section">
-                  
-<div className="investors-flex">
+                  <h3
+                    style={{
+                      padding: "0px 25px",
+                      color: "#2570C0",
+                      fontSize: "1.5rem",
+                      fontWeight: "600",
+                    }}
+                  >
+                    PROPERTY INVESTORS:
+                  </h3>
 
-                  <h3 style={{padding: '0px 25px',   color: '#2570C0', fontSize: '15.6px', fontWeight: '600'}}>PROPERTY INVESTORS</h3>
-
-                  
-<div className="investors_name_flex">
-                  <div>
+                  <div className="investors_name_flex">
                     <h6 className="investor_name">Yankee Weiss</h6>
+
+                    
                   </div>
-
-                   <div>
-                    <h6>Yankee Weiss</h6>
-                  </div>
-                  </div>
-
-                  </div>
-
-                  
-
-                  
-
                 </div>
               </div>
             </div>

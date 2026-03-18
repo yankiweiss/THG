@@ -1,12 +1,13 @@
 body {
  background: transparent linear-gradient(90deg, #1642891A 0%, #1B52AB33 100%) 5% 5% no-repeat padding-box;
  font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", 
-  Helvetica, Arial, "Lucida Grande", sans-serif;;
- 
-}
+  Helvetica, Arial, "Lucida Grande", sans-serif;
+  
+  
+  }
 
 .navbar {
-  width: 262px;
+  max-width: 12%;
   height: 100vh;
   float: left;
  background: #e2eeff;
@@ -20,16 +21,18 @@ body {
   box-shadow: 1px 1px 20px 1px #1b3d777e, -1px 1px 2px 1px #1b3d7770 ;
  
 }
-.logo_company_name {
-  margin-top: 30px;
-}
+/*.logo_company_name {
+  margin-top: 2em;
+}*/
+
+
 
 .icon {
-  width: 212px;
+  box-sizing: content-box;
+  width: 56%;
   display: flex;
-  margin-bottom: 10px;
-  padding: 7px;
-  font-size: 16px;
+  margin-bottom: 0.7rem;
+  padding: 0.4rem  3rem;
   background-color: white;
   border-radius: 5px;
   border: none;
@@ -38,6 +41,9 @@ body {
   align-items: center;
   gap: 20px;
   font-weight: 600;
+  flex-wrap: wrap;
+  overflow-wrap: anywhere;
+  
 }
 
 .icon:hover {
@@ -49,7 +55,7 @@ body {
 }
 .properties {
   float: right;
-  width: 80%;
+  width: 75vw;
   
 }
 
@@ -60,8 +66,8 @@ body {
 }
 
 .search {
-  width: 350px;
-  padding: 5px;
+  max-width: 350px;
+  padding: 0.3rem;
   border-radius: 15px;
   background-color: white;
   display: flex;
@@ -72,16 +78,19 @@ body {
 
 .prop_section {
   margin-top: 50px;
+  
 }
 
 .prop_wrapper {
-  width: 90%;
+  max-width: 95%;
+overflow: hidden;
   background-color: white;
+  max-height: 165px;
   display: flex;
-  border-radius: 16px;
-  height: 165px;
-  box-shadow: 2px 2px 2px 1px #1B3C77, -1px 1px 2px 1px #1B3C77 ;
+  border-radius: 13px;
+  box-shadow: 5px 3px 10px 1px #1B3C77, -1px 1px 2px 1px #1B3C77 ;
   opacity: 1;
+  box-sizing: border-box; 
 }
 
 .column-flex {
@@ -94,31 +103,51 @@ body {
 .display-section {
   display: flex;
   flex-direction: column;
-  width: 80%;
+  flex-grow: 1;
+  border-radius: 8px;
+  overflow: hidden;
+  
+  
 }
 .investor-section {
-  background-color: #E6ECFF;
-  width: 100%;
+  background-color: #E6ECFF; 
+  display: flex;
+  height: 30%;
+  align-items: center;
   
 }
 
 .info {
   display: flex;
-  gap: 50px;
+  
 }
 .property_flex {
   display: flex;
-  height: 85%;
-  align-items: center;
+  height: 70%;
   background-color: #F0F6FF;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.property_flex_item{
+  flex-basis: 500px;
+}
+.property_flex_item:nth-child(2){
+ flex-grow: 2;
+}
+.flex-right{
+  display: flex;
+  gap: 50px;
+  justify-content: center;
+  
 }
 
 .fin-text {
   color: #7F9DC9;
   font-weight: 600;
+  font-size: 1rem;
 }
 .fin-amount {
-  font-size: 25px;
+  font-size: 2rem;
   color: #000000;
   font-weight: bold;
 }
@@ -127,8 +156,11 @@ body {
   display: flex;
   justify-content: end;
   gap: 100px;
-  width: 75%;
+  align-items: center;
+  
 }
+
+
 
 .investors-flex {
   display: flex;
@@ -139,7 +171,7 @@ body {
   display: flex;
   gap: 35px;
   justify-content: center;
-  width: 65%;
+ 
 
 }
 .investor_name {
@@ -162,3 +194,40 @@ body {
   color: rgb(0, 0, 19);
   box-shadow: 2px 2px 2px 1px rgba(81, 102, 109, 0.473);
 }
+
+@media screen and ( max-width: 1300px ){
+  .icon span{
+    
+    display: none;
+  }
+  .icon{
+    padding: 15px;
+    max-width: 75%;
+  }
+ 
+}
+
+@media screen and ( max-width: 860px){
+  .icon span{
+    display: none;
+  }
+  .icon{
+    padding: 8px;
+  }
+  .prop_wrapper{
+    display: flex;
+    flex-direction: column;
+  }
+  
+
+  .prop_wrapper  img{
+    min-width: 95%;
+    flex-grow: 1;
+    height: auto;
+    
+    
+  }
+}
+
+
+

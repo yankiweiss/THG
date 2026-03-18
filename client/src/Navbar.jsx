@@ -17,14 +17,15 @@ function Navbar() {
   return (
     <>
       <div className="navbar">
-        <div className="logo_company_name">
+      <div >
           <img
             src={logo}
             alt="Company Logo"
-            style={{ width: "145px" }}
+            style={{ maxWidth: "99%",  padding: '10% 15%'}}
             onClick={() => navigate("/")}
           />
-        </div>
+          </div>
+      
 
         <div className="icons">
           <button
@@ -33,34 +34,34 @@ function Navbar() {
           >
             <BiHomeAlt />
 
-            Properties
+           <span>Properties</span> 
           </button>
 
           <button
             className={`icon ${activeIcon === "file" ? "active" : " "} `}
             onClick={() => setActiveIcon("file")}
           >
-            <LuFiles /> Files
+            <LuFiles /> <span>Files</span>
           </button>
 
           <button
             className={`icon ${activeIcon === "chart" ? "active" : " "} `}
             onClick={() => setActiveIcon("chart")}
           >
-            <LuChartColumnDecreasing /> Reports
+            <LuChartColumnDecreasing /> <span>Reports</span>
           </button>
 
           <button
             className={`icon ${activeIcon === "plus" ? "active" : " "} `}
             onClick={() => setActiveIcon("plus")}
           >
-            <FiPlus /> Add Deal
+            <FiPlus /> <span>Add Deal</span>
           </button>
         </div>
 
-        <section className="log">
+        {/*<section className="log">
           <button className="logOut">Log Out</button>
-        </section>
+        </section>*/}
       </div>
     </>
   );
