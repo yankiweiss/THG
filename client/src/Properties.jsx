@@ -70,6 +70,8 @@ function Properties() {
   return (
     <>
       <div className="page-wrapper">
+
+       
         {/* now we need tooltips for each one of them */}
 
         <div className="properties">

@@ -17,7 +17,7 @@ body {
   gap: 75px;
   align-items: center;
   flex-direction: column; 
-   box-shadow: 1px 1px 20px 1px #1b3d777e, -1px 1px 2px 1px #1b3d7770 ;
+  box-shadow: 1px 1px 20px 1px #1b3d777e, -1px 1px 2px 1px #1b3d7770 ;
  
 }
 .logo_company_name {
