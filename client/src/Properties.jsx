@@ -75,7 +75,7 @@ function Properties() {
         <div className="properties">
           <h4
             style={{
-              color: "grey",
+              color: "#6780B2",
               letterSpacing: "1px",
               paddingLeft: "50px",
               paddingTop: "55px",
@@ -88,7 +88,7 @@ function Properties() {
 
           <h1
             className="header"
-            style={{ color: "#1E293B", margin: "0px", paddingBottom: "25px" }}
+            style={{ color: "#000000", margin: "0px", paddingBottom: "25px", fontWeight: 'bold' }}
           >
             PROPERTIES
           </h1>
@@ -113,7 +113,7 @@ function Properties() {
               <div className="display-section">
                 <div className="property_flex ">
                   <div>
-                    <h5 style={{marginLeft: '25PX'}}>{data[0]?.property_name}</h5>
+                    <h5 style={{marginLeft: '25PX', fontWeight: 'bold'}}>{data[0]?.property_name}</h5>
                   </div>
 
                   <div className="financial-flex">
@@ -142,7 +142,7 @@ function Properties() {
                   
 <div className="investors-flex">
 
-                  <h3 style={{padding: '0px 25px'}}>Property Investors</h3>
+                  <h3 style={{padding: '0px 25px',   color: '#2570C0', fontSize: '15.6px', fontWeight: '600'}}>PROPERTY INVESTORS</h3>
 
                   
 <div className="investors_name_flex">

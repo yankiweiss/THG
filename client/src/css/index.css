@@ -1,44 +1,47 @@
 body {
-  background-color: rgba(124, 173, 219, 0.212);
+ background: transparent linear-gradient(90deg, #1642891A 0%, #1B52AB33 100%) 5% 5% no-repeat padding-box;
+ font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", 
+  Helvetica, Arial, "Lucida Grande", sans-serif;;
+ 
 }
 
 .navbar {
-  width: 13%;
+  width: 262px;
   height: 100vh;
   float: left;
-  background-color: rgb(242, 248, 250);
+ background: #e2eeff;
   margin: 15px;
-  border-radius: 8px;
+  border-radius: 19px;
   display: flex;
   justify-content: start;
   gap: 75px;
   align-items: center;
-  flex-direction: column;
-  box-shadow:
-    2px 2px 2px 1px rgba(147, 165, 172, 0.534),
-    -5px 2px 2px rgba(147, 165, 172, 0.534);
+  flex-direction: column; 
+   box-shadow: 1px 1px 20px 1px #1b3d777e, -1px 1px 2px 1px #1b3d7770 ;
+ 
 }
 .logo_company_name {
   margin-top: 30px;
 }
 
 .icon {
-  width: 210px;
+  width: 212px;
   display: flex;
   margin-bottom: 10px;
   padding: 7px;
-  font-size: 20px;
+  font-size: 16px;
   background-color: white;
   border-radius: 5px;
   border: none;
-  color: rgb(0, 0, 19);
-  box-shadow: 2px 2px 2px 1px rgba(81, 102, 109, 0.473);
+  color: #2570C0;
+  box-shadow: 2px 2px 2px 1px #1B3C7759;
   align-items: center;
   gap: 20px;
+  font-weight: 600;
 }
 
 .icon:hover {
-  background-color: lightblue;
+  background-color: #E6ECFF;
 }
 .log {
   display: flex;
@@ -47,6 +50,7 @@ body {
 .properties {
   float: right;
   width: 80%;
+  
 }
 
 .search input {
@@ -74,10 +78,10 @@ body {
   width: 90%;
   background-color: white;
   display: flex;
-  border-radius: 8px;
-  height: 150px;
-  box-shadow: 2px 2px 2px 1px rgba(81, 102, 109, 0.473);
-  
+  border-radius: 16px;
+  height: 165px;
+  box-shadow: 2px 2px 2px 1px #1B3C77, -1px 1px 2px 1px #1B3C77 ;
+  opacity: 1;
 }
 
 .column-flex {
@@ -87,63 +91,63 @@ body {
   align-items: center;
 }
 
-
 .display-section {
   display: flex;
   flex-direction: column;
-  width: 90%;
-  
+  width: 80%;
 }
 .investor-section {
-  background-color: rgba(191, 216, 224, 0.952);
+  background-color: #E6ECFF;
   width: 100%;
   
 }
 
-.info{
+.info {
   display: flex;
   gap: 50px;
 }
-.property_flex{
+.property_flex {
   display: flex;
   height: 85%;
   align-items: center;
-  background-color: rgb(225, 242, 248);
-  
+  background-color: #F0F6FF;
 }
 
-.fin-text{
-  color: rgb(153, 153, 153);
+.fin-text {
+  color: #7F9DC9;
+  font-weight: 600;
 }
-.fin-amount{
+.fin-amount {
   font-size: 25px;
+  color: #000000;
+  font-weight: bold;
 }
 
-.financial-flex{
+.financial-flex {
   display: flex;
   justify-content: end;
-  gap: 25px;
+  gap: 100px;
   width: 75%;
 }
 
-.investors-flex{
+.investors-flex {
   display: flex;
- gap: 25px;
+  gap: 25px;
   align-items: center;
 }
-.investors_name_flex{
+.investors_name_flex {
   display: flex;
   gap: 35px;
   justify-content: center;
   width: 65%;
+
 }
-.investor_name{
+.investor_name {
   background-color: white;
   padding: 3px 15px;
   border-radius: 8px;
-  color: blue;
+  color: #2570C0;
 }
-
 
 .logOut {
   position: absolute;
@@ -158,6 +162,3 @@ body {
   color: rgb(0, 0, 19);
   box-shadow: 2px 2px 2px 1px rgba(81, 102, 109, 0.473);
 }
-
-
-
