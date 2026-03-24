@@ -46,44 +46,6 @@ function AddDeal() {
     }
   };
 
-  //
-  //
-  //    try {
-  //      const form = e.target;
-  //      const picFile = form.querySelector('[name="pictures"]').files[0];
-  //
-  //      const uploadToCloudinary = async (file) => {
-  //        const fd = new FormData();
-  //        fd.append("file", file);
-  //        fd.append("upload_preset", "thehamiltongroup");
-  //
-  //        setUploadProgress(30);
-  //        const res = await fetch(
-  //          `https://api.cloudinary.com/v1_1/dhwtnj8eb/image/upload`,
-  //          {
-  //            method: "POST",
-  //            body: fd,
-  //          },
-  //        );
-  //
-  //        setUploadProgress(70);
-  //        const data = await res.json();
-  //        setUploadProgress(100);
-  //        return data.secure_url;
-  //      };
-  //
-  //      let uploadedPicUrl = "";
-  //      if (picFile) {
-  //        uploadedPicUrl = await uploadToCloudinary(picFile);
-  //      }
-  //
-  //      if (!uploadedPicUrl) {
-  //        alert("Image upload failed");
-  //        setIsSubmitting(false);
-  //        return;
-  //      }
-  //
-  //
 
   const submitData = async (e) => {
     e.preventDefault();
@@ -115,11 +77,7 @@ function AddDeal() {
       uploadedPicUrl = await uploadToCloudinary(picFile);
     }
 
-    if (!uploadedPicUrl) {
-      alert("Image upload failed");
-
-      return;
-    }
+    
 
     const payload = {
       ...allFormData,
@@ -142,7 +100,7 @@ function AddDeal() {
       { investor_name: "", amount_invested: "", preferred_return: "" },
     ]);
 
-    imageHolder.current = ""
+    imageHolder.current.src = ''
 
     formRef.current.reset();
   };
