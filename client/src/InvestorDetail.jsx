@@ -1,6 +1,9 @@
 import "./css/index.css";
 import { BarChart } from "./BarChart.jsx";
 
+
+
+
 function InvestorDetail() {
   const barChartData = {
     labels: ["Q1", "Q2", "Q3", "Q4"],

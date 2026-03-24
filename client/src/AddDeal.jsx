@@ -3,8 +3,11 @@ import "./index.css";
 import { MdOutlineUploadFile } from "react-icons/md";
 import { RiDeleteBin5Line } from "react-icons/ri";
 
+
 import { FaPlus } from "react-icons/fa";
+import { useNavigate } from "react-router-dom";
 function AddDeal() {
+  const navigate = useNavigate()
   const [CoSponsors, setCoSponsors] = useState(false);
   const [Investor, setInvestor] = useState([
     { investor_name: "", amount_invested: "", preferred_return: "" },
@@ -103,6 +106,7 @@ function AddDeal() {
     imageHolder.current.src = ''
 
     formRef.current.reset();
+    navigate('/')
   };
 
   return (
@@ -158,6 +162,7 @@ function AddDeal() {
                 id="property_name"
                 className="deal-input"
                 autoFocus
+                required
               ></input>
 
               <label
@@ -335,6 +340,7 @@ function AddDeal() {
               </div>
             </>
           ))}
+          
         </div>
 
         <button type="submit" className="submitBtn" onClick={submitData}>

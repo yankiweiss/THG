@@ -18,7 +18,11 @@ body {
 }
 
 .navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
   max-width: 12%;
+  width: 12%;
   min-height: 100vh;
   background: #e2eeff;
   margin: 15px;
@@ -67,6 +71,8 @@ body {
 .right-side {
   width: 80vw;
   margin-top: 50px;
+  margin-left: 18vw;
+  min-height: 100vh;
 }
 
 .search input {
@@ -118,7 +124,7 @@ body {
   transition-property: transform;
   transition-timing-function: ease-in-out;
   transition-duration: 0.3s;
-  min-height: 100px;
+  min-height: 150px;
 }
 
 .prop_wrapper:hover {
