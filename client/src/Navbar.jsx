@@ -8,6 +8,7 @@ import MyBarChart from "./Chatrs";
 import logo from "../src/assets/logo.png";
 import "./css/index.css";
 import { useState } from "react";
+import {Link} from 'react-router-dom'
 
 function Navbar() {
   const navigate = useNavigate();
@@ -28,14 +29,14 @@ function Navbar() {
       
 
         <div className="icons">
-          <button
+          <Link  to={'/'} style={{ textDecoration: 'none' }}><button
             className={`icon ${activeIcon === "home" ? "active" : " "} `}
             onClick={() => setActiveIcon("home")}
           >
             <BiHomeAlt />
 
            <span>Properties</span> 
-          </button>
+          </button></Link>
 
           <button
             className={`icon ${activeIcon === "file" ? "active" : " "} `}
@@ -50,13 +51,14 @@ function Navbar() {
           >
             <LuChartColumnDecreasing /> <span>Reports</span>
           </button>
-
+<Link to={'/addDeal'}>
           <button
             className={`icon ${activeIcon === "plus" ? "active" : " "} `}
             onClick={() => setActiveIcon("plus")}
           >
             <FiPlus /> <span>Add Deal</span>
           </button>
+          </Link>
         </div>
 
         {/*<section className="log">

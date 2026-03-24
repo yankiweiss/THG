@@ -4,6 +4,7 @@ import { NumericFormat } from "react-number-format";
 import { GoPlus } from "react-icons/go";
 import { AiOutlineSearch } from "react-icons/ai";
 import "./css/index.css";
+import {Link} from 'react-router-dom';
 
 function Properties() {
   const navigate = useNavigate();
@@ -74,7 +75,7 @@ function Properties() {
        
         {/* now we need tooltips for each one of them */}
 
-        <div className="properties">
+        <div className="right-side">
           <h4
             style={{
               color: "#6780B2",
@@ -101,12 +102,14 @@ function Properties() {
           </h1>
 
           <div className="search">
-            <AiOutlineSearch />
+            <AiOutlineSearch color="#AABFE2" fontSize={'25px'}/>
             <input placeholder="Search Properties"></input>
           </div>
 
+          <section>
+
           <div className="prop_section">
-            <div className="prop_wrapper">
+          <Link to={'PropertyDetail'} > <div className="prop_wrapper">
               <img
                 src={data[0]?.secure_url}
                 style={{
@@ -119,7 +122,7 @@ function Properties() {
 
               <div className="display-section">
                 <div className="property_flex ">
-                  <h5  style={{ marginLeft: "25PX", fontWeight: "bold" }} className="property_flex_item">
+                  <h5  style={{ marginLeft: "25PX", fontWeight: "bold", color: 'black' }} className="property_flex_item">
                     {data[0]?.property_name}
                   </h5>
 
@@ -144,7 +147,7 @@ function Properties() {
                     style={{
                       padding: "0px 25px",
                       color: "#2570C0",
-                      fontSize: "1.5rem",
+                      fontSize: "1.2rem",
                       fontWeight: "600",
                     }}
                   >
@@ -159,7 +162,10 @@ function Properties() {
                 </div>
               </div>
             </div>
+            </Link>
           </div>
+
+          </section>
         </div>
       </div>
     </>
