@@ -73,6 +73,7 @@ body {
   margin-top: 50px;
   margin-left: 18vw;
   min-height: 100vh;
+  height: 100vh;
 }
 
 .search input {
@@ -110,10 +111,12 @@ body {
 }
 
 .prop_wrapper {
+  width: 95%;
   max-width: 95%;
   overflow: hidden;
   background-color: white;
   max-height: 165px;
+  height: 165px;
   display: flex;
   border-radius: 13px;
   box-shadow:
@@ -266,6 +269,7 @@ body {
 .main-flex {
   display: flex;
   max-width: 100%;
+  width: 100%;
   gap: 100px;
   margin-inline: auto;
   align-items: center;
@@ -409,8 +413,10 @@ a:visited {
 .top-flex {
   display: flex;
   min-height: 146px;
+  height: 146px;
   gap: 25px;
   flex-wrap: wrap;
+  width: 100%;
 }
 
 .ID_investor_name {
@@ -444,8 +450,8 @@ a:visited {
 }
 
 .capital_breakdown {
-  max-width: 69vw;
-  width: 69vw;
+  max-width: 75vw;
+  width: 100%;
   background: #f0f6ff;
   height: 45vh;
   margin-top: 75px;

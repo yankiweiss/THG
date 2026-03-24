@@ -1,10 +1,26 @@
 import "./css/index.css";
 import { BarChart } from "./BarChart.jsx";
-
-
-
+import { useParams } from "react-router-dom";
+import {useEffect, useState } from "react";
 
 function InvestorDetail() {
+  const [investorData, setInvestorData] = useState([]);
+
+  let { propertyId, investorId } = useParams();
+
+  const fetchProperty = async () => {
+    await fetch(
+      `https://thg-seven.vercel.app/api/investor/${propertyId}/${investorId}`)
+      .then((res) => res.json())
+      .then((data) => setInvestorData(data));
+  };
+
+  useEffect(() => {
+    fetchProperty();
+  }, []);
+
+  console.log(investorData);
+
   const barChartData = {
     labels: ["Q1", "Q2", "Q3", "Q4"],
     datasets: [
@@ -45,11 +61,11 @@ function InvestorDetail() {
     <>
       <div className="right-side">
         <div className="main_page">
-          <h3 className="fw600">8 Smith Clove Road</h3>
+          <h3 className="fw600">{investorData?.property?.property_name}</h3>
 
           <div className="top-flex">
             <img
-              src={"../src/assets/g1eyapz0z56ntbnjk13m.webp"}
+              src={investorData?.property?.secure_url}
               width={"300px"}
               height={"146px"}
               style={{
@@ -62,7 +78,7 @@ function InvestorDetail() {
               <h6 style={{ color: "#2570C0" }} className="fw600">
                 INVESTOR
               </h6>
-              <h3 className="fw600">Joel Freidman</h3>
+              <h3 className="fw600">{investorData?.investor?.name}</h3>
             </div>
             <div className="ID-investor-details">
               <div className="column-flex">

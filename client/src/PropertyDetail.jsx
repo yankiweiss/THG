@@ -74,7 +74,7 @@ function PropertyDetail() {
               <div className="investors_section">
                 <h3 className="fw600 item">{inv.name}</h3>
 
-                <Link to={"/investorDetail"}>
+                <Link to={`/investorDetail/${propertyData.id}/${inv.id}`}>
                   <div className="investor_details">
                     <h6
                       style={{

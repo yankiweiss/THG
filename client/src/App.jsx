@@ -23,7 +23,7 @@ function App() {
           <Route path="/addDeal" element={<AddDeal/>} />
          
           <Route
-            path="/investorDetail/"
+            path="/investorDetail/:propertyId/:investorId"
             element={<InvestorDetail />}
           />
 
