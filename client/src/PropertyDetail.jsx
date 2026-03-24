@@ -122,7 +122,7 @@ function PropertyDetail() {
         <div className="propertyDetail_flex">
           <img
             src={"../src/assets/g1eyapz0z56ntbnjk13m.webp"}
-            width={"587px"} height={'226px'}
+            max-width={"500px"} max-height={'200px'} width={'500px'} height={'200px'}
             style={{ borderRadius: "8px" , boxShadow:'4px 4px 5px 1px  #1B3C77BF'}}
             alt="property_picture"
           />
