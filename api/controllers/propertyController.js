@@ -24,8 +24,8 @@ const postAProperty = async (req, res) => {
         const {
             investor_name,
             amount_invested,
-            preferred_return,
-            role,
+            preferred_return
+          
 
         } = entry;
     

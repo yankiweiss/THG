@@ -127,10 +127,12 @@ function AddDeal() {
     let allFormData = Object.fromEntries(formData);
 
     const payload = {
-      allFormData, investor: [...Investor]
+      allFormData, Investor
     }
+
+    console.log(payload)
 try {
-   await fetch('https://thg-seven.vercel.app/api/AddDeal', {
+   await fetch('https://thg-seven.vercel.app/api/properties/addDeal', {
       method: 'POST',
       headers: {'Content-Type' : 'application/json'},
       body: JSON.stringify(payload)
@@ -139,10 +141,7 @@ try {
 } catch (error) {
   console.log(error)
 }
-   
-
-    
-
+  
     setInvestor([
       { investor_name: "", amount_invested: "", preferred_return: "" },
     ]);
@@ -179,7 +178,7 @@ try {
           </button>
         </div>
 
-        <form ref={formRef}>
+        <form ref={formRef} onSubmit={submitData}>
           <div className="prop-info-image">
             <div
               className="column-flex"
