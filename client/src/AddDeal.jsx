@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import "./index.css";
 import { MdOutlineUploadFile } from "react-icons/md";
 import { RiDeleteBin5Line } from "react-icons/ri";
@@ -9,6 +9,8 @@ function AddDeal() {
   const [Investor, setInvestor] = useState([
     { investor_name: "", amount_invested: 0, preferred_return: 0 },
   ]);
+   const formRef = useRef(null)
+
 
   const handleAddBtn = () => {
     setInvestor([
@@ -35,7 +37,8 @@ function AddDeal() {
     );
   };
 
-  console.log(Investor);
+ 
+ 
 
   //
   //  const handleImagePreview = (e) => {
@@ -118,23 +121,33 @@ function AddDeal() {
   //    // You can add success notification or redirect here
   //  };
 
-  const submitData = (e) => {
+  const submitData = async (e) => {
     e.preventDefault();
-    let form = e.target;
-    let formData = new FormData(form);
+    let formData = new FormData(formRef.current);
     let allFormData = Object.fromEntries(formData);
 
-    console.log(...Investor, ...allFormData);
+    const payload = {
+      allFormData, investor: [...Investor]
+    }
+try {
+   await fetch('https://thg-seven.vercel.app/api/AddDeal', {
+      method: 'POST',
+      headers: {'Content-Type' : 'application/json'},
+      body: JSON.stringify(payload)
+    })
+  
+} catch (error) {
+  console.log(error)
+}
+   
 
     
 
-    console.log("hello");
-
     setInvestor([
-      { investor_name: "", amount_invested: 0, preferred_return: 0 },
+      { investor_name: "", amount_invested: "", preferred_return: "" },
     ]);
 
-    form.reset();
+    formRef.current.reset();
   };
 
   return (
@@ -166,7 +179,7 @@ function AddDeal() {
           </button>
         </div>
 
-        <form onSubmit={submitData}>
+        <form ref={formRef}>
           <div className="prop-info-image">
             <div
               className="column-flex"
@@ -251,6 +264,7 @@ function AddDeal() {
               </button>
             </div>
           </div>
+          </form>
 
           <div className="AD_investor_section">
             <div className="investor_heading">
@@ -267,6 +281,7 @@ function AddDeal() {
                   {" "}
                   <FaPlus /> Add Investor
                 </button>
+                
               )}
             </div>
 
@@ -302,6 +317,7 @@ function AddDeal() {
                       type="text"
                       name="amount_invested"
                       id="amount_invested"
+                      value={value.amount_invested}
                       className="deal-input"
                       onChange={(e) => handleChange(e, i)}
                     ></input>
@@ -320,6 +336,7 @@ function AddDeal() {
                       name="preferred_return"
                       id="preferred_return"
                       className="deal-input"
+                      value={value.preferred_return}
                       onChange={(e) => handleChange(e, i)}
                     ></input>
                   </div>
@@ -338,10 +355,10 @@ function AddDeal() {
             ))}
           </div>
 
-          <button type="submit" className="submitBtn">
+          <button type="submit" className="submitBtn" onClick={submitData}>
             Create New Property
           </button>
-        </form>
+    
       </div>
     </>
   );

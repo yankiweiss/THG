@@ -23,8 +23,8 @@ const postAProperty = async (req, res) => {
     for (const entry of investors ) {
         const {
             investor_name,
-            invested_amount,
-            perf_return,
+            amount_invested,
+            preferred_return,
             role,
 
         } = entry;
@@ -51,8 +51,8 @@ const postAProperty = async (req, res) => {
           investorID,
           propertyID,
           role,
-          invested_amount,
-          perf_return,
+          amount_invested,
+         preferred_return,
         ]
     )
 }
