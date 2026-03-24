@@ -342,6 +342,7 @@ body {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  gap: 5px;
 }
 
 .propertyDetail_fin_flex div {
@@ -644,5 +645,24 @@ table td {
 .submitBtn:focus {
   background-color: #2569c0;
   color: white;
+}
+
+.upload_field {
+  position: relative; /* Base for the absolute image */
+  width: 100%;
+  min-height: 150px;
+  overflow: hidden; /* Keeps the image inside the borders */
+}
+
+.preview-img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Prevents stretching */
+  display: none;    /* Hidden until an image is picked */
+  z-index: 100;      /* Places it above the text and icon */
+  pointer-events: none; /* Allows you to still click "through" it if needed */
 }
 
