@@ -45,7 +45,6 @@ const postAProperty = async (req, res) => {
         `INSERT INTO investments (
          investor_id,
           property_id,
-          role,
           invested_amount,
           perf_return)  VALUES ($1, $2, $3, $4, $5)`, [
           investorID,
