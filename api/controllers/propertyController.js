@@ -50,7 +50,6 @@ const postAProperty = async (req, res) => {
           perf_return)  VALUES ($1, $2, $3, $4, $5)`, [
           investorID,
           propertyID,
-          role,
           amount_invested,
          preferred_return,
         ]

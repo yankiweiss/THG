@@ -127,7 +127,9 @@ function AddDeal() {
     let allFormData = Object.fromEntries(formData);
 
     const payload = {
-      allFormData, Investor
+      ...allFormData,
+      investors: Investor,
+      pictures: ""
     }
 
     console.log(payload)
