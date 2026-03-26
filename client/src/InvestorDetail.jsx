@@ -7,6 +7,7 @@ import { FiPlus } from "react-icons/fi";
 function InvestorDetail() {
   const [investorData, setInvestorData] = useState([]);
   const [addEvent, SetAddEvent] = useState(false);
+  const [eventType, setEventType] = useState("Investment");
   const targetRef = useRef(null);
 
   let { propertyId, investorId } = useParams();
@@ -31,13 +32,35 @@ function InvestorDetail() {
 
   console.log(investorData);
 
-
-
-  const handleAddEvent = (e) => {
+  const handleAddEvent = async (e) => {
     e.preventDefault();
+    const form = e.target;
+    const formData = new FormData(form);
+    const allEventData = Object.fromEntries(formData);
 
-    SetAddEvent(false)
-  }
+    const payload = {
+      ...allEventData,
+      propertyId,
+      investorId,
+    };
+
+    const res = await fetch("https://thg-seven.vercel.app/api/event", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+
+    const data = res.json();
+
+    console.log(data);
+
+    SetAddEvent(false);
+    setEventType('Investment')
+  };
+
+  const handleEventTypeChange = (e) => {
+    setEventType(e.target.value);
+  };
 
   const barChartData = {
     labels: ["Q1", "Q2", "Q3", "Q4"],
@@ -222,69 +245,99 @@ function InvestorDetail() {
               </p>
 
               <form onSubmit={handleAddEvent}>
-              <div className="add_event_form_wrapper">
+                <div className="add_event_form_wrapper">
+                  <div className="add-event-form" ref={targetRef}>
+                    <div className="column-flex">
+                      <label htmlFor="eventAmount" className="fw600">
+                        Event Amount
+                      </label>
+                      <input
+                        type="number"
+                        id="eventAmount"
+                        name="event_amount"
+                        className="deal-input"
+                        required
+                      ></input>
+                    </div>
 
-                
-                <div className="add-event-form" ref={targetRef}>
-                  <div className="column-flex">
-                    <label htmlFor="eventAmount" className="fw600">
-                      Event Amount
-                    </label>
-                    <input
-                      type="number"
-                      id="eventAmount"
-                      name="event_amount"
-                      className="deal-input"
-                    ></input>
+                    <div className="column-flex">
+                      <label className="fw600">Event Type</label>
+                      <select
+                        name="event_type"
+                        className="deal-input"
+                        style={{ width: "auto" }}
+                        value={eventType}
+                        onChange={handleEventTypeChange}
+                      >
+                        <option value="Investment">Investment</option>
+                        <option value="Capital Call">Capital Call</option>
+                        <option value="Return to Capital">
+                          Return to Capital
+                        </option>
+                        <option value="Return">Return</option>
+                      </select>
+                    </div>
+
+                    {eventType === "Return" ? (
+                      <div style={{ display: "flex", gap: "5px" }}>
+                        <div className="column-flex">
+                          <label className="fw600">From Date</label>
+
+                          <input
+                            className="deal-input"
+                            type="date"
+                            style={{ width: "auto" }}
+                            name="from_date"
+                            required
+                          ></input>
+                        </div>
+                        <div className="column-flex">
+                          <label className="fw600">To Date</label>
+
+                          <input
+                            className="deal-input"
+                            type="date"
+                            style={{ width: "auto" }}
+                            name="to_date"
+                            required
+                          ></input>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="column-flex">
+                        <label className="fw600">Event Date</label>
+
+                        <input
+                          className="deal-input"
+                          type="date"
+                          style={{ width: "auto" }}
+                          name="event_date"
+                          required
+                        ></input>
+                      </div>
+                    )}
+
+                    <div className="column-flex">
+                      <label className="fw600">Notes</label>
+
+                      <textarea className="deal-input" name="notes" />
+                    </div>
                   </div>
 
-                  <div className="column-flex">
-                    <label className="fw600">Event Type</label>
-                    <select
-                      name="investment_type"
-                      className="deal-input"
-                      style={{ width: "auto" }}
+                  <div className="add_event_btns">
+                    <button
+                      onClick={() => SetAddEvent(false)}
+                      className="add-investor"
+                      style={{ backgroundColor: "white", color: "black" }}
                     >
-                      <option value="Investment">Investment</option>
-                      <option value="Capital Call">Capital Call</option>
-                      <option value="Return to Capital">
-                        Return to Capital
-                      </option>
-                      <option value="Return">Return</option>
-                    </select>
-                  </div>
+                      Cancel
+                    </button>
 
-                  <div className="column-flex">
-                    <label className="fw600">Event Date</label>
-
-                    <input
-                      className="deal-input"
-                      type="date"
-                      style={{ width: "auto" }}
-                    ></input>
-                  </div>
-
-                  <div className="column-flex">
-                    <label className="fw600">Notes</label>
-
-                    <textarea className="deal-input" />
+                    <button type="submit" className="add-investor">
+                      Add Event
+                    </button>
                   </div>
                 </div>
-
-                <div className="add_event_btns">
-                  <button
-                    onClick={() => SetAddEvent(false)}
-                    className="add-investor"
-                    style={{ backgroundColor: "white", color: "black" }}
-                  >
-                    Cancel
-                  </button>
-
-                  <button type="submit" className="add-investor">
-                    Add Event
-                  </button>
-                </div>
-              </div>
               </form>
             </div>
           </>
