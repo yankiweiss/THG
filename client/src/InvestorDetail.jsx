@@ -1,16 +1,20 @@
 import "./css/index.css";
 import { BarChart } from "./BarChart.jsx";
-import { useParams } from "react-router-dom";
-import {useEffect, useState } from "react";
+import { Link, useParams } from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
+import { FiPlus } from "react-icons/fi";
 
 function InvestorDetail() {
   const [investorData, setInvestorData] = useState([]);
+  const [addEvent, SetAddEvent] = useState(false);
+  const targetRef = useRef(null);
 
   let { propertyId, investorId } = useParams();
 
   const fetchProperty = async () => {
     await fetch(
-      `https://thg-seven.vercel.app/api/investor/${propertyId}/${investorId}`)
+      `https://thg-seven.vercel.app/api/investor/${propertyId}/${investorId}`,
+    )
       .then((res) => res.json())
       .then((data) => setInvestorData(data));
   };
@@ -19,7 +23,21 @@ function InvestorDetail() {
     fetchProperty();
   }, []);
 
+  useEffect(() => {
+    if (addEvent && targetRef.current) {
+      targetRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [addEvent]);
+
   console.log(investorData);
+
+
+
+  const handleAddEvent = (e) => {
+    e.preventDefault();
+
+    SetAddEvent(false)
+  }
 
   const barChartData = {
     labels: ["Q1", "Q2", "Q3", "Q4"],
@@ -44,12 +62,19 @@ function InvestorDetail() {
         barThickness: 20,
       },
     ],
+  };
 
-    options: {
-      scales: {
-        x: {
-          categoryPercentage: 0.8, // Adjusts space between groups of bars
-          barPercentage: 0.9, // Adjusts space within bars in a group
+  const barChartOptions = {
+    scales: {
+      offset: false,
+      x: {
+        type: "time",
+        time: {
+          unit: "quarter",
+        },
+        grid: {
+          tickColor: "#FF4A4A",
+          color: "#FF4A4A",
         },
       },
     },
@@ -85,7 +110,9 @@ function InvestorDetail() {
                 <h6 className="ID-text fw600">
                   INITIAL<br></br> INVESTMENT{" "}
                 </h6>
-                <h6 className="fw600">$150.000.00</h6>
+                <h6 className="fw600">
+                  {investorData?.investments?.invested_amount}
+                </h6>
               </div>
 
               <div className="column-flex">
@@ -118,7 +145,15 @@ function InvestorDetail() {
         </div>
 
         <div className="capital_breakdown">
-          <h6>Select Year</h6>
+          <div className="cb-top">
+            <h6>Select Year</h6>
+
+            <button className="add-investor" onClick={() => SetAddEvent(true)}>
+              {" "}
+              <FiPlus style={{ fontSize: "26px" }} />
+              Add Event
+            </button>
+          </div>
 
           <div className="capital_events_amount">
             <h4
@@ -131,7 +166,7 @@ function InvestorDetail() {
               Amount
             </h4>
             <div className="quarterly_breakdown">
-              <BarChart data={barChartData} />
+              <BarChart data={barChartData} options={barChartOptions} />
             </div>
 
             <h4
@@ -162,68 +197,98 @@ function InvestorDetail() {
                       <td>Return</td>
                       <td></td>
                     </tr>
-                    <tr>
-                      <td>01/06/2029</td>
-                      <td>$250,000.00</td>
-                      <td>Return</td>
-                    </tr>
-                    <tr>
-                      <td>01/06/2029</td>
-                      <td>$250,000.00</td>
-                      <td>Return</td>
-                    </tr>
-                    <tr>
-                      <td>01/06/2029</td>
-                      <td>$250,000.00</td>
-                      <td>Return</td>
-                    </tr>
-                    <tr>
-                      <td>01/06/2029</td>
-                      <td>$250,000.00</td>
-                      <td>Return</td>
-                    </tr>
-                    <tr>
-                      <td>01/06/2029</td>
-                      <td>$250,000.00</td>
-                      <td>Return</td>
-                    </tr>
-                    <tr>
-                      <td>01/06/2029</td>
-                      <td>$250,000.00</td>
-                      <td>Return</td>
-                    </tr>
-                    <tr>
-                      <td>01/06/2029</td>
-                      <td>$250,000.00</td>
-                      <td>Return</td>
-                    </tr>
-                    <tr>
-                      <td>01/06/2029</td>
-                      <td>$250,000.00</td>
-                      <td>Return</td>
-                    </tr>
-                    <tr>
-                      <td>01/06/2029</td>
-                      <td>$250,000.00</td>
-                      <td>Return</td>
-                    </tr>
-                    <tr>
-                      <td>01/06/2029</td>
-                      <td>$250,000.00</td>
-                      <td>Return</td>
-                    </tr>
-                    <tr>
-                      <td>01/06/2029</td>
-                      <td>$250,000.00</td>
-                      <td>Return</td>
-                      <td></td>
-                    </tr>
                   </tbody>
                 </table>
               </div>
             </div>
           </div>
         </div>
+
+        {addEvent && (
+          <>
+            {" "}
+            <div className="add-form-container" ref={targetRef}>
+              <h3
+                style={{ fontSize: "1.5rem", color: "#2570C0" }}
+                className="fw600"
+              >
+                ADD NEW EVENT
+              </h3>
+              <p
+                style={{ fontSize: "0.9rem", color: "#2570C0" }}
+                className="fw600"
+              >
+                Record a capital transaction for this investor
+              </p>
+
+              <form onSubmit={handleAddEvent}>
+              <div className="add_event_form_wrapper">
+
+                
+                <div className="add-event-form" ref={targetRef}>
+                  <div className="column-flex">
+                    <label htmlFor="eventAmount" className="fw600">
+                      Event Amount
+                    </label>
+                    <input
+                      type="number"
+                      id="eventAmount"
+                      name="event_amount"
+                      className="deal-input"
+                    ></input>
+                  </div>
+
+                  <div className="column-flex">
+                    <label className="fw600">Event Type</label>
+                    <select
+                      name="investment_type"
+                      className="deal-input"
+                      style={{ width: "auto" }}
+                    >
+                      <option value="Investment">Investment</option>
+                      <option value="Capital Call">Capital Call</option>
+                      <option value="Return to Capital">
+                        Return to Capital
+                      </option>
+                      <option value="Return">Return</option>
+                    </select>
+                  </div>
+
+                  <div className="column-flex">
+                    <label className="fw600">Event Date</label>
+
+                    <input
+                      className="deal-input"
+                      type="date"
+                      style={{ width: "auto" }}
+                    ></input>
+                  </div>
+
+                  <div className="column-flex">
+                    <label className="fw600">Notes</label>
+
+                    <textarea className="deal-input" />
+                  </div>
+                </div>
+
+                <div className="add_event_btns">
+                  <button
+                    onClick={() => SetAddEvent(false)}
+                    className="add-investor"
+                    style={{ backgroundColor: "white", color: "black" }}
+                  >
+                    Cancel
+                  </button>
+
+                  <button type="submit" className="add-investor">
+                    Add Event
+                  </button>
+                </div>
+              </div>
+              </form>
+            </div>
+          </>
+        )}
       </div>
     </>
   );

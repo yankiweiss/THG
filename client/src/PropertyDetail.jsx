@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import { FiPlus } from "react-icons/fi";
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { format } from "date-fns";
 
 function PropertyDetail() {
   const [propertyData, setPropertyData] = useState([]);
@@ -19,7 +20,7 @@ function PropertyDetail() {
     fetchProperty();
   }, []);
 
-  console.log(propertyData.investors)
+  console.log(typeof propertyData.closing_date);
 
   return (
     <>
@@ -56,7 +57,12 @@ function PropertyDetail() {
                 <div>
                   <h6 className="PropertyDetail-fin-text">Closing Date</h6>
                   <h6 className="PropertyDetail-fin-value">
-                    {propertyData.closing_date}
+                    {propertyData?.closing_date
+                      ? format(
+                          new Date(propertyData.closing_date),
+                          "MM/dd/yyyy",
+                        )
+                      : "Loading..."}
                   </h6>
                 </div>
               </div>
@@ -69,41 +75,40 @@ function PropertyDetail() {
             </h4>
 
             <div className="PD-in-sec-dt">
+              {propertyData?.investors?.map((inv) => (
+                <div className="investors_section">
+                  <h3 className="fw600 item">{inv.name}</h3>
 
-             {propertyData?.investors?.map((inv) => (
-              <div className="investors_section">
-                <h3 className="fw600 item">{inv.name}</h3>
-
-                <Link to={`/investorDetail/${propertyData.id}/${inv.id}`}>
-                  <div className="investor_details">
-                    <h6
-                      style={{
-                        textAlign: "center",
-                        color: "#2570C0",
-                        fontWeight: "600",
-                      }}
-                      className="item k"
-                    >
-                      Investor<br></br> Portfolio<br></br> Details
-                    </h6>
-
-                    <div className="flex-column item k">
-                      <h6 className="fw600">INVESTED</h6>
-                      <h6 style={{ color: "#2570C0" }} className="fw600">
-                      {inv.invested_amount}
+                  <Link to={`/investorDetail/${propertyData.id}/${inv.id}`}>
+                    <div className="investor_details">
+                      <h6
+                        style={{
+                          textAlign: "center",
+                          color: "#2570C0",
+                          fontWeight: "600",
+                        }}
+                        className="item k"
+                      >
+                        Investor<br></br> Portfolio<br></br> Details
                       </h6>
-                    </div>
 
-                    <div className="flex-column item k">
-                      <h6 className="fw600">PERF RETURN</h6>
-                      <h6 style={{ color: "#2570C0" }} className="fw600">
-                        %{inv.perf_return}
-                      </h6>
+                      <div className="flex-column item k">
+                        <h6 className="fw600">INVESTED</h6>
+                        <h6 style={{ color: "#2570C0" }} className="fw600">
+                          {inv.invested_amount}
+                        </h6>
+                      </div>
+
+                      <div className="flex-column item k">
+                        <h6 className="fw600">PERF RETURN</h6>
+                        <h6 style={{ color: "#2570C0" }} className="fw600">
+                          %{inv.perf_return}
+                        </h6>
+                      </div>
                     </div>
-                  </div>
-                </Link>
-              </div>
-             ))}
+                  </Link>
+                </div>
+              ))}
             </div>
           </div>
         </div>

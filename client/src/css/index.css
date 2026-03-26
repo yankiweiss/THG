@@ -10,6 +10,12 @@ body {
   font-weight: 600;
 }
 
+button{
+  background-color: transparent;
+  border: none;
+  outline: none;
+}
+
 /* will need to create a new flex for the navbar and the rest of the website */
 .app {
   display: flex;
@@ -394,6 +400,8 @@ body {
   font-weight: 600;
   display: flex;
   align-items: center;
+  justify-content: center
+  ;
   gap: 10px;
   box-shadow: 0px 3px 7px #1b3c77bf;
 }
@@ -453,10 +461,21 @@ a:visited {
   max-width: 75vw;
   width: 100%;
   background: #f0f6ff;
-  height: 45vh;
+  height: 50vh;
   margin-top: 75px;
   border-radius: 8px;
   box-shadow: 0px 3px 7px #1b3c77bf;
+  padding-bottom: 50px;
+}
+
+.cb-top{
+  display: flex;
+  width: 100%;
+  padding: 25px;
+  align-items: center;
+  justify-content: space-between;
+  margin-left: 50px;
+  padding-right: 100px;
 }
 
 .capital_events_amount {
@@ -520,6 +539,37 @@ thead > * th {
 
 table td {
   font-weight: 600;
+}
+
+.add-event-form{
+ 
+ 
+  
+  border-radius: 8px;
+  display: flex;
+  justify-content: space-evenly;
+}
+.add-form-container{
+  margin-top: 100px;
+   
+}
+
+.add_event_btns{
+  display: flex;
+  align-items: center;
+  justify-content: end;
+  gap: 25px;
+}
+.add_event_form_wrapper{
+  display: flex;
+  flex-direction: column;
+   width: 75vw;
+ padding: 25px;
+  height: auto;
+  background-color: #f0f6ff;
+  box-shadow: 0px 3px 7px #1b3c77bf;
+  margin-bottom: 150px;
+  border-radius: 8px;
 }
 
 /* need to see how to make the header should be sticky and only the tbody should be able to scroll */
@@ -678,4 +728,5 @@ table td {
   z-index: 100;      /* Places it above the text and icon */
   pointer-events: none; /* Allows you to still click "through" it if needed */
 }
+
 

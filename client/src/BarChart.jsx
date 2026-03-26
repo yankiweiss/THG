@@ -20,6 +20,6 @@ ChartJS.register(
     Legend
 )
 
-export const BarChart = ({data}) =>  {
-    return <Bar data={data} />
+export const BarChart = ({data, options}) =>  {
+    return <Bar data={data} options={options}/>
 }
