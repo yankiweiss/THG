@@ -1,7 +1,14 @@
+import { eachQuarterOfInterval } from "date-fns";
+
 const actualReturns = (events) => {
- return events?.map((event) =>  ({
-    y : event.event_amount, x: event.to_date
-}))
+  const result = events?.map((event) => {
+    return eachQuarterOfInterval({
+      start: new Date(event.from_date),
+      end : new Date(event.to_date)
+    })
+  })
+
+  console.log(result)
 }
 
 export default actualReturns;

@@ -4,7 +4,7 @@ import { Link, useParams } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import { FiPlus } from "react-icons/fi";
 import actualReturns from "./utils/CalculatingReturns.js";
-//import { format } from "date-fns";
+import { format } from "date-fns";
 
 function InvestorDetail() {
   const [investorData, setInvestorData] = useState([]);
@@ -236,8 +236,11 @@ function InvestorDetail() {
                 <tbody>
                   {investorData?.events?.length > 0 ? (
                     investorData?.events.map((evt) => (
-                      <tr>
-                        <td> {evt.event_date}</td>
+                      <tr> 
+                        {evt.event_date === null ? 
+                        <td>{format(new Date (evt.to_date), 'MM/dd/yyyy')}-<br></br>{format(new Date(evt.from_date) , 'MM/dd/yyyy') }</td>
+                       : <td> {format(new Date(evt.event_date), 'MM/dd/yyyy')}</td>
+                        }
                         <td>${evt.event_amount}</td>
                         <td>{evt.event_type}</td>
                         <td>
