@@ -3,6 +3,7 @@ import { BarChart } from "./BarChart.jsx";
 import { Link, useParams } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import { FiPlus } from "react-icons/fi";
+import actualReturns from "./utils/CalculatingReturns.js";
 //import { format } from "date-fns";
 
 function InvestorDetail() {
@@ -11,7 +12,8 @@ function InvestorDetail() {
   const [eventType, setEventType] = useState("Investment");
   const targetRef = useRef(null);
 
-  
+
+  const events = investorData?.events;
 
   let { propertyId, investorId } = useParams();
 
@@ -33,9 +35,6 @@ function InvestorDetail() {
     }
   }, [addEvent]);
 
-
-  
-
   const handleAddEvent = async (e) => {
     e.preventDefault();
     const form = e.target;
@@ -54,7 +53,7 @@ function InvestorDetail() {
       body: JSON.stringify(payload),
     });
 
- const data = await res.json();
+    const data = await res.json();
 
     setInvestorData((prev) => ({
       ...prev,
@@ -70,25 +69,34 @@ function InvestorDetail() {
   };
 
   const barChartData = {
-    labels: ["Q1", "Q2", "Q3", "Q4"],
+    
     datasets: [
       {
         label: "Actual Return",
-        data: [1200, 1500, 150],
+         data: actualReturns(events),
         backgroundColor: "#6B47FF",
         barThickness: 20,
       },
       {
         label: "Expected Return",
-        data: [1200, 1500, 150],
+         data: [
+        { x: '2024-01-01', y: 500 }, // Q1
+        { x: '2024-04-01', y: 5000 }, // Q2
+        { x: '2024-07-01', y: 10000 }, // Q3
+        { x: '2024-10-01', y: 20000 }  // Q4
+      ],
         backgroundColor: "#FF8548",
         barThickness: 20,
       },
       {
         label: "Missing Return",
-        data: [1200, 1500, 150],
+         data: [
+        { x: '2024-01-01', y: 500 }, // Q1
+        { x: '2024-04-01', y: 5000 }, // Q2
+        { x: '2024-07-01', y: 10000 }, // Q3
+        { x: '2024-10-01', y: 20000 }  // Q4
+      ],
         backgroundColor: "#FF4A4A",
-
         barThickness: 20,
       },
     ],
@@ -96,21 +104,27 @@ function InvestorDetail() {
 
   const barChartOptions = {
     scales: {
-      offset: false,
       x: {
         type: "time",
         time: {
           unit: "quarter",
         },
-        grid: {
-          tickColor: "#FF4A4A",
-          color: "#FF4A4A",
+         
+       
+      },
+      y: {
+        ticks: {
+          callback: function (value) {
+            return "$" + value;
+          },
         },
       },
     },
   };
 
   //when fetching all data data state is being filled in with object of array with all data
+
+  console.log(investorData?.events)
 
   return (
     <>
@@ -267,13 +281,20 @@ function InvestorDetail() {
                         Event Amount
                       </label>
 
-                     <span className="deal-input">$<input
-                        id="eventAmount"
-                        name="event_amount"
-                        type="number"
-                        required
-                        style={{border: 'none', outline: 'none', backgroundColor: 'transparent'}}
-                      ></input></span>
+                      <span className="deal-input">
+                        $
+                        <input
+                          id="eventAmount"
+                          name="event_amount"
+                          type="number"
+                          required
+                          style={{
+                            border: "none",
+                            outline: "none",
+                            backgroundColor: "transparent",
+                          }}
+                        ></input>
+                      </span>
                     </div>
 
                     <div className="column-flex">

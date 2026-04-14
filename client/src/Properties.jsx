@@ -7,11 +7,15 @@ import { format } from "date-fns";
 
 function Properties() {
   const [propertyData, setPropertyData] = useState([]);
+  const [loading, setLoading] = useState(false)
 
   const getAllProperties = async () => {
-    await fetch("https://thg-seven.vercel.app/api/properties")
-      .then((response) => response.json())
-      .then((data) => setPropertyData(data));
+    const response = await fetch("https://thg-seven.vercel.app/api/properties");
+    const data = await response.json();
+    setPropertyData(data)
+    setLoading(true)
+    
+
   };
 
   useEffect(() => {
@@ -20,10 +24,14 @@ function Properties() {
 
   return (
     <>
+    
       <div className="page-wrapper">
         {/* now we need tooltips for each one of them */}
 
+      
+  {loading ? 
         <div className="right-side">
+          
           <h4
             style={{
               color: "#6780B2",
@@ -119,8 +127,9 @@ function Properties() {
               </div>
             ))}
           </section>
-        </div>
-      </div>
+        
+       </div> : <p className="loading">Loading...</p> }
+      </div> 
     </>
   );
 }
