@@ -497,19 +497,28 @@ a:visited {
   border-radius: 6px;
   width: 35%;
   overflow: auto;
-  scrollbar-width: none;
+  min-height: 100%;
 }
 
-table {
-  width: 80%;
+
+
+
+
+tr td
+ {
+  padding: 0.5rem 1rem;
+
+  width: auto;
+  
 }
 
-table,
-tbody,
-tr,
-td {
-  padding: 0.6rem;
+table{
   border-collapse: collapse;
+}
+textarea{
+  border: none;
+  background-color: transparent;
+  outline: none;
 }
 
 tr:nth-child(even) {
@@ -517,24 +526,21 @@ tr:nth-child(even) {
   /* or any other color */
 }
 
-.events-table-wrap {
-  display: flex;
-  justify-content: center;
-}
 
-table tr:hover {
+
+tbody tr:hover {
   background-color: rgb(236, 236, 236);
   border-radius: 15px;
 }
 
-thead > * th {
+thead {
   position: sticky;
   top: 0;
-  min-width: 3rem;
   padding: 1px;
   /* Match this to your .event_table background */
   background-color: #f0f6ff;
   z-index: 100;
+  text-align: center;
 }
 
 table td {

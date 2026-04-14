@@ -8,6 +8,7 @@ import Reports from "./Reports";
 import InvestorDetail from "./InvestorDetail";
 import "./css/index.css";
 import AddDeal from "./AddDeal";
+import Test from './Test'
 
 function App() {
   return (
@@ -21,6 +22,8 @@ function App() {
           <Route path="/properties" element={<Properties />} />
 
           <Route path="/addDeal" element={<AddDeal/>} />
+
+          <Route path="/test" element={<Test/>}/>
          
           <Route
             path="/investorDetail/:propertyId/:investorId"

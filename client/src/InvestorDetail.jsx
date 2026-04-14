@@ -3,12 +3,15 @@ import { BarChart } from "./BarChart.jsx";
 import { Link, useParams } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import { FiPlus } from "react-icons/fi";
+//import { format } from "date-fns";
 
 function InvestorDetail() {
   const [investorData, setInvestorData] = useState([]);
   const [addEvent, SetAddEvent] = useState(false);
   const [eventType, setEventType] = useState("Investment");
   const targetRef = useRef(null);
+
+  
 
   let { propertyId, investorId } = useParams();
 
@@ -30,7 +33,8 @@ function InvestorDetail() {
     }
   }, [addEvent]);
 
-  console.log(investorData);
+
+  
 
   const handleAddEvent = async (e) => {
     e.preventDefault();
@@ -50,12 +54,15 @@ function InvestorDetail() {
       body: JSON.stringify(payload),
     });
 
-    const data = res.json();
+ const data = await res.json();
 
-    console.log(data);
+    setInvestorData((prev) => ({
+      ...prev,
+      events: [...prev.events, data],
+    }));
 
     SetAddEvent(false);
-    setEventType('Investment')
+    setEventType("Investment");
   };
 
   const handleEventTypeChange = (e) => {
@@ -203,26 +210,34 @@ function InvestorDetail() {
               Capital Events
             </h4>
             <div className="event_table">
-              <div className="events-table-wrap">
-                <table>
-                  <thead>
-                    <tr style={{ color: "#2570C0" }}>
-                      <th>Event Date</th>
-                      <th>Event Amount</th>
-                      <th>Event Type</th>
-                      <th>Notes</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td>01/06/2029</td>
-                      <td>$250,000.00</td>
-                      <td>Return</td>
-                      <td></td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
+              <table>
+                <thead>
+                  <tr style={{ color: "#2570C0" }}>
+                    <th style={{ minWidth: "30px" }}>Event Date</th>
+                    <th style={{ minWidth: "25px" }}>Event Amount</th>
+                    <th style={{ minWidth: "25px" }}>Event Type</th>
+                    <th style={{ minWidth: "30px" }}>Notes</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {investorData?.events?.length > 0 ? (
+                    investorData?.events.map((evt) => (
+                      <tr>
+                        <td> {evt.event_date}</td>
+                        <td>${evt.event_amount}</td>
+                        <td>{evt.event_type}</td>
+                        <td>
+                          <textarea cols="10" readOnly>
+                            {evt.notes}
+                          </textarea>
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <h6>no events yet</h6>
+                  )}
+                </tbody>
+              </table>
             </div>
           </div>
         </div>
@@ -251,13 +266,14 @@ function InvestorDetail() {
                       <label htmlFor="eventAmount" className="fw600">
                         Event Amount
                       </label>
-                      <input
-                        type="number"
+
+                     <span className="deal-input">$<input
                         id="eventAmount"
                         name="event_amount"
-                        className="deal-input"
+                        type="number"
                         required
-                      ></input>
+                        style={{border: 'none', outline: 'none', backgroundColor: 'transparent'}}
+                      ></input></span>
                     </div>
 
                     <div className="column-flex">
