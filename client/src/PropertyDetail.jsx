@@ -4,9 +4,11 @@ import { FiPlus } from "react-icons/fi";
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { format } from "date-fns";
+import Loading from "./Loading";
 
 function PropertyDetail() {
   const [propertyData, setPropertyData] = useState([]);
+  const [loading, setLoading] = useState(false)
 
   let { id } = useParams();
 
@@ -14,6 +16,8 @@ function PropertyDetail() {
     await fetch(`https://thg-seven.vercel.app/api/properties/${id}`)
       .then((res) => res.json())
       .then((data) => setPropertyData(data));
+
+      setLoading(true)
   };
 
   useEffect(() => {
@@ -24,7 +28,10 @@ function PropertyDetail() {
 
   return (
     <>
+
+    { loading ?
       <div className="right-side">
+      
         <div className="main-flex">
           <div className="property-content">
             <h3 className="fw600">{propertyData.property_name}</h3>
@@ -111,7 +118,7 @@ function PropertyDetail() {
               ))}
             </div>
           </div>
-        </div>
+        </div> 
 
         <div className="add-investor-section">
           <button className="add-investor">
@@ -119,7 +126,9 @@ function PropertyDetail() {
             Add Investor
           </button>
         </div>
-      </div>
+        
+      </div> : <Loading/>}
+      
     </>
   );
 }

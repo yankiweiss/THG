@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import PropertyDetail from "./PropertyDetail";
 import { format } from "date-fns";
+import Loading from "./Loading";
 
 function Properties() {
   const [propertyData, setPropertyData] = useState([]);
@@ -128,7 +129,7 @@ function Properties() {
             ))}
           </section>
         
-       </div> : <p className="loading">Loading...</p> }
+       </div> : <Loading/> }
       </div> 
     </>
   );

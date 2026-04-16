@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { FiPlus } from "react-icons/fi";
 import {actualReturns, expectedReturn, investmentToDate, returnHelper, investmentActualReturn} from "./utils/CalculatingReturns.js";
 import { format } from "date-fns";
+import Loading from "./Loading.jsx";
 
 function InvestorDetail() {
 
@@ -14,7 +15,8 @@ function InvestorDetail() {
   const [addEvent, SetAddEvent] = useState(false);
   const [eventType, setEventType] = useState("Investment");
   const targetRef = useRef(null);
-  const[ddSelectedYear, setddSelectedYear] = useState(year)
+  const[ddSelectedYear, setddSelectedYear] = useState(year);
+  const [loading, setLoading] = useState(false)
 
   const events = investorData?.events || [];
   const initialInvestment = Number(investorData?.investments?.invested_amount);
@@ -33,6 +35,7 @@ function InvestorDetail() {
     )
       .then((res) => res.json())
       .then((data) => setInvestorData(data));
+      setLoading(true)
   };
 
   useEffect(() => {
@@ -160,6 +163,7 @@ function InvestorDetail() {
 
   return (
     <>
+    {loading ?
       <div className="right-side">
         <div className="main_page">
           <h3 className="fw600">{investorData?.property?.property_name}</h3>
@@ -428,7 +432,7 @@ function InvestorDetail() {
             </div>
           </>
         )}
-      </div>
+      </div> : <Loading/>}
     </>
   );
 }
