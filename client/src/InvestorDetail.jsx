@@ -3,17 +3,27 @@ import { BarChart } from "./BarChart.jsx";
 import { Link, useParams } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import { FiPlus } from "react-icons/fi";
-import actualReturns from "./utils/CalculatingReturns.js";
+import {actualReturns, expectedReturn} from "./utils/CalculatingReturns.js";
 import { format } from "date-fns";
 
 function InvestorDetail() {
+
+  const now = new Date();
+  const year = now.getFullYear()
   const [investorData, setInvestorData] = useState([]);
   const [addEvent, SetAddEvent] = useState(false);
   const [eventType, setEventType] = useState("Investment");
   const targetRef = useRef(null);
+  const[ddSelectedYear, setddSelectedYear] = useState(year)
+
+  const events = investorData?.events || [];
+  const initialInvestment = Number(investorData?.investments?.invested_amount);
+  
+  const perfReturn = Number(investorData?.investments?.perf_return);
+  console.log(typeof perfReturn)
 
 
-  const events = investorData?.events;
+
 
   let { propertyId, investorId } = useParams();
 
@@ -69,48 +79,40 @@ function InvestorDetail() {
   };
 
   const barChartData = {
-    
     datasets: [
       {
         label: "Actual Return",
-         data: actualReturns(events),
+        data: actualReturns(events, ddSelectedYear),
         backgroundColor: "#6B47FF",
         barThickness: 20,
       },
       {
         label: "Expected Return",
-         data: [
-        { x: '2024-01-01', y: 500 }, // Q1
-        { x: '2024-04-01', y: 5000 }, // Q2
-        { x: '2024-07-01', y: 10000 }, // Q3
-        { x: '2024-10-01', y: 20000 }  // Q4
-      ],
+        data: expectedReturn(initialInvestment, events, perfReturn),
         backgroundColor: "#FF8548",
         barThickness: 20,
       },
-      {
-        label: "Missing Return",
-         data: [
-        { x: '2024-01-01', y: 500 }, // Q1
-        { x: '2024-04-01', y: 5000 }, // Q2
-        { x: '2024-07-01', y: 10000 }, // Q3
-        { x: '2024-10-01', y: 20000 }  // Q4
-      ],
-        backgroundColor: "#FF4A4A",
-        barThickness: 20,
-      },
+      //{
+      //  label: "Missing Return",
+      //  data: [
+      //    { x: "2026-01-01", y: 500 }, // Q1
+      //    { x: "2026-04-01", y: 5000 }, // Q2
+      //    { x: "2026-07-01", y: 10000 }, // Q3
+      //    { x: "2026-10-01", y: 20000 }, // Q4
+      //  ],
+      //  backgroundColor: "#FF4A4A",
+      //  barThickness: 20,
+      //},
     ],
   };
 
   const barChartOptions = {
-    scales: {
+       scales: {
       x: {
         type: "time",
         time: {
           unit: "quarter",
         },
-         
-       
       },
       y: {
         ticks: {
@@ -120,11 +122,41 @@ function InvestorDetail() {
         },
       },
     },
-  };
+  
+  
+}
 
   //when fetching all data data state is being filled in with object of array with all data
+  const eventsYear = (events) => {
+    let allYears = [];
+    let results;
+    let withOutDuplicates;
+    let a;
 
-  console.log(investorData?.events)
+    events?.forEach((evt) => {
+      if (evt.from_date === null || evt.to_date === null) {
+        return;
+      } else {
+        const fromDate = new Date(evt.from_date).getFullYear();
+        const toDate = new Date(evt.to_date).getFullYear();
+
+        allYears.push({ fromDate, toDate });
+
+        results = allYears.map(({ fromDate, toDate }) => [fromDate, toDate]);
+
+        a = results.flat()
+
+        withOutDuplicates = [...new Set(a)]
+
+
+      }
+    });
+    return withOutDuplicates
+  };
+
+  const b = eventsYear(events);
+
+  
 
   return (
     <>
@@ -190,7 +222,15 @@ function InvestorDetail() {
 
         <div className="capital_breakdown">
           <div className="cb-top">
-            <h6>Select Year</h6>
+            <label>Select Year</label>
+            <select onChange={(e) => setddSelectedYear(e.target.value)}>
+
+             {b?.map((year) => (
+                <option value={year}>{year}</option>
+
+              ))}
+
+            </select>
 
             <button className="add-investor" onClick={() => SetAddEvent(true)}>
               {" "}
@@ -236,11 +276,19 @@ function InvestorDetail() {
                 <tbody>
                   {investorData?.events?.length > 0 ? (
                     investorData?.events.map((evt) => (
-                      <tr> 
-                        {evt.event_date === null ? 
-                        <td>{format(new Date (evt.to_date), 'MM/dd/yyyy')}-<br></br>{format(new Date(evt.from_date) , 'MM/dd/yyyy') }</td>
-                       : <td> {format(new Date(evt.event_date), 'MM/dd/yyyy')}</td>
-                        }
+                      <tr>
+                        {evt.event_date === null ? (
+                          <td>
+                            {format(new Date(evt.from_date), "MM/dd/yyyy")} -{" "}
+                            <br></br>
+                            {format(new Date(evt.to_date), "MM/dd/yyyy")}
+                          </td>
+                        ) : (
+                          <td>
+                            {" "}
+                            {format(new Date(evt.event_date), "MM/dd/yyyy")}
+                          </td>
+                        )}
                         <td>${evt.event_amount}</td>
                         <td>{evt.event_type}</td>
                         <td>
