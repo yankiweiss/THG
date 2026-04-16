@@ -126,16 +126,24 @@ const investmentActualReturn = (events) => {
   return totalReturn;
 };
 
-const expectedReturn = (initialInvestment, events, perfRate) => {
+const expectedReturn = (initialInvestment, events, perfRate, year) => {
+  
   const returnOnAmount = returnHelper(initialInvestment, events, perfRate);
 
-  
-const dividedIntoQuarters = returnOnAmount / 4;
+  let expectedAmount = [];
 
-for(let i = 1 ; i <= 4; i++){
- 
-}
+  const dividedIntoQuarters = returnOnAmount / 4;
 
+  for (let i = 0; i <= 11; i += 3) {
+    const quarter = new Date( year, i, 1);
+
+    const amount = Number(dividedIntoQuarters);
+
+    expectedAmount.push({ x: quarter, y: amount });
+  }
+  console.log(expectedAmount)
+
+  return expectedAmount;
 };
 
 export {

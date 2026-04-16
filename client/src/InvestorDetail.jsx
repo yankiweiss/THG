@@ -88,7 +88,7 @@ function InvestorDetail() {
       },
       {
         label: "Expected Return",
-        data: expectedReturn(initialInvestment, events, perfReturn),
+        data: expectedReturn(initialInvestment, events, perfReturn, ddSelectedYear),
         backgroundColor: "#FF8548",
         barThickness: 20,
       },
