@@ -90,7 +90,7 @@ button{
 
 .search input::placeholder {
   color: #aabfe2;
-  opacity: 1;
+  
 }
 
 .search {
@@ -744,5 +744,7 @@ table td {
   width: 100vw;
   font-size: 2rem;
 }
+
+/* test page */
 
 

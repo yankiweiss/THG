@@ -9,6 +9,8 @@ import Loading from "./Loading";
 function Properties() {
   const [propertyData, setPropertyData] = useState([]);
   const [loading, setLoading] = useState(false)
+  const [search, setSearch] = useState('');
+  const [searchData, setSearchData] = useState('');
 
   const getAllProperties = async () => {
     const response = await fetch("https://thg-seven.vercel.app/api/properties");
@@ -22,6 +24,19 @@ function Properties() {
   useEffect(() => {
     getAllProperties();
   }, []);
+
+  
+
+  
+    
+    
+    console.log(search)
+    
+    const searchDataInput = propertyData?.filter((property) =>  property.property_name.toLowerCase().includes(search.toLowerCase()));
+    
+    console.log(searchDataInput)
+
+  
 
   return (
     <>
@@ -60,11 +75,11 @@ function Properties() {
 
           <div className="search">
             <AiOutlineSearch color="#AABFE2" fontSize={"25px"} />
-            <input placeholder="Search Properties"></input>
+            <input placeholder="Search Properties" value={search} onChange={(e) => setSearch(e.target.value)}></input>
           </div>
 
           <section>
-            {propertyData.map((property) => (
+            {searchDataInput.map((property) => (
               <div className="prop_section">
                 <Link to={`propertyDetail/${property.id}`}>
                   {" "}
