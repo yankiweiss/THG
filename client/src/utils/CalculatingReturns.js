@@ -5,11 +5,7 @@ import {
   startOfQuarter,
 } from "date-fns";
 
-
-
-
 const actualReturns = (events, year) => {
-
   // only getting the Return events.
   const returnEvents = events?.filter((event) => event.event_type === "Return");
 
@@ -66,7 +62,7 @@ const actualReturns = (events, year) => {
 
         return acc;
       }, {});
-        (start = addQuarters(new Date(start), 1));
+      start = addQuarters(new Date(start), 1);
     }
   });
 
@@ -75,42 +71,77 @@ const actualReturns = (events, year) => {
   return chartData;
 };
 
-const returnHelper = (initialInvestment, events, perfRate) => {
+let totalAmountInvested;
 
+const returnHelper = (initialInvestment, events, perfReturn) => {
   const amountAtClosing = initialInvestment;
-  const rate = perfRate;
+
+  const rate = perfReturn;
+
   const allEvents = events;
 
-  events?.forEach((evt) =>   {
+  totalAmountInvested = amountAtClosing;
 
+  allEvents?.forEach((evt) => {
+    if (evt.event_type === "Capital Call") {
+      totalAmountInvested += Number(evt.event_amount);
+    } else if (
+      evt.event_type === "Investment" ||
+      evt.event_type === "Return to Capital"
+    ) {
+      totalAmountInvested -= Number(evt.event_amount);
+    }
+  });
 
-  })
+  return totalAmountInvested * (rate / 100);
+};
 
-  console.log(allEvents)
+const investmentToDate = (initialInvestment, events) => {
+  const amountAtClosing = initialInvestment;
+  const allEvents = events;
 
- 
+  totalAmountInvested = amountAtClosing;
 
-  return amountAtClosing * (rate / 100)
+  allEvents?.forEach((evt) => {
+    if (evt.event_type === "Capital Call") {
+      totalAmountInvested += Number(evt.event_amount);
+    } else if (
+      evt.event_type === "Investment" ||
+      evt.event_type === "Return to Capital"
+    ) {
+      totalAmountInvested -= Number(evt.event_amount);
+    }
+  });
 
-}
+  return totalAmountInvested;
+};
 
+const investmentActualReturn = (events) => {
+  const returnEvents = events?.filter((event) => event.event_type === "Return");
 
-const expectedReturn = (initialInvestment,  events, perfRate) =>  {
+  const totalReturn = returnEvents?.reduce((acc, evt) => {
+    return acc + Number(evt.event_amount);
+  }, 0);
 
+  return totalReturn;
+};
+
+const expectedReturn = (initialInvestment, events, perfRate) => {
   const returnOnAmount = returnHelper(initialInvestment, events, perfRate);
 
-  console.log(returnOnAmount)
+  
+const dividedIntoQuarters = returnOnAmount / 4;
 
-
-// data will need to import 
-  // initial investment's,
-  // investments events,
-  // perf return rate
-
+for(let i = 1 ; i <= 4; i++){
+ 
 }
 
+};
 
-
-
-
-export { actualReturns, expectedReturn};
+export {
+  actualReturns,
+  expectedReturn,
+  returnHelper,
+  investmentToDate,
+  investmentActualReturn,
+};

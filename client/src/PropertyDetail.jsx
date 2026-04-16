@@ -51,7 +51,7 @@ function PropertyDetail() {
                 <div>
                   <h6 className="PropertyDetail-fin-text">Purchase Price</h6>
                   <h6 className="PropertyDetail-fin-value">
-                    {propertyData.purchase_price}
+                    ${propertyData.purchase_price}
                   </h6>
                 </div>
                 <div>
@@ -95,7 +95,7 @@ function PropertyDetail() {
                       <div className="flex-column item k">
                         <h6 className="fw600">INVESTED</h6>
                         <h6 style={{ color: "#2570C0" }} className="fw600">
-                          {inv.invested_amount}
+                          ${inv.invested_amount}
                         </h6>
                       </div>
 
