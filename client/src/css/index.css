@@ -288,7 +288,7 @@ button{
 }
 
 .PD-in-sec {
-  width: 700px;
+  width: 775px;
   display: flex;
   flex-direction: column;
 }
@@ -296,7 +296,7 @@ button{
 .PD-in-sec-dt {
   background-color: #f0f6ff;
   box-shadow: 0px 3px 7px #1b3c77bf;
-  padding: 0px 15px;
+  padding: 10px 15px;
   border-radius: 15px;
   display: flex;
   flex-direction: column;
