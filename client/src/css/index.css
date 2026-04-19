@@ -168,7 +168,7 @@ button{
 
 .property_flex {
   display: flex;
-  height: 70%;
+  height: 115px;
   background-color: #f0f6ff;
   align-items: center;
   flex-wrap: wrap;

@@ -1,4 +1,6 @@
 import { AiOutlineSearch } from "react-icons/ai";
+import { RiDeleteBin5Line } from "react-icons/ri";
+
 import "./css/index.css";
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
@@ -87,7 +89,7 @@ function Properties() {
           <section>
             {searchDataInput.map((property) => (
               <div className="prop_section">
-                <Link to={`propertyDetail/${property.id}`}>
+                
                   {" "}
                   <div className="prop_wrapper">
                     <img
@@ -96,6 +98,7 @@ function Properties() {
                     />
 
                     <div className="display-section">
+                      <Link to={`propertyDetail/${property.id}`}>
                       <div className="property_flex ">
                         <h5
                           style={{
@@ -123,9 +126,13 @@ function Properties() {
                             <h6 className="fin-amount">
                               {(format(parseISO(property?.closing_date), "MM/dd/yyyy"))}
                             </h6>
+                            
                           </div>
+                          
                         </div>
                       </div>
+                      </Link>
+                      
 
                       <div className="investor-section">
                         <h3
@@ -142,10 +149,11 @@ function Properties() {
                         <div className="investors_name_flex">
                           <h6 className="investor_name">Yankee Weiss</h6>
                         </div>
+                      <RiDeleteBin5Line color="red"/>
                       </div>
                     </div>
                   </div>
-                </Link>
+                
               </div>
             ))}
           </section>
