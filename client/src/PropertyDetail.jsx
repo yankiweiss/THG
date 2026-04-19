@@ -35,6 +35,8 @@ function PropertyDetail() {
         
     }
 
+    console.log(propertyData)
+
   return (
     <>
 
@@ -62,7 +64,7 @@ function PropertyDetail() {
               <div className="propertyDetail_fin_flex">
                 <div>
                   <h6 className="PropertyDetail-fin-text">Total Investors</h6>
-                  <h6 className="PropertyDetail-fin-value">4</h6>
+                  <h6 className="PropertyDetail-fin-value">{propertyData?.investors?.length}</h6>
                 </div>
                 <div>
                   <h6 className="PropertyDetail-fin-text">Purchase Price</h6>

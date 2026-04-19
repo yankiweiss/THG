@@ -1,5 +1,6 @@
-const now = new Date();
-console.log(now)
+const array = [1, 2];
+
+console.log(array.length)
 
 function Test() {
   console.log("from test");
