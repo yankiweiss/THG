@@ -206,5 +206,5 @@ export {
   getPropertyById,
   deleteProperty,
   updatePropertyField,
-  getAllPropertiesDB2
+  getAllProperties2
 };
