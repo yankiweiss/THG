@@ -81,22 +81,7 @@ const getAllProperties = async (req, res) => {
 };
 
 
-const getAllProperties2 = async (req, res) => {
-  const getAllPropertiesDB2 = `
-    SELECT * 
-    FROM properties
-    INNER JOIN investments
-    ON properties.id = investments.property_id
-    INNER JOIN investors
-    ON investments.investor_id = investors.id
-    `;
 
-  // will need to get for each property the investor associate data.
-
-  const result = await dataBasePool.query(getAllPropertiesDB2);
-
-  res.json(result.rows);
-};
 
 const getPropertyById = async (req, res) => {
   const propertyId = parseInt(req.params.id, 10);
