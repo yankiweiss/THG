@@ -117,7 +117,7 @@ function PropertyDetail() {
                       <div className="flex-column item k">
                         <h6 className="fw600">PERF RETURN</h6>
                         <h6 style={{ color: "#2570C0" }} className="fw600">
-                          %{inv.perf_return}
+                          {inv.perf_return}%
                         </h6>
                       </div>
                     </div>

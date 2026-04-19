@@ -225,7 +225,7 @@ function InvestorDetail() {
                     PERF <br></br>RETURN
                   </h6>
                   <h6 className="fw600">
-                    %{investorData?.investments?.perf_return}
+                    {investorData?.investments?.perf_return}%
                   </h6>
                 </div>
                 <div className="column-flex">
