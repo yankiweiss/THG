@@ -106,10 +106,10 @@ const investmentToDate = (initialInvestment, events) => {
   totalAmountInvested = amountAtClosing;
 
   allEvents?.forEach((evt) => {
-    if (evt.event_type === "Capital Call") {
+    if (evt.event_type === "Capital Call" || evt.event_type === 'Investment') {
       totalAmountInvested += Number(evt.event_amount);
     } else if (
-      evt.event_type === "Investment" ||
+   
       evt.event_type === "Return to Capital"
     ) {
       totalAmountInvested -= Number(evt.event_amount);
