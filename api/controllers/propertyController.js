@@ -9,57 +9,57 @@ const postAProperty = async (req, res) => {
   try {
     await client.query("BEGIN");
 
-    const propertyResult  =  await client.query (`
+    const propertyResult = await client.query(`
   INSERT INTO properties(property_name, purchase_price, secure_url, closing_date )
   VALUES($1, $2, $3, $4) RETURNING id`, [
       property_name,
       purchase_price,
       pictures,
       closing_date,
-    ] );
+    ]);
 
-    
 
-    for (const entry of investors ) {
-        const {
-            investor_name,
-            amount_invested,
-            preferred_return
-          
 
-        } = entry;
-    
-    
-        const investorResult = await client.query (
-            `INSERT INTO investors (name)
+    for (const entry of investors) {
+      const {
+        investor_name,
+        amount_invested,
+        preferred_return
+
+
+      } = entry;
+
+
+      const investorResult = await client.query(
+        `INSERT INTO investors (name)
             VALUES ($1)
             RETURNING id`, [investor_name]
-        )
- 
+      )
 
-    const propertyID = propertyResult.rows[0].id;
 
-    const investorID = investorResult.rows[0].id;
+      const propertyID = propertyResult.rows[0].id;
 
-    await client.query(
+      const investorID = investorResult.rows[0].id;
+
+      await client.query(
         `INSERT INTO investments (
          investor_id,
           property_id,
           invested_amount,
           perf_return)  VALUES ($1, $2, $3, $4)`, [
-          investorID,
-          propertyID,
-          amount_invested,
-         preferred_return,
-        ]
-    )
-}
-  
+        investorID,
+        propertyID,
+        amount_invested,
+        preferred_return,
+      ]
+      )
+    }
+
     await client.query("COMMIT");
 
     res.status(201).json({
       message: "Property created successfully",
-  
+
     });
   } catch (error) {
     console.error(error);
@@ -67,13 +67,13 @@ const postAProperty = async (req, res) => {
     client.release();
   }
 };
-  
+
 
 const getAllProperties = async (req, res) => {
   const getAllPropertiesDB = `
     SELECT * FROM properties`;
 
-    // will need to get for each property the investor associate data.
+  // will need to get for each property the investor associate data.
 
   const result = await dataBasePool.query(getAllPropertiesDB);
 
@@ -88,10 +88,10 @@ const getAllProperties2 = async (req, res) => {
     INNER JOIN investments
     ON properties.id = investments.property_id
     INNER JOIN investors
-    ON investments.investor_id
+    ON investments.investor_id = investors.id
     `;
 
-    // will need to get for each property the investor associate data.
+  // will need to get for each property the investor associate data.
 
   const result = await dataBasePool.query(getAllPropertiesDB2);
 
@@ -104,10 +104,10 @@ const getPropertyById = async (req, res) => {
   const client = await dataBasePool.connect();
 
   try {
-    const propertyResult = await client.query (
-        `SELECT *
+    const propertyResult = await client.query(
+      `SELECT *
         FROM properties WHERE id = $1`,
-        [propertyId]
+      [propertyId]
     );
 
 
@@ -129,7 +129,7 @@ const getPropertyById = async (req, res) => {
       [propertyId]
     );
 
- 
+
 
     res.json({
       ...propertyResult.rows[0],
@@ -141,7 +141,7 @@ const getPropertyById = async (req, res) => {
         role: row.role,
         investment_id: row.investment_id
       })),
-      
+
     });
   } catch (error) {
     console.error(error);
@@ -150,7 +150,7 @@ const getPropertyById = async (req, res) => {
     client.release();
   }
 };
- 
+
 
 const deleteProperty = async (req, res) => {
   try {
@@ -172,24 +172,24 @@ const deleteProperty = async (req, res) => {
 };
 
 const updatePropertyField = async (req, res) => {
-  const {id }  = req.params;
-  const {field, value } = req.body;
+  const { id } = req.params;
+  const { field, value } = req.body;
 
   try {
 
-    const result = await dataBasePool.query (
+    const result = await dataBasePool.query(
       `UPDATE properties
       SET ${field} = $1
       WHERE id = $2
-      RETURNING *; `, 
-      [value , id]
+      RETURNING *; `,
+      [value, id]
 
     )
-    
+
     res.json(result.rows[0]);
-    
+
   } catch (err) {
-     console.error(err);
+    console.error(err);
     res.status(500).json({ error: "Update failed" });
   }
 
