@@ -5,7 +5,7 @@ const router = express.Router();
 
 router.post('/addDeal', postAProperty)
 router.get('/:id', getPropertyById)
-router.get('/', getAllProperties)
+router.get('/', getAllProperties2)
 router.delete('/:id', deleteProperty)
 router.put('/:id', updatePropertyField)
 
