@@ -277,19 +277,18 @@ button{
   max-width: 100%;
   width: 100%;
   gap: 100px;
-  margin-inline: auto;
+ 
   align-items: center;
   flex-wrap: wrap;
   height: 350px;
 }
 
 .property-content {
-  margin-top: 50px;
   width: 600px;
 }
 
 .PD-in-sec {
-  width: 750px;
+  width: 700px;
   display: flex;
   flex-direction: column;
 }
@@ -297,7 +296,7 @@ button{
 .PD-in-sec-dt {
   background-color: #f0f6ff;
   box-shadow: 0px 3px 7px #1b3c77bf;
-  padding: 30px 15px;
+  padding: 0px 15px;
   border-radius: 15px;
   display: flex;
   flex-direction: column;
