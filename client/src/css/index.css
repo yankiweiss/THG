@@ -300,6 +300,7 @@ button{
   padding: 30px 15px;
   border-radius: 15px;
   display: flex;
+  flex-direction: column;
 }
 
 .investors_section {
@@ -313,6 +314,7 @@ button{
   width: 100%;
   gap: 20px;
   flex-grow: 1;
+  margin: 5px;
 }
 
 .investors_section:hover .investor_details {

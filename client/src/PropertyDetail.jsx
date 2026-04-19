@@ -8,7 +8,8 @@ import Loading from "./Loading";
 
 function PropertyDetail() {
   const [propertyData, setPropertyData] = useState([]);
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
+  const [addInvestor , setAddInvestor] = useState(false)
 
   let { id } = useParams();
 
