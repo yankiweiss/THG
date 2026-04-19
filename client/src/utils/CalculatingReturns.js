@@ -2,6 +2,7 @@ import {
   addQuarters,
   eachDayOfInterval,
   endOfQuarter,
+  parseISO,
   startOfQuarter,
 } from "date-fns";
 
@@ -14,8 +15,8 @@ const actualReturns = (events, year) => {
   let combined = 0;
 
   returnEvents?.forEach((event) => {
-    const fromDate = new Date(event.from_date);
-    const endDate = new Date(event.to_date);
+    const fromDate = (parseISO(event.from_date));
+    const endDate = (parseISO(event.to_date));
     const eventAmount = event.event_amount;
 
     // getting total of days per event.
@@ -67,6 +68,8 @@ const actualReturns = (events, year) => {
   });
 
   const chartData = Object.values(combined);
+
+  console.log(chartData)
 
   return chartData;
 };

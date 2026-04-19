@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom";
 import { FiPlus } from "react-icons/fi";
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { format } from "date-fns";
+import { format, parseISO } from "date-fns";
 import Loading from "./Loading";
 
 function PropertyDetail() {
@@ -25,6 +25,15 @@ function PropertyDetail() {
   }, []);
 
   console.log(typeof propertyData.closing_date);
+
+
+  const formatNumbers = (number) => {
+
+     const usdFormatter =  new Intl.NumberFormat('en-US', {style: 'currency', currency: 'USD'})
+
+     return usdFormatter.format(number)
+        
+    }
 
   return (
     <>
@@ -58,15 +67,14 @@ function PropertyDetail() {
                 <div>
                   <h6 className="PropertyDetail-fin-text">Purchase Price</h6>
                   <h6 className="PropertyDetail-fin-value">
-                    ${propertyData.purchase_price}
+                    {formatNumbers(propertyData.purchase_price)}
                   </h6>
                 </div>
                 <div>
                   <h6 className="PropertyDetail-fin-text">Closing Date</h6>
                   <h6 className="PropertyDetail-fin-value">
                     {propertyData?.closing_date
-                      ? format(
-                          new Date(propertyData.closing_date),
+                      ? format(parseISO(propertyData.closing_date),
                           "MM/dd/yyyy",
                         )
                       : "Loading..."}
@@ -102,7 +110,7 @@ function PropertyDetail() {
                       <div className="flex-column item k">
                         <h6 className="fw600">INVESTED</h6>
                         <h6 style={{ color: "#2570C0" }} className="fw600">
-                          ${inv.invested_amount}
+                          {formatNumbers(inv.invested_amount)}
                         </h6>
                       </div>
 

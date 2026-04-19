@@ -3,7 +3,7 @@ import "./css/index.css";
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import PropertyDetail from "./PropertyDetail";
-import { format } from "date-fns";
+import { format, parseISO } from "date-fns";
 import Loading from "./Loading";
 
 function Properties() {
@@ -25,16 +25,22 @@ function Properties() {
     getAllProperties();
   }, []);
 
-  
-
-  
-    
-    
     console.log(search)
     
     const searchDataInput = propertyData?.filter((property) =>  property.property_name.toLowerCase().includes(search.toLowerCase()));
     
     console.log(searchDataInput)
+
+
+    console.log(propertyData)
+
+    const formatNumbers = (number) => {
+
+     const usdFormatter =  new Intl.NumberFormat('en-US', {style: 'currency', currency: 'USD'})
+
+     return usdFormatter.format(number)
+        
+    }
 
   
 
@@ -107,7 +113,7 @@ function Properties() {
                             <h6 className="fin-text">PURCHASE PRICE</h6>
 
                             <h6 className="fin-amount">
-                              ${property?.purchase_price}
+                              {formatNumbers(property?.purchase_price)}
                             </h6>
                           </div>
 
@@ -115,7 +121,7 @@ function Properties() {
                             <h6 className="fin-text">CLOSING DATE</h6>
 
                             <h6 className="fin-amount">
-                              {format(property?.closing_date, "MM/dd/yyyy")}
+                              {(format(parseISO(property?.closing_date), "MM/dd/yyyy"))}
                             </h6>
                           </div>
                         </div>

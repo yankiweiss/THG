@@ -4,7 +4,7 @@ import { Link, useParams } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import { FiPlus } from "react-icons/fi";
 import {actualReturns, expectedReturn, investmentToDate, returnHelper, investmentActualReturn} from "./utils/CalculatingReturns.js";
-import { format } from "date-fns";
+import { format, parseISO } from "date-fns";
 import Loading from "./Loading.jsx";
 
 function InvestorDetail() {
@@ -159,6 +159,15 @@ function InvestorDetail() {
 
   const b = eventsYear(events);
 
+
+   const formatNumbers = (number) => {
+
+     const usdFormatter =  new Intl.NumberFormat('en-US', {style: 'currency', currency: 'USD'})
+
+     return usdFormatter.format(number)
+        
+    }
+
   
 
   return (
@@ -191,7 +200,7 @@ function InvestorDetail() {
                   INITIAL<br></br> INVESTMENT{" "}
                 </h6>
                 <h6 className="fw600">
-                  ${Number(investorData?.investments?.invested_amount).toFixed(2)}
+                  {formatNumbers(investorData?.investments?.invested_amount)}
                 </h6>
               </div>
 
@@ -199,7 +208,7 @@ function InvestorDetail() {
                 <h6 className="ID-text fw600">
                   INVESTMENT<br></br> TO DATE{" "}
                 </h6>
-                <h6 className="fw600">${Number(investmentToDate(initialInvestment, events)).toFixed(2)}</h6>
+                <h6 className="fw600">{formatNumbers(investmentToDate(initialInvestment, events))}</h6>
               </div>
 
               <div className="column-flex">
@@ -212,13 +221,13 @@ function InvestorDetail() {
                 <h6 className="ID-text fw600">
                   ACTUAL<br></br> RETURN
                 </h6>
-                <h6 className="fw600">${Number(investmentActualReturn(events)).toFixed(2)}</h6>
+                <h6 className="fw600">{formatNumbers(investmentActualReturn(events))}</h6>
               </div>
               <div className="column-flex">
                 <h6 className="ID-text fw600">
                   EXPECTED <br></br>RETURN
                 </h6>
-                <h6 className="fw600">${Number(returnHelper(initialInvestment, events, perfReturn)).toFixed(2)}</h6>
+                <h6 className="fw600">{formatNumbers(returnHelper(initialInvestment, events, perfReturn))}</h6>
               </div>
             </div>
           </div>
@@ -283,15 +292,15 @@ function InvestorDetail() {
                       <tr>
                         {evt.event_date === null ? (
                           <td>
-                            {format(new Date(evt.from_date), "MM/dd/yyyy")}-<br></br>{format(new Date(evt.to_date), "MM/dd/yyyy")}
+                            {format(parseISO(evt.from_date), "MM/dd/yyyy")}-<br></br>{format(parseISO(evt.to_date), "MM/dd/yyyy")}
                           </td>
                         ) : (
                           <td>
                             {" "}
-                            {format(new Date(evt.event_date), "MM/dd/yyyy")}
+                            {format(parseISO(evt.event_date), "MM/dd/yyyy")}
                           </td>
                         )}
-                        <td>${evt.event_amount}</td>
+                        <td>{formatNumbers(evt.event_amount)}</td>
                         <td>{evt.event_type}</td>
                         <td>
                           <textarea cols="10" readOnly>
