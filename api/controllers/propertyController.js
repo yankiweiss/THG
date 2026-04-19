@@ -82,7 +82,7 @@ const getAllProperties = async (req, res) => {
 
 
 const getAllProperties2 = async (req, res) => {
-  const getAllPropertiesDB = `
+  const getAllPropertiesDB2 = `
     SELECT * 
     FROM properties
     INNER JOIN investments
@@ -93,7 +93,7 @@ const getAllProperties2 = async (req, res) => {
 
     // will need to get for each property the investor associate data.
 
-  const result = await dataBasePool.query(getAllPropertiesDB);
+  const result = await dataBasePool.query(getAllPropertiesDB2);
 
   res.json(result.rows);
 };
@@ -205,5 +205,6 @@ export {
   getAllProperties,
   getPropertyById,
   deleteProperty,
-  updatePropertyField
+  updatePropertyField,
+  getAllPropertiesDB2
 };
