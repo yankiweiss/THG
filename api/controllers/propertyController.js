@@ -190,6 +190,5 @@ export {
   getAllProperties,
   getPropertyById,
   deleteProperty,
-  updatePropertyField,
-  getAllProperties2
+  updatePropertyField
 };
