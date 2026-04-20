@@ -13,7 +13,11 @@ function Properties() {
   const [search, setSearch] = useState('');
   const [searchData, setSearchData] = useState('');
 
-  const baseUrl = import.meta.inv.url;
+
+
+  const baseUrl = import.meta.env.VITE_BASE_URL;
+
+  console.log(baseUrl);
 
   const getAllProperties = async () => {
     const response = await fetch(`${baseUrl}/properties`);
