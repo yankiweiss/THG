@@ -171,7 +171,12 @@ button{
 .delete{
   margin-right: 50px;
   cursor: pointer;
+  display: none;
 
+}
+
+.prop_wrapper:hover .delete{
+  display: block;
 }
 
 
