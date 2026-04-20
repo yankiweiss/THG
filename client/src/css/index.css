@@ -158,9 +158,22 @@ button{
 .investor-section {
   background-color: #e6ecff;
   display: flex;
+  justify-content: space-between;
   height: 30%;
   align-items: center;
+  width: 100%;
 }
+.inv-details{
+  display: flex;
+  justify-content: start;
+}
+
+.delete{
+  margin-right: 50px;
+  cursor: pointer;
+
+}
+
 
 .info {
   display: flex;
