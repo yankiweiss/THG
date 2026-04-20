@@ -13,8 +13,10 @@ function Properties() {
   const [search, setSearch] = useState('');
   const [searchData, setSearchData] = useState('');
 
+  const baseUrl = import.meta.inv.url;
+
   const getAllProperties = async () => {
-    const response = await fetch("https://thg-seven.vercel.app/api/properties");
+    const response = await fetch(`${baseUrl}/properties`);
     const data = await response.json();
     setPropertyData(data)
     setLoading(true)
@@ -42,6 +44,7 @@ function Properties() {
       console.log('deleting this property')
     }
 
+    fetch('')
 
 
   }
