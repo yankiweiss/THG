@@ -5,9 +5,8 @@ import { useEffect, useRef, useState } from "react";
 import { FiPlus } from "react-icons/fi";
 import {
   actualReturns,
-  expectedReturn,
+  expectedQuarterReturns,
   investmentToDate,
-  returnHelper,
   investmentActualReturn,
 } from "./utils/CalculatingReturns.js";
 import { format, parseISO } from "date-fns";
@@ -27,9 +26,13 @@ function InvestorDetail() {
 
   const events = investorData?.events || [];
   const initialInvestment = Number(investorData?.investments?.invested_amount);
+  const closingDate = investorData?.property?.closing_date;
+
+ 
+  
 
   const perfReturn = Number(investorData?.investments?.perf_return);
-  console.log(typeof perfReturn);
+
 
   let { propertyId, investorId } = useParams();
 
@@ -93,14 +96,17 @@ function InvestorDetail() {
         backgroundColor: "#6B47FF",
         barThickness: 20,
       },
+
+    
       {
         label: "Expected Return",
-        data: expectedReturn(
+        data: closingDate ? expectedQuarterReturns(
+          ddSelectedYear,
           initialInvestment,
           events,
           perfReturn,
-          ddSelectedYear,
-        ),
+          closingDate
+        ): [],
         backgroundColor: "#FF8548",
         barThickness: 20,
       },
@@ -175,7 +181,7 @@ function InvestorDetail() {
 
 
   
- 
+
 
   return (
     <>
@@ -241,9 +247,9 @@ function InvestorDetail() {
                     EXPECTED <br></br>RETURN
                   </h6>
                   <h6 className="fw600">
-                    {formatNumbers(
-                      returnHelper(initialInvestment, events, perfReturn),
-                    )}
+                    {/*{formatNumbers(
+                      expectedQuarterReturns(initialInvestment, events, perfReturn),
+                    )}*/}
                   </h6>
                 </div>
               </div>

@@ -20,7 +20,7 @@ function Properties() {
   console.log(baseUrl);
 
   const getAllProperties = async () => {
-    const response = await fetch(`${baseUrl}/properties`);
+    const response = await fetch(`https://thg-seven.vercel.app/api/properties`);
     const data = await response.json();
     setPropertyData(data)
     setLoading(true)

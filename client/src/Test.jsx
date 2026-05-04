@@ -1,12 +1,10 @@
-const array = [1, 2];
+const now = new Date();
 
-console.log(array.length)
+console.log(Date.now())
 
 function Test() {
   console.log("from test");
-  return (
-  <h1>Test Webpage!!!</h1>
-  )
+  return <h1>Test Webpage!!!</h1>;
 }
 
 export default Test;

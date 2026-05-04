@@ -1,7 +1,13 @@
 import {
   addQuarters,
   eachDayOfInterval,
+  eachQuarterOfInterval,
+  eachYearOfInterval,
   endOfQuarter,
+  getQuarter,
+  isSameQuarter,
+  max,
+  min,
   parseISO,
   startOfQuarter,
 } from "date-fns";
@@ -15,8 +21,8 @@ const actualReturns = (events, year) => {
   let combined = 0;
 
   returnEvents?.forEach((event) => {
-    const fromDate = (parseISO(event.from_date));
-    const endDate = (parseISO(event.to_date));
+    const fromDate = parseISO(event.from_date);
+    const endDate = parseISO(event.to_date);
     const eventAmount = event.event_amount;
 
     // getting total of days per event.
@@ -76,27 +82,139 @@ const actualReturns = (events, year) => {
 
 let totalAmountInvested;
 
-const returnHelper = (initialInvestment, events, perfReturn) => {
-  const amountAtClosing = initialInvestment;
+// below will be a function to get back quarters expected return.
 
-  const rate = perfReturn;
+const expectedQuarterReturns = (
+  year,
+  initialInvestment,
+  events,
+  perfReturn,
+  closingDate,
+) => {
+  // overall timeline from closing_date to date.
 
-  const allEvents = events;
+  const timelineArray = [];
+  const chartJS = [];
 
-  totalAmountInvested = amountAtClosing;
-
-  allEvents?.forEach((evt) => {
-    if (evt.event_type === "Capital Call") {
-      totalAmountInvested += Number(evt.event_amount);
-    } else if (
-      evt.event_type === "Investment" ||
-      evt.event_type === "Return to Capital"
-    ) {
-      totalAmountInvested -= Number(evt.event_amount);
-    }
+  const years = eachYearOfInterval({
+    start: new Date(closingDate),
+    end: new Date(),
   });
 
-  return totalAmountInvested * (rate / 100);
+  years.forEach((year) => {
+    timelineArray.push({
+      year: year.getFullYear(),
+      quarters: [
+        {
+          quarter: 1,
+          expectedReturn: 0,
+          start: new Date(year.getFullYear(), 0, 1),
+          end: new Date(year.getFullYear(), 3, 0),
+        },
+        {
+          quarter: 2,
+          expectedReturn: 0,
+          start: new Date(year.getFullYear(), 3, 1),
+          end: new Date(year.getFullYear(), 6, 0),
+        },
+        {
+          quarter: 3,
+          expectedReturn: 0,
+          start: new Date(year.getFullYear(), 6, 1),
+          end: new Date(year.getFullYear(), 9, 0),
+        },
+        {
+          quarter: 4,
+          expectedReturn: 0,
+          start: new Date(year.getFullYear(), 9, 1),
+          end: new Date(year.getFullYear(), 12, 0),
+        },
+      ],
+    });
+  });
+
+  // will be the base on what to calculate on.
+
+  const eventsAndDates = [
+    {
+      event: "initial-investment",
+      amount: initialInvestment,
+      date: closingDate,
+    },
+  ];
+
+  const nonReturnEvents = events?.filter(
+    (event) => event.event_type !== "Return",
+  );
+
+  nonReturnEvents?.forEach((evt) =>
+    eventsAndDates.push({
+      event: evt.event_type,
+      amount: Number(evt.event_amount),
+      date: evt.event_date,
+    }),
+  );
+
+  const endDate = timelineArray[timelineArray.length - 1].quarters[3].end;
+
+  console.log(endDate);
+
+  eventsAndDates.forEach((evt) => {
+    const eventStart = new Date(evt.date);
+    //const endDate = new Date();
+    const eventType = evt.event;
+    const amount = evt.amount;
+
+    timelineArray.forEach((year) => {
+      year.quarters.forEach((q) => {
+        const qStart = new Date(q.start);
+        const qEnd = new Date(q.end);
+
+        const overlapStart = max([eventStart.getTime(), qStart.getTime()]);
+        const overlapEnd = min([endDate.getTime(), qEnd.getTime()]);
+
+        const overlap = overlapEnd - overlapStart;
+
+        const msInDays = 1000 * 60 * 60 * 24;
+
+        const amountPD = (Number(amount) / 365) * (perfReturn / 100);
+
+        const quarterAmount = (overlap / msInDays) * amountPD;
+
+        if (overlap > 0) {
+          if(eventType === 'Return to Capital'){
+            q.expectedReturn -= Number(quarterAmount)
+          }else {
+          q.expectedReturn += Number(quarterAmount);
+          }
+        }
+
+
+        
+
+      });
+    });
+  });
+
+  timelineArray.forEach((year) =>  {
+    year.quarters.forEach((q) => {
+      chartJS.push({x: q.start, y: Number(q.expectedReturn)})
+    })
+  })
+
+  console.log(chartJS)
+
+
+
+  return chartJS
+
+  //const chartJS = timelineArray.map((data) => {
+  //  y: data.
+  //})
+
+  // will build out here a overview of events, and then compare actual events to that.
+
+  
 };
 
 const investmentToDate = (initialInvestment, events) => {
@@ -106,12 +224,9 @@ const investmentToDate = (initialInvestment, events) => {
   totalAmountInvested = amountAtClosing;
 
   allEvents?.forEach((evt) => {
-    if (evt.event_type === "Capital Call" || evt.event_type === 'Investment') {
+    if (evt.event_type === "Capital Call" || evt.event_type === "Investment") {
       totalAmountInvested += Number(evt.event_amount);
-    } else if (
-   
-      evt.event_type === "Return to Capital"
-    ) {
+    } else if (evt.event_type === "Return to Capital") {
       totalAmountInvested -= Number(evt.event_amount);
     }
   });
@@ -129,22 +244,39 @@ const investmentActualReturn = (events) => {
   return totalReturn;
 };
 
-const expectedReturn = (initialInvestment, events, perfRate, year) => {
-  
-  const returnOnAmount = returnHelper(initialInvestment, events, perfRate);
+const expectedReturn = (
+  initialInvestment,
+  events,
+  perfRate,
+  year,
+  closingDate,
+) => {
+  const returnOnAmount = returnHelper(
+    initialInvestment,
+    events,
+    perfRate,
+    closingDate,
+  );
 
   let expectedAmount = [];
+
+  const returnPerYear = returnOnAmount / 365;
+
+  const now = new Date();
+
+  const daysFromClosing = now - new Date(closingDate);
+
+  const totalReturn = daysFromClosing * returnPerYear;
 
   const dividedIntoQuarters = returnOnAmount / 4;
 
   for (let i = 0; i <= 11; i += 3) {
-    const quarter = new Date( year, i, 1);
+    const quarter = new Date(year, i, 1);
 
     const amount = Number(dividedIntoQuarters);
 
     expectedAmount.push({ x: quarter, y: amount });
   }
-  console.log(expectedAmount)
 
   return expectedAmount;
 };
@@ -152,7 +284,7 @@ const expectedReturn = (initialInvestment, events, perfRate, year) => {
 export {
   actualReturns,
   expectedReturn,
-  returnHelper,
+  expectedQuarterReturns,
   investmentToDate,
   investmentActualReturn,
 };
