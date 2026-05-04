@@ -194,6 +194,10 @@ const expectedQuarterReturns = (
  const b = 5;
  console.log(b)
 
+ const i = 10;
+ console.log(i)
+
+
   timelineArray.forEach((year) => {
     year.quarters.forEach((q) => {
       chartJS.push({ x: q.start, y: Number(q.expectedReturn) });

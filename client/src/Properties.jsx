@@ -15,9 +15,9 @@ function Properties() {
 
 
 
-  const baseUrl = import.meta.env.VITE_BASE_URL;
-
-  console.log(baseUrl);
+//  const baseUrl = import.meta.env.VITE_BASE_URL;
+//
+//  console.log(baseUrl);
 
   const getAllProperties = async () => {
     const response = await fetch(`https://thg-seven.vercel.app/api/properties`);

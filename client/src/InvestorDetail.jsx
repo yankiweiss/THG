@@ -23,7 +23,7 @@ function InvestorDetail() {
   const targetRef = useRef(null);
   const [ddSelectedYear, setddSelectedYear] = useState(year);
   const [loading, setLoading] = useState(false);
-  const [evAmount, setEvAmount] = useState(0);
+  
 
   const events = investorData?.events || [];
  
