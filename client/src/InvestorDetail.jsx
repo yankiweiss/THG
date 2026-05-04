@@ -8,6 +8,7 @@ import {
   expectedQuarterReturns,
   investmentToDate,
   investmentActualReturn,
+  expectedReturnAmount
 } from "./utils/CalculatingReturns.js";
 import { format, parseISO } from "date-fns";
 import Loading from "./Loading.jsx";
@@ -25,14 +26,11 @@ function InvestorDetail() {
   const [evAmount, setEvAmount] = useState(0);
 
   const events = investorData?.events || [];
+ 
   const initialInvestment = Number(investorData?.investments?.invested_amount);
   const closingDate = investorData?.property?.closing_date;
 
- 
-  
-
   const perfReturn = Number(investorData?.investments?.perf_return);
-
 
   let { propertyId, investorId } = useParams();
 
@@ -54,6 +52,16 @@ function InvestorDetail() {
       targetRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [addEvent]);
+
+ const expectedData = closingDate
+  ? expectedQuarterReturns(
+      ddSelectedYear,
+      initialInvestment,
+      events,
+      perfReturn,
+      closingDate
+    )
+  : { chartJS: [], totalExpected: 0 };
 
   const handleAddEvent = async (e) => {
     e.preventDefault();
@@ -97,16 +105,9 @@ function InvestorDetail() {
         barThickness: 20,
       },
 
-    
       {
         label: "Expected Return",
-        data: closingDate ? expectedQuarterReturns(
-          ddSelectedYear,
-          initialInvestment,
-          events,
-          perfReturn,
-          closingDate
-        ): [],
+        data: expectedData.chartJS,
         backgroundColor: "#FF8548",
         barThickness: 20,
       },
@@ -142,34 +143,19 @@ function InvestorDetail() {
     },
   };
 
-  //when fetching all data data state is being filled in with object of array with all data
-  const eventsYear = (events) => {
-    let allYears = [];
-    let results;
-    let withOutDuplicates;
-    let a;
+  const yearsY = events.map((event) => {
+    const date = event.event_date ??
+    event.to_date ??
+    event.from_date;
 
-    events?.forEach((evt) => {
-      if (evt.from_date === null || evt.to_date === null) {
-        return;
-      } else {
-        const fromDate = new Date(evt.from_date).getFullYear();
-        const toDate = new Date(evt.to_date).getFullYear();
+    return new Date(date).getFullYear()
+    
+  })
 
-        allYears.push({ fromDate, toDate });
+  const years = new Set(yearsY);
 
-        results = allYears.map(({ fromDate, toDate }) => [fromDate, toDate]);
-
-        a = results.flat();
-
-        withOutDuplicates = [...new Set(a)];
-      }
-    });
-    return withOutDuplicates;
-  };
-
-  const b = eventsYear(events);
-
+  
+ 
   const formatNumbers = (number) => {
     const usdFormatter = new Intl.NumberFormat("en-US", {
       style: "currency",
@@ -178,10 +164,6 @@ function InvestorDetail() {
 
     return usdFormatter.format(number);
   };
-
-
-  
-
 
   return (
     <>
@@ -247,9 +229,7 @@ function InvestorDetail() {
                     EXPECTED <br></br>RETURN
                   </h6>
                   <h6 className="fw600">
-                    {/*{formatNumbers(
-                      expectedQuarterReturns(initialInvestment, events, perfReturn),
-                    )}*/}
+                    {formatNumbers(expectedData.totalExpected)}
                   </h6>
                 </div>
               </div>
@@ -260,7 +240,7 @@ function InvestorDetail() {
             <div className="cb-top">
               <label>Select Year</label>
               <select onChange={(e) => setddSelectedYear(e.target.value)}>
-                {b?.map((year) => (
+                {[...years].map((year) => (
                   <option value={year}>{year}</option>
                 ))}
               </select>
@@ -373,15 +353,12 @@ function InvestorDetail() {
                             id="eventAmount"
                             name="event_amount"
                             type="text"
-                           
                             required
                             style={{
                               border: "none",
                               outline: "none",
                               backgroundColor: "transparent",
                             }}
-                            
-                         
                           ></input>
                         </span>
                       </div>

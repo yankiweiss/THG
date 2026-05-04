@@ -75,8 +75,6 @@ const actualReturns = (events, year) => {
 
   const chartData = Object.values(combined);
 
-  console.log(chartData)
-
   return chartData;
 };
 
@@ -92,8 +90,8 @@ const expectedQuarterReturns = (
   closingDate,
 ) => {
   // overall timeline from closing_date to date.
-
   const timelineArray = [];
+
   const chartJS = [];
 
   const years = eachYearOfInterval({
@@ -157,8 +155,6 @@ const expectedQuarterReturns = (
 
   const endDate = timelineArray[timelineArray.length - 1].quarters[3].end;
 
-  console.log(endDate);
-
   eventsAndDates.forEach((evt) => {
     const eventStart = new Date(evt.date);
     //const endDate = new Date();
@@ -182,39 +178,36 @@ const expectedQuarterReturns = (
         const quarterAmount = (overlap / msInDays) * amountPD;
 
         if (overlap > 0) {
-          if(eventType === 'Return to Capital'){
-            q.expectedReturn -= Number(quarterAmount)
-          }else {
-          q.expectedReturn += Number(quarterAmount);
+          if (eventType === "Return to Capital") {
+            q.expectedReturn -= Number(quarterAmount);
+          } else {
+            q.expectedReturn += Number(quarterAmount);
           }
         }
-
-
-        
-
       });
     });
   });
 
-  timelineArray.forEach((year) =>  {
+ 
+
+  timelineArray.forEach((year) => {
     year.quarters.forEach((q) => {
-      chartJS.push({x: q.start, y: Number(q.expectedReturn)})
-    })
-  })
+      chartJS.push({ x: q.start, y: Number(q.expectedReturn) });
+    });
+  });
 
-  console.log(chartJS)
+  return { chartJS, totalExpected: expectedReturnAmount(timelineArray) };
+};
 
+const expectedReturnAmount = (timeline) => {
+  let totalExpected = 0;
+  timeline.forEach((year) => {
+    year.quarters.forEach((q) => {
+      totalExpected += Number(q.expectedReturn);
+    });
+  });
 
-
-  return chartJS
-
-  //const chartJS = timelineArray.map((data) => {
-  //  y: data.
-  //})
-
-  // will build out here a overview of events, and then compare actual events to that.
-
-  
+  return Number(totalExpected);
 };
 
 const investmentToDate = (initialInvestment, events) => {
@@ -287,4 +280,5 @@ export {
   expectedQuarterReturns,
   investmentToDate,
   investmentActualReturn,
+  expectedReturnAmount,
 };
